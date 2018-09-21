@@ -1,0 +1,36 @@
+#lang racket
+(define (fibRecursive fibList fibLength)
+  (begin
+    (define newNum (+ (list-ref fibList (- (length fibList) 1)) (list-ref fibList (- (length fibList) 2)) ))
+    (if (= fibLength (length fibList))
+        
+        (display fibList)
+
+        (begin
+          (fibRecursive (append fibList (list newNum)) fibLength)
+          )
+        )
+    )    
+  )
+
+(define (fib fibLength)
+  (fibRecursive (list 0 1) fibLength)
+
+  )
+
+; (fib desiredLength)
+
+(define (timeIt func args)
+  (begin
+    
+    (define startTime (current-milliseconds))
+
+    (apply func args) (newline)
+    (define nowTime (current-milliseconds))
+
+    (define elapsedTime (- nowTime startTime))
+    (display "Times you can run in one second: " )
+    (display (round (/ 1 (/ elapsedTime 1000))))
+    )
+  )
+(timeIt fib '(272))
