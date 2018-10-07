@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.lang.Math; 
 import java.util.Arrays;
+import java.util.*; 
 
 public class sieve{
 	public static void main(String[] args){
@@ -23,7 +24,8 @@ public class sieve{
 				if(primes[i]){
 					for(int x = (int) (Math.pow(((2 * i) + 3), 2) - 3) / 2; x < primesLength; x += ((2 * i) + 3)){
 						primes[x] = false;
-					}					
+					}
+
 				}
 			}
 			int p = (int) 1;
@@ -33,6 +35,7 @@ public class sieve{
 					if(p == n){
 						System.out.println("Prime number "+ n + " is " + ((2 * i) + 3));
 						System.out.println("Calculated in " + ((System.nanoTime() - start) / 1000000000.0 ) + " seconds.");
+						System.out.println(Collections.frequency(Arrays.asList(primes), true));
 						break;
 					}
 				}
