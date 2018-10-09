@@ -1,21 +1,7 @@
 import sys
 from edgeList import fileToData
 import time
-def breadthSearch(connections, level, startNode, endNode, checked={}, length=1):
 
-    if startNode == endNode:
-        return 0
-    if not level:
-        return -1
-    if endNode in level:
-        return length
-    nextLevel = set()
-    for node in level:
-        for n in connections[node]:
-            if n not in checked:
-                nextLevel.add(n)
-    checked = checked | level
-    return breadthSearch(connections, nextLevel, startNode, endNode, checked=checked, length=(length+1))
 
 def main():
     meta, connections = fileToData(sys.argv[1], directed=True)
