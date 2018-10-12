@@ -11,26 +11,33 @@ public class sieve{
 			System.out.println(2);
 			return;
 		}else{
-			boolean [] primes ;
-			int primesLength;
+
+			
+      int primesLength;
 			if (n < 200){
 				primesLength = (int) 1000;
 			}else{
 				primesLength = (int) pi(n)/2;
 			}
-			primes = new boolean [primesLength];
-			Arrays.fill(primes, true);
+			
+			//BitSet primes = new BitSet(primesLength);
+      //primes.set(0, primesLength)   ;
+      boolean [] primes = new boolean [primesLength];   //In primes, false=prime & true=composite to save time on array initialization
+      //Arrays.fill(primes, true);
 			for(int i = 0; i < Math.sqrt(primesLength); i++){
-				if(primes[i]){
+				//if(primes.get(i)){  
+        if(! primes[i]){
 					for(int x = (int) (Math.pow(((2 * i) + 3), 2) - 3) / 2; x < primesLength; x += ((2 * i) + 3)){
-						primes[x] = false;
+					   //primes.set(x, false);
+             primes[x] = true;//false;
 					}
 
 				}
 			}
 			int p = (int) 1;
 			for(int i = 0; i < primesLength; i++){
-				if(primes[i]){
+				//if(primes.get(i)){  
+        if(!primes[i]){
 					p += 1;
 					if(p == n){
 						System.out.println("Prime number "+ n + " is " + ((2 * i) + 3));
