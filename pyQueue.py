@@ -41,11 +41,3 @@ class Pqueue:
         else:
             return None
 
-def my_cmp(a1, b1):
-    a=len(str(a1))
-    b=len(str(b1))
-    if a < b: 
-        return -1
-    if a == b: 
-        return 0
-    return 1    
