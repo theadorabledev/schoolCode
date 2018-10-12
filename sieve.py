@@ -2,16 +2,16 @@
 import time
 from math import sqrt, log
 import sys
-import numpy as np
 def sieve(n):
 	""" Main function that performs incremental sieve of eratosthenes to get nth prime. """
+	#python -m cProfile sieve.py 1000000
 	if n == 1:
 		return 2
 	elif n < 200:
 		primes = [True] * 1000
 	else:	
 		primes = [True] * (pi(n)/2)# pi(n) is divided by 2 becuase even numbers are automatically not prime
-	
+	#print primes
 	sieveSub(primes)
 	#x = time.time()
 	#print nthTrue(primes, n)
@@ -22,10 +22,10 @@ def sieveSub(primes):
     """ Subprocess that performs the sieve operation. """
     accumulativeLength=len(primes)
     for i in xrange(int(sqrt(accumulativeLength))):
-        if primes[i]:
-            #((2 * i) + 3) is converting between indexes and odd number based system
-            for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
-                primes[x] = False
+		if primes[i]:
+			#((2 * i) + 3) is converting between indexes and odd number based system
+			for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
+				primes[x] = False
 
 
         
