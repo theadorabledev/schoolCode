@@ -1,6 +1,24 @@
 import numpy as np
 from numpy.linalg import matrix_power
 import copy
+
+def screwyFileFix(lineData):
+    """ Fixes edge-list data files without newlines. """
+    newLineData = []
+    for line in lineData:
+        newLineData.append([int(j) for j in line.strip().split(" ")])    
+    numGraphs = newLineData.pop(0)
+    #print newLineData[0]
+    myGraphs = []
+    while newLineData:
+        graph = []
+        upTo = newLineData[0][1]
+        for i in range(upTo+1):
+            graph.append(newLineData.pop(0))
+        myGraphs.append(graph)
+    return myGraphs
+    
+    
 def topologicalSort(argConnections):
     """ Topologically sorts the given graph data using Khan's algroithm. """
     connections = copy.deepcopy(argConnections)
@@ -26,6 +44,16 @@ def topologicalSort(argConnections):
                     nodes.remove(cNode)
                     break
     return order
+
+def isHamiltionianPath(connections):
+    """ Returns if the inputted graph contains a hamiltonian path. """
+    topSort = topologicalSort(connections)
+    for i in range(len(topSort) - 1):
+        if topSort[i+1] not in connections[topSort[i]]:
+            return (False, [])
+    return (True, topSort)
+        
+        
 
 def isAcyclic(connections, level=set(),  checked=set()):
     """ A function that returns if a graph is acyclic. """
@@ -117,11 +145,6 @@ def getAdjacencyMatrix(meta, graphDataOrig, directed=False):
 def hasCycles(meta, connections, count):
     """ Returns if the passed graph has any cycles of length count. """
     graph = getAdjacencyMatrix(meta, connections)
-    #print graph
-    #print matrix_power(graph, count)
-    #print np.trace(matrix_power(graph, count))
-    
-    #print np.trace(matrix_power(graph, count))/(2 * count * meta[0])
     if np.trace(matrix_power(graph, count))<1:#/(2 * count * meta[0]) < 1:
         return False
     return True   
@@ -146,23 +169,29 @@ def dataToGraph(newLineData, directed=False):
             connections[i]=[]
         return (meta, connections)
     
-def fileToData(fileName, directed=False, multipleGraphs=False):
+def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False):
     """ Reads a file and turns it into graph data. """
     f = open(fileName, "r")
     lineData = f.readlines()
 
     multGraphData = []
     if multipleGraphs:
-        lineData.append("\n")
-        newLineData=[]
-        for line in lineData:
-            if line != "\n":
-                newLineData.append([int(j) for j in line.strip().split(" ")])
-            else:
-                multGraphData.append(newLineData)
-                newLineData = []
-        multGraphData.pop(0)
-        return [dataToGraph(lineData,directed=directed) for lineData in multGraphData]
+        if screwyFile:
+            return [dataToGraph(newLineData,directed=directed) for newLineData in screwyFileFix(lineData)]
+            #for graph in screwyFile(lineData):
+                
+        else:
+        
+            lineData.append("\n")
+            newLineData=[]
+            for line in lineData:
+                if line != "\n":
+                    newLineData.append([int(j) for j in line.strip().split(" ")])
+                else:
+                    multGraphData.append(newLineData)
+                    newLineData = []
+            multGraphData.pop(0)
+            return [dataToGraph(lineData,directed=directed) for lineData in multGraphData]
     else:
         newLineData = [[int(j) for j in i.strip().split(" ")] for i in lineData]
         return dataToGraph(newLineData, directed=directed)
