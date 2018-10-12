@@ -5,50 +5,54 @@ import java.util.*;
 
 public class sieve{
 	public static void main(String[] args){
-		long start = System.nanoTime(); 
+		long totTime = System.nanoTime();
 		int n = Integer.valueOf( args[0]) ;
-		if (n == 1){
-			System.out.println(2);
-			return;
-		}else{
-
+		for(int z = 0; z < Integer.valueOf( args[1]); z++ ){		
+			long start = System.nanoTime(); 
 			
-      int primesLength;
-			if (n < 200){
-				primesLength = (int) 1000;
+			if (n == 1){
+				System.out.println(2);
+				return;
 			}else{
-				primesLength = (int) pi(n)/2;
-			}
-			
-			//BitSet primes = new BitSet(primesLength);
-      //primes.set(0, primesLength)   ;
-      boolean [] primes = new boolean [primesLength];   //In primes, false=prime & true=composite to save time on array initialization
-      //Arrays.fill(primes, true);
-			for(int i = 0; i < Math.sqrt(primesLength); i++){
-				//if(primes.get(i)){  
-        if(! primes[i]){
-					for(int x = (int) (Math.pow(((2 * i) + 3), 2) - 3) / 2; x < primesLength; x += ((2 * i) + 3)){
-					   //primes.set(x, false);
-             primes[x] = true;//false;
-					}
 
+				
+	      			int primesLength;
+				if (n < 200){
+					primesLength = (int) 1000;
+				}else{
+					primesLength = (int) pi(n)/2;
 				}
-			}
-			int p = (int) 1;
-			for(int i = 0; i < primesLength; i++){
-				//if(primes.get(i)){  
-        if(!primes[i]){
-					p += 1;
-					if(p == n){
-						System.out.println("Prime number "+ n + " is " + ((2 * i) + 3));
-						System.out.println("Calculated in " + ((System.nanoTime() - start) / 1000000000.0 ) + " seconds.");
-						System.out.println(Collections.frequency(Arrays.asList(primes), true));
-						break;
+				
+
+	      			boolean [] primes = new boolean [primesLength];   //In primes, false=prime & true=composite to save time on array initialization
+
+				for(int i = 0; i < Math.sqrt(primesLength); i++){
+
+					if(! primes[i]){
+						for(int x = (int) (Math.pow(((2 * i) + 3), 2) - 3) / 2; x < primesLength; x += ((2 * i) + 3)){
+
+		     				primes[x] = true;//false;
+						}
+
+					}
+				}
+				int p = (int) 1;
+				for(int i = 0; i < primesLength; i++){
+
+					if(!primes[i]){
+						p += 1;
+						if(p == n){
+							System.out.println("Prime number "+ n + " is " + ((2 * i) + 3));
+							System.out.println("Calculated in " + ((System.nanoTime() - start) / 1000000000.0 ) + " seconds.");
+
+							break;
+						}
 					}
 				}
 			}
+
 		}
-
+	System.out.println(args[1] + " operations done in " + ((System.nanoTime() - totTime) / 1000000000.0 ) + " seconds");
 	}
 	static int pi(int num) {
 		double n = num;
