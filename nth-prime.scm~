@@ -1,0 +1,10 @@
+(define (nth-prime n)
+  (display n)
+  )
+
+(define (iota x)
+  (cond ((positive? x)
+         (iota (- x 1))
+         (display x) 
+         (display " "))))
+;Sieve_of_Eratosthenes
