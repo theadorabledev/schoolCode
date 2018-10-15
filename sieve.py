@@ -2,7 +2,6 @@
 import time
 from math import sqrt, log
 import sys
-
 def sieve(n):
 	""" Main function that performs optimized sieve of eratosthenes to get nth prime. """
 	#python -m cProfile sieve.py 1000000
@@ -13,23 +12,16 @@ def sieve(n):
 	else:	
 		primes = [True] * (pi(n)/2)# pi(n) is divided by 2 becuase even numbers are automatically not prime
 	accumulativeLength=len(primes)
-	#print map((lambda x : 2 * x) , xrange(3))
-	"""
-	primes = map(
-	    (lambda i: 
-	        map(
-	            (lambda x: primes.__setitem__(x, False)),  
-	            xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3)
-	        ) if primes[i] else None
-	    
-	    ),
-	    (xrange(int(sqrt(accumulativeLength))))
-	)"""
+
 	for i in xrange(int(sqrt(accumulativeLength))):
 		
 		if primes[i]:
+			#p = Pool()
+			
+			#p.map(lambda x : primes.__setitem__(x, False), xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3))
 			for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
 				primes[x] = False
+				#primes.__setitem__(x, False)
 	return nthTrue(primes, n)
 
 def pi(n):
