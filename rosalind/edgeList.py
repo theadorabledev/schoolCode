@@ -1,7 +1,78 @@
 import numpy as np
 from numpy.linalg import matrix_power
 import copy
+class pQueue:
+    """ A python queue that returns the lowest priority item, with an optional option passign your own comparison functions."""
+    def OrdinaryComparison(self, a, b):
+        """ The basic comparison function."""
+        if self.valueDict[a][0] < self.valueDict[b][0]: 
+            return -1
+        if self.valueDict[a][0] == self.valueDict[b][0]:
+            return 0
+        return 1
 
+    def __init__(self, connections, comparator = OrdinaryComparison):
+        self.cmpFunc = comparator
+        self.array=[]
+        self.connections = connections
+        self.valueDict = {}
+        self.visited = set()
+    def push(self, data, worth, last):
+        """  Pushes element onto queue. """
+        
+        if data in self.valueDict:
+            if self.valueDict[data][0] > worth + self.valueDict[last][0]:
+                self.valueDict[data] = [worth + self.valueDict[last][0], last]
+                
+        else:
+            if self.valueDict:
+                self.valueDict[data] = [worth + self.valueDict[last][0], last]
+            else:
+                self.valueDict[data] = [worth, last]
+        if data not in self.array and data not in self.visited:
+            if not self.array:
+                self.array.append(data)
+            else:
+                for i in xrange(len(self.array)):
+                    if i == (len(self.array) - 1) and self.cmpFunc(self, self.array[i], data) == -1:
+                        self.array.append(data)
+                        break                    
+                    if self.cmpFunc(self, self.array[i], data) != -1:
+                        self.array.insert(i, data)
+                        break
+        self.visited.add(data)
+    def pop(self):
+        """ Removes minimum element of queue. """
+        if self.array:
+            return self.array.pop(0)
+        else:
+            return None
+    def peek(self):
+        """ Shows minimum element of queue. """
+        if self.array:
+            return self.array[0]
+        else:
+            return None
+
+
+
+def djikstra(connections, startNode, endNode):
+    if startNode == endNode:
+        return 0
+    queue = pQueue(connections)
+    queue.push(startNode, 0, startNode)
+    while queue.array:
+        curNode = queue.pop()
+        if curNode == endNode:
+            return queue.valueDict[endNode][0]
+        for connection in connections[curNode]:
+            queue.push(connection[0], connection[1], curNode)
+#    if endNode in queue.valueDict:
+#        return queue.valueDict[endNode][0]
+    return -1
+
+    
+        
 def screwyFileFix(lineData):
     """ Fixes edge-list data files without newlines. """
     newLineData = []
@@ -150,7 +221,7 @@ def hasCycles(meta, connections, count):
     return True   
     
 
-def dataToGraph(newLineData, directed=False):
+def dataToGraph(newLineData, directed=False, weighted=False):
     """ Turns raw data into usable data. """
     meta = newLineData.pop(0)
     connections = {}
@@ -160,8 +231,11 @@ def dataToGraph(newLineData, directed=False):
         
         if not connection[1] in connections:
             connections[connection[1]] = []
+        if not weighted:    
+            connections[connection[0]].append(connection[1])
+        else:
+            connections[connection[0]].append([connection[1], connection[2]])
             
-        connections[connection[0]].append(connection[1])
         if not directed:
             connections[connection[1]].append(connection[0])
     for i in range(1, meta[0]+1):
@@ -169,7 +243,7 @@ def dataToGraph(newLineData, directed=False):
             connections[i]=[]
         return (meta, connections)
     
-def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False):
+def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False, weighted=False):
     """ Reads a file and turns it into graph data. """
     f = open(fileName, "r")
     lineData = f.readlines()
@@ -177,7 +251,7 @@ def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False)
     multGraphData = []
     if multipleGraphs:
         if screwyFile:
-            return [dataToGraph(newLineData,directed=directed) for newLineData in screwyFileFix(lineData)]
+            return [dataToGraph(newLineData,directed=directed,weighted=weighted) for newLineData in screwyFileFix(lineData)]
             #for graph in screwyFile(lineData):
                 
         else:
@@ -191,10 +265,10 @@ def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False)
                     multGraphData.append(newLineData)
                     newLineData = []
             multGraphData.pop(0)
-            return [dataToGraph(lineData,directed=directed) for lineData in multGraphData]
+            return [dataToGraph(lineData,directed=directed,weighted=weighted) for lineData in multGraphData]
     else:
         newLineData = [[int(j) for j in i.strip().split(" ")] for i in lineData]
-        return dataToGraph(newLineData, directed=directed)
+        return dataToGraph(newLineData, directed=directed, weighted=weighted)
 
     
 #print fileToData("square.txt", multipleGraphs=True)
