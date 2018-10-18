@@ -4,22 +4,6 @@ import time
 import json
 from multiprocessing import Pool
 
-def setupFactorFile(upTo):
-    try:
-        rfile = open("factors.json", "r")
-        fileJSON = json.load(rfile) 
-    except IOError:
-        with open("factors.json", "w") as file:
-            json.dump({i:primeFactorsSum(i, i%2) for i in xrange(1, upTo + 1)}, file)
-    else:    
-        if len(fileJSON) < upTo:
-            for i in xrange(len(fileJSON), upTo+1):
-                fileJSON[i] = primeFactorsSum(i, i%2)
-        with open("factors.json", "w") as file:
-            json.dump(fileJSON, file)
-    with open("factors.json", "r") as file:
-        return json.load(file) 
-
 def findAmicableNums(start, upTo):
     nums = set()
     for i in xrange(start, upTo):
@@ -39,7 +23,9 @@ def sociableNumTest(num, length=4):
     for i in xrange( length):
 
         nums.append(primeFactorsSum(nums[-1],nums[-1]%2))
-        if nums[0] == nums[-1]:
+        if nums[-1] == 1:
+            return None
+        elif nums[0] == nums[-1]:
             return nums
     return None
 def primeFactorsSum(n, increase):
@@ -49,18 +35,21 @@ def main():
     args = sys.argv[1:]
     global factors
     if args[0] != "--sociable":
-        factors = setupFactorFile(int(args[0]))
+        factors = {i:primeFactorsSum(i, i%2) for i in xrange(1, int(args[0]) + 1)}
+
         p = Pool()
         x = set(p.map(test, range(2, int(args[0]))))
         x.remove(None)
         print sorted(x)
     else:
-        factors = setupFactorFile(int(args[1]))
-        p = Pool()
-        x = set(p.map(sociableNumTest, range(2, int(args[1]))))
-        x.remove(None)
-        print sorted(x)
+        factors = {i:primeFactorsSum(i, i%2) for i in xrange(1, int(args[1]) + 1)}
 
+        #p = Pool()
+        #x = set(p.map(sociableNumTest, xrange(2, int(args[1]))))
+        #x.remove(None)
+        #print sorted(x)
+        for i in xrange(6, int(args[1])):
+            print sociableNumTest(i)
 
 if __name__ == "__main__":
     x = time.time()
