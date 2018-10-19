@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import matrix_power
 import copy
+INFINITY = float("inf")
 class pQueue:
     """ A python queue that returns the lowest priority item, with an optional option passign your own comparison functions."""
     def OrdinaryComparison(self, a, b):
@@ -14,33 +15,21 @@ class pQueue:
     def __init__(self, connections, comparator = OrdinaryComparison):
         self.cmpFunc = comparator
         self.array=[]
-        self.connections = connections
-        self.valueDict = {}
-        self.visited = set()
-    def push(self, data, worth, last):
-        """  Pushes element onto queue. """
-        
-        if data in self.valueDict:
-            if self.valueDict[data][0] > worth + self.valueDict[last][0]:
-                self.valueDict[data] = [worth + self.valueDict[last][0], last]
-                
+        self.valueDict = {i:[INFINITY, None] for i in connections}
+        map(self.push, [i for i in connections])
+
+    def push(self, vertex):
+        """ Pushes vertex onto queue. """
+        if not self.array:
+            self.array.append(vertex)
         else:
-            if self.valueDict:
-                self.valueDict[data] = [worth + self.valueDict[last][0], last]
-            else:
-                self.valueDict[data] = [worth, last]
-        if data not in self.array and data not in self.visited:
-            if not self.array:
-                self.array.append(data)
-            else:
-                for i in xrange(len(self.array)):
-                    if i == (len(self.array) - 1) and self.cmpFunc(self, self.array[i], data) == -1:
-                        self.array.append(data)
-                        break                    
-                    if self.cmpFunc(self, self.array[i], data) != -1:
-                        self.array.insert(i, data)
-                        break
-        self.visited.add(data)
+            for i in xrange(len(self.array)):
+                if i == (len(self.array) - 1) and self.cmpFunc(self, self.array[i], vertex) == -1:
+                    self.array.append(vertex)
+                    break                    
+                if self.cmpFunc(self, self.array[i], vertex) != -1:
+                    self.array.insert(i, vertex)
+                    break        
     def pop(self):
         """ Removes minimum element of queue. """
         if self.array:
@@ -55,24 +44,82 @@ class pQueue:
             return None
 
 
-
-def djikstra(connections, startNode, endNode):
-    if startNode == endNode:
-        return 0
+    def decreaseKey(self, vertex, value, last):
+        """ Decreases the value of a vertex and updates it's position in the queue. """
+        self.valueDict[vertex] = [value, last]
+        for i in xrange(len(self.array)):
+            if self.array[i] == vertex:
+                self.array.pop(i)
+                break
+        self.push(vertex)
+            
+def djikstra(connections, startNode):
+    """ BFS Priority-queue implementation of Djikstra's algorthm that reutrn a dict with the shortest distance to each node from a given start. """
+#    if startNode == endNode:
+#        return 0
     queue = pQueue(connections)
-    queue.push(startNode, 0, startNode)
+    queue.valueDict[startNode][0] = 0
+    #queue.push(startNode, 0, startNode)
+    queue.decreaseKey(1, 0, None)
     while queue.array:
         curNode = queue.pop()
-        if curNode == endNode:
-            return queue.valueDict[endNode][0]
-        for connection in connections[curNode]:
-            queue.push(connection[0], connection[1], curNode)
-#    if endNode in queue.valueDict:
-#        return queue.valueDict[endNode][0]
-    return -1
+        for vertex in connections[curNode]:
+            if queue.valueDict[vertex[0]][0] > queue.valueDict[curNode][0] + vertex[1]:
+                queue.decreaseKey(vertex[0], queue.valueDict[curNode][0] + vertex[1], curNode)
+    for vertex in queue.valueDict:
+        if queue.valueDict[vertex][0] == INFINITY:
+            queue.valueDict[vertex][0] = -1
+    return {vertex: queue.valueDict[vertex][0] for vertex in queue.valueDict}
 
-    
-        
+def djikstra2(connections, startNode):
+    """ Faster alternate version of djikstra that uses singe-efge extensions of shortest paths. """
+    valueDict = {i:INFINITY for i in connections}
+    valueDict[startNode] = 0
+    unknown = {i for i in connections}
+    known = set()
+    while known != unknown:
+        unseen = unknown - known
+        curNode = min(unseen , key = valueDict.get)
+        known.add(curNode)
+        for node in connections[curNode]:
+            if valueDict[node[0]] > valueDict[curNode] + node[1]:
+                valueDict[node[0]] = valueDict[curNode] + node[1]
+    for vertex in valueDict:
+        valueDict[vertex] = valueDict[vertex] if valueDict[vertex] != INFINITY else -1
+    return valueDict
+def bellmanFord(connections, startNode, negativeCyclesCheck=False, shortestDagPath=False):
+    """Finds single-source shortest paths in general graphs, checks if a cycle has negative weight cycles, finds shortest paths in DAGs. """
+    startNode = startNode if not negativeCyclesCheck else len(connections) + 1
+    if negativeCyclesCheck:
+        connections[len(connections) + 1] = [[vertex, 0] for vertex in connections] # Dummy start node to get disconnected edges
+    valueDict = {i:INFINITY for i in connections}
+    valueDict[startNode] = 0
+    if not shortestDagPath:
+        for i in range(len(connections) - 1):
+            for vertex in connections:
+                for connectedVertex in connections[vertex]:            
+                    valueDict[connectedVertex[0]] = min(valueDict[connectedVertex[0]], valueDict[vertex] + connectedVertex[1]) 
+        if negativeCyclesCheck:
+            #Negative weight is a permanent decreasing loop. The algorithm finds the shortest path which can have (len(vertexes) - 1) edges. If the value changes after a final loop, there was a negative weight cycle.
+            
+            for vertex in connections:
+                for connectedVertex in connections[vertex]:            
+                    if valueDict[connectedVertex[0]] != min(valueDict[connectedVertex[0]], valueDict[vertex] + connectedVertex[1]):
+                        return 1
+            return -1
+        else:
+            for vertex in valueDict:
+                valueDict[vertex] = valueDict[vertex] if valueDict[vertex] != INFINITY else "x"
+            return valueDict    
+    else:
+        topologicalOrder = topologicalSort({vertex:[connectedVertex[0] for connectedVertex in connections[vertex]] for vertex in connections})
+
+        for vertex in topologicalOrder:
+            for connectedVertex in connections[vertex]:
+                valueDict[connectedVertex[0]] = min(valueDict[connectedVertex[0]], valueDict[vertex] + connectedVertex[1]) 
+        for vertex in valueDict:
+            valueDict[vertex] = valueDict[vertex] if valueDict[vertex] != INFINITY else "x"
+        return valueDict
 def screwyFileFix(lineData):
     """ Fixes edge-list data files without newlines. """
     newLineData = []
@@ -104,7 +151,10 @@ def topologicalSort(argConnections):
     #print nodes
     while nodes:
    #     print nodes
+        
         node = nodes.pop(0)
+        for i in xrange(nodes.count(node)):
+            nodes.remove(node)
         order.append(node)
         connectedNodes = connections[node]
         del  connections[node]
@@ -231,6 +281,7 @@ def dataToGraph(newLineData, directed=False, weighted=False):
         
         if not connection[1] in connections:
             connections[connection[1]] = []
+        
         if not weighted:    
             connections[connection[0]].append(connection[1])
         else:
@@ -238,10 +289,11 @@ def dataToGraph(newLineData, directed=False, weighted=False):
             
         if not directed:
             connections[connection[1]].append(connection[0])
-    for i in range(1, meta[0]+1):
+    #keys = {i for i in connections}
+    for i in xrange(1, meta[0]+1):
         if i not in connections:
             connections[i]=[]
-        return (meta, connections)
+    return (meta, connections)
     
 def fileToData(fileName, directed=False, multipleGraphs=False, screwyFile=False, weighted=False):
     """ Reads a file and turns it into graph data. """
