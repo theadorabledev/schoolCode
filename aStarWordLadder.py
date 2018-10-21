@@ -24,6 +24,7 @@ def getNeighbors(word):
     
 def returnDict(argWord):
     return {word:getNeighbors(word) for word in theDictionary if len(word)==len(argWord)}
+
 def djikstra(connections, startNode, endNode):
     valueDict = {i:INFINITY for i in connections}
     chainDict = {i:[] for i in connections}
