@@ -94,10 +94,12 @@ class Maze:
                 if (i, nodeX) in self.blacks:
                     break                     
                 
+
     def returnConnections(self):
         """ Returns data as adjacency list. """
         return {node:self.nodes[node].connections for node in self.nodes}
-
+def djikstra2(connections, startNode, endNode):
+    pass
 def djikstra(connections, startNode, endNode):
     """ Faster alternate version of djikstra that uses singe-edge extensions of shortest paths. """
     valueDict = {i:INFINITY for i in connections}
@@ -105,9 +107,11 @@ def djikstra(connections, startNode, endNode):
     unknown = {i for i in connections}
     lastNode = {i: None for i in connections}
     known = set()
-    while known != unknown:
-        unseen = unknown - known
-        curNode = min(unseen , key = valueDict.get)
+    while unknown:
+        curNode = min(unknown , key = valueDict.get)
+        #if curNode == endNode:
+         #   break
+        unknown.discard(curNode)
         known.add(curNode)
         for node in connections[curNode]:
             if valueDict[node[0]] > valueDict[curNode] + node[1]:
