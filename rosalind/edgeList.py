@@ -72,7 +72,7 @@ def djikstra(connections, startNode):
     return {vertex: queue.valueDict[vertex][0] for vertex in queue.valueDict}
 
 def djikstra2(connections, startNode):
-    """ Faster alternate version of djikstra that uses singe-efge extensions of shortest paths. """
+    """ Faster alternate version of djikstra that uses singe-edge extensions of shortest paths. """
     valueDict = {i:INFINITY for i in connections}
     valueDict[startNode] = 0
     unknown = {i for i in connections}
