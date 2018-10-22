@@ -16,7 +16,7 @@ public class maze{
 	private HashMap<Integer, Integer> colorFix = new HashMap<Integer, Integer>();
 	public HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
 	private int count = 2;
-
+	private Set<Node> blacks = new HashSet<Node>();
 	public maze(BufferedImage image){
 		width = image.getWidth();
 		height = image.getHeight();
@@ -56,8 +56,14 @@ public class maze{
 				break;
 			}
 		}
-	}
+		updateConnections();
 
+	}
+	private void updateConnections(){
+		for(Integer node : nodes.keySet()){
+			System.out.println(node + " " + nodes.get(node).connections);		
+		}
+	}
 	public void fixData(BufferedImage image){
 		for(int y = 0;y < height; y++){
 			for(int x = 0; x < width; x++){
@@ -66,11 +72,24 @@ public class maze{
 		}
 		
 	}
+	private Set<Node> blacks(){
+		Set<Node> blacks = new HashSet<Node>();
+		for(int y = 0; y < height; y++){
 
+			for(int x = 0; x < width; x++){
+				
+				if(nodes.get(y * width + x).equals(0) ){
+					nodes.add(new Node(x, y));
+				
+				}
+			}
+		}
+	}
 	
 	public class Node{
 		public int x;
 		public int y;
+		public ArrayList<Integer> connections = new ArrayList<Integer>();
 		public Node(int a, int b){
 			x = a;
 			y = b;
