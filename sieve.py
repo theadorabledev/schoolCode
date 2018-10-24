@@ -6,9 +6,13 @@ import numpy as np
 
 conversions = {2:(lambda x : (2*x) + 3 ), 3:(lambda x : (3*x) + 5 - (x % 2))}
 deConversions = {2:(lambda x : (x - 3) / 2), 3:(lambda x : (x - 5 + (x % 2))/3)}
-conversion = 2
+conversion = 3
 convert = conversions[conversion]
 deConvert = deConversions[conversion]
+stepsFunc = [
+        (lambda x : (((2 * x) - 1)/ 3)) ,
+        (lambda x : (((4 * x) - 1)/ 3))
+        ]
 
 def sieve(n):
 	""" Main function that performs optimized sieve of eratosthenes to get nth prime. """
@@ -17,15 +21,17 @@ def sieve(n):
 		return 2
 	elif n < 200:
 		primes = [True] * 1000
-		#primes = array("b", [True] * 1000)
 	else:	
-		#primes = array("b", [True] * (pi(n)/conversion))
-		#primes = np.ones((pi(n)/conversion))
+
 		primes = [True] * (pi(n)/conversion)# pi(n) is divided by 2 becuase even numbers are automatically not prime
 	accumulativeLength=len(primes)
 
 	for i in xrange(int(sqrt(accumulativeLength))):
-		
+
+                steps = 2 * convert(i)
+                stepA = stepsFunc[i % 2](convert(i))
+                stepB = steps - stepA
+                print i, convert(i), stepsA, stepsB
 		if primes[i]:
 			#p = Pool()
 			#print i, convert(i), deConvert(convert(i))
