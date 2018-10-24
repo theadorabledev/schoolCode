@@ -10,10 +10,15 @@ public class mazeSolver{
 
 		BufferedImage image = ImageIO.read(new File("maze.png"));
 		maze myMaze = new maze(image);
-		System.out.println(myMaze.data);
-		for(Integer key: myMaze.nodes.keySet()){
-			System.out.println(key + "  " + myMaze.nodes.get(key).y + "  " + myMaze.nodes.get(key).x );
+		HashMap<Integer, ArrayList<Integer []>> djikstraPath = djikstra(myMaze.connections, myMaze.startNode, myMaze.endNode);
+		for(Integer n : djikstraPath.keySet()){
+			for(Integer [] o : djikstraPath.get(n)){
+				//System.out.println(n + " " + Arrays.toString(o));
+			}
 		}
-		
+		//System.out.println(djikstraPath);
+	}
+	public static HashMap<Integer, ArrayList<Integer[]>> djikstra(HashMap<Integer, ArrayList<Integer[]>> connections, int startNode, int endnode){
+		return connections;
 	}
 }
