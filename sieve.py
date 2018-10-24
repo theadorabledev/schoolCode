@@ -2,6 +2,14 @@
 import time
 from math import sqrt, log
 import sys
+import numpy as np
+
+conversions = {2:(lambda x : (2*x) + 3 ), 3:(lambda x : (3*x) + 5 - (x % 2))}
+deConversions = {2:(lambda x : (x - 3) / 2), 3:(lambda x : (x - 5 + (x % 2))/3)}
+conversion = 2
+convert = conversions[conversion]
+deConvert = deConversions[conversion]
+
 def sieve(n):
 	""" Main function that performs optimized sieve of eratosthenes to get nth prime. """
 	#python -m cProfile sieve.py 1000000
@@ -9,17 +17,20 @@ def sieve(n):
 		return 2
 	elif n < 200:
 		primes = [True] * 1000
+		#primes = array("b", [True] * 1000)
 	else:	
-		primes = [True] * (pi(n)/2)# pi(n) is divided by 2 becuase even numbers are automatically not prime
+		#primes = array("b", [True] * (pi(n)/conversion))
+		#primes = np.ones((pi(n)/conversion))
+		primes = [True] * (pi(n)/conversion)# pi(n) is divided by 2 becuase even numbers are automatically not prime
 	accumulativeLength=len(primes)
 
 	for i in xrange(int(sqrt(accumulativeLength))):
 		
 		if primes[i]:
 			#p = Pool()
-			
-			#p.map(lambda x : primes.__setitem__(x, False), xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3))
-			for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
+			#print i, convert(i), deConvert(convert(i))
+			for x in xrange(deConvert(convert(i) ** 2), accumulativeLength, convert(i)):
+				#print "i is not prime", i," : ", x, convert(x)
 				primes[x] = False
 				#primes.__setitem__(x, False)
 	return nthTrue(primes, n)
@@ -33,42 +44,24 @@ def pi(n):
 def nthTrue(primes, n):
 	""" Gets the nth true in the list. """
 	l = len(primes)
+	#numPrimes = np.count_nonzero(primes == 1)
 	numPrimes = primes.count(True)
 	calc = numPrimes - n
-	#map((lambda i: (calc = calc - 1) if primes[i] else pass), xrange(l-1 , 0, -1))
 	for i in xrange(l-1 , 0, -1):
 		if primes[i]:
 			calc -= 1
 		if calc == -2:
-			return (2*i)+3
+			return convert(i)
 
 
-def sieveSet(n):
-	primes = {i for i in xrange(pi(n)/2)}
-	accumulativeLength=len(primes)
-	for i in xrange(int(sqrt(accumulativeLength))):
-		if i in primes:
-			for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
-				primes.discard(x)
-	for i in xrange(n-2):
-		primes.pop()
-	return (2 * primes.pop()) + 3
 
-def sieveDict(n):
-	primes = {i:True for i in xrange(pi(n)/2)}
-	accumulativeLength=len(primes)
-	for i in xrange(int(sqrt(accumulativeLength))):
-		if primes[i]:
-			for x in xrange((((2 * i) + 3) ** 2 - 3) / 2, accumulativeLength, (2 * i)+3):
-				primes[x] = False
-	return (2 * [i for i in primes.keys() if primes[i]][n-2]) + 3
-	return (2 * primes.pop()) + 3	
+
 if __name__ == "__main__":
 	args = sys.argv[1:]
 	x = time.time()  
-	print "Prime number", str(args[0]) ,"is",str(sieve(int(args[0])))
-	#print "Prime number", str(args[0]) ,"is",str(sieveSet(int(args[0]))) 
-	#print "Prime number", str(args[0]) ,"is",str(sieveDict(int(args[0]))) #str(sieve(int(args[0])))
+	answer = str(sieve(int(args[0])))
+	print "Prime number", str(args[0]) ,"is", answer
+
 	
 	print "Calculated in", str(time.time() - x), "seconds.\n"
 		

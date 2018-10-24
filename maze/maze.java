@@ -15,18 +15,25 @@ public class maze{
 	private int black = -16777216;
 	private HashMap<Integer, Integer> colorFix = new HashMap<Integer, Integer>();
 	public HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
+	public HashMap<Node, Integer> rNodes = new HashMap<Node, Integer>();
 	private int count = 2;
-	private Set<Node> blacks = new HashSet<Node>();
+	private Set<Node> blacks;
+	public HashMap<Integer, ArrayList<Integer []>> connections = new HashMap<>();
+	public int startNode = 1;
+	public int endNode = 0;
 	public maze(BufferedImage image){
 		width = image.getWidth();
 		height = image.getHeight();
 		colorFix.put(-1, 1);
 		colorFix.put(-16777216, 0);
 		fixData(image);
+		blacks = getBlacks();
 		for(int x = 0; x < width; x++){
 			if(data.get(x).equals(1)){
-				nodes.put(1, new Node(x, 0));
-				break;
+					Node n = new Node(x, 0);
+					nodes.put(1, n);
+					rNodes.put(n, 1);
+					break;
 			}
 		}
 		for(int y = 1; y < height - 1; y++){
@@ -45,24 +52,78 @@ public class maze{
 				boolean XOX = (prv == 0) && (nxt == 0);
 				boolean OOO = (prv == 1) && (cur == 1) && (nxt == 1);
 				if(cur !=0 && !(OOO && aboveBlack && belowBlack) && !(XOX && !(aboveBlack || belowBlack)) ){
-					nodes.put(count, new Node(x, y));
+					Node n = new Node(x, y);
+					nodes.put(count, n);
+					rNodes.put(n, count);
 					count++;
 				}
 			}
 		}
 		for(int x = 0; x < width; x++){
 			if(data.get(width * height - height + x).equals(1)){
-				nodes.put(count, new Node(x, height - 1));
-				break;
+					endNode = count;
+					Node n = new Node(x, height - 1);
+					nodes.put(count, n);
+					rNodes.put(n, count);
+					break;
 			}
 		}
 		updateConnections();
 
 	}
-	private void updateConnections(){
-		for(Integer node : nodes.keySet()){
-			System.out.println(node + " " + nodes.get(node).connections);		
+	private boolean getConnectedNode(Node node, Node n){
+		for(Node xNode : rNodes.keySet()){
+			if(xNode.equals(n)){
+				Integer [] arr  = {rNodes.get(xNode), Math.abs(xNode.x + xNode.y - node.x - node.y)};
+				node.connections.add(arr);
+				return true;
+			}
+			for(Node blackNode : blacks){
+				if(blackNode.equals(n)){
+					return true;
+				}
+			
+			}
+		}	
+		return false;
+	}
+	private void updateConnections(){		
+		for(Integer iNode : nodes.keySet()){
+			Node node = nodes.get(iNode);
+			for(int x = node.x + 1; x < width; x++){
+				Node n = new Node(x, node.y);
+				if(getConnectedNode(node, n)){
+					break;
+				}		
+			}
+			for(int x = node.x - 1; x > 0; x--){
+				Node n = new Node(x, node.y);
+				if(getConnectedNode(node, n)){
+					break;
+				}		
+			}
+			for(int y = node.y + 1; y < height + 1; y++){
+				Node n = new Node(node.x, y);
+				if(getConnectedNode(node, n)){
+					break;
+				}		
+			}
+			for(int y = node.y - 1; y > -1; y--){
+				Node n = new Node(node.x, y);
+				
+				if(getConnectedNode(node, n)){					
+					break;
+				}	
+								
+			}
+			//System.out.println(iNode + " ("+node.x +","+node.y +") " + nodes.get(iNode).connections);	
+				
 		}
+		for(Integer node : nodes.keySet()){
+			connections.put(node, nodes.get(node).connections);
+			//System.out.println(" " + node.y +" " + node.x);		
+		}
+		//System.out.println(connections);
 	}
 	public void fixData(BufferedImage image){
 		for(int y = 0;y < height; y++){
@@ -72,27 +133,31 @@ public class maze{
 		}
 		
 	}
-	private Set<Node> blacks(){
+	private Set<Node> getBlacks(){
 		Set<Node> blacks = new HashSet<Node>();
 		for(int y = 0; y < height; y++){
-
 			for(int x = 0; x < width; x++){
-				
-				if(nodes.get(y * width + x).equals(0) ){
-					nodes.add(new Node(x, y));
-				
+				if(data.get(y * width + x).equals(0)){
+					blacks.add(new Node(x, y));
 				}
 			}
 		}
+    return blacks;
 	}
 	
 	public class Node{
 		public int x;
 		public int y;
-		public ArrayList<Integer> connections = new ArrayList<Integer>();
+		public ArrayList<Integer []> connections = new ArrayList<Integer []>();
 		public Node(int a, int b){
 			x = a;
 			y = b;
+		}
+		public boolean equals(Node node){
+			if(node.x == x && node.y == y){
+				return true;
+			}
+			return false;
 		}
 	}
 }
