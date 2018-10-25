@@ -16,7 +16,8 @@ public class mazeSolver{
 				//System.out.println(n + " " + Arrays.toString(o));
 			}
 		}
-		//System.out.println(djikstraPath);
+		Graph graph = new Graph(myMaze.connections);
+		System.out.println(graph.connections);
 	}
 	public static HashMap<Integer, ArrayList<Integer[]>> djikstra(HashMap<Integer, ArrayList<Integer[]>> connections, int startNode, int endnode){
 		return connections;
