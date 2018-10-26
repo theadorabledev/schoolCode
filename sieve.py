@@ -2,43 +2,48 @@
 import time
 from math import sqrt, log
 import sys
-import numpy as np
 
 conversions = {2:(lambda x : (2*x) + 3 ), 3:(lambda x : (3*x) + 5 - (x % 2))}
 deConversions = {2:(lambda x : (x - 3) / 2), 3:(lambda x : (x - 5 + (x % 2))/3)}
 conversion = 3
 convert = conversions[conversion]
 deConvert = deConversions[conversion]
-stepsFunc = [
+steps3Func = [
         (lambda x : (((2 * x) - 1)/ 3)) ,
         (lambda x : (((4 * x) - 1)/ 3))
         ]
-
 def sieve(n):
 	""" Main function that performs optimized sieve of eratosthenes to get nth prime. """
 	#python -m cProfile sieve.py 1000000
 	if n == 1:
 		return 2
+	elif n == 2:
+		return 3
 	elif n < 200:
-		primes = [True] * 1000
+		primes = [True] * 400
 	else:	
 
 		primes = [True] * (pi(n)/conversion)# pi(n) is divided by 2 becuase even numbers are automatically not prime
 	accumulativeLength=len(primes)
 
-	for i in xrange(int(sqrt(accumulativeLength))):
+	for i in xrange(deConvert(int(sqrt(convert(accumulativeLength))))):
 
                 steps = 2 * convert(i)
-                stepA = stepsFunc[i % 2](convert(i))
+                stepA = steps3Func[i % 2](convert(i))
                 stepB = steps - stepA
-                print i, convert(i), stepsA, stepsB
+                #print i, convert(i), stepA, stepB,steps
 		if primes[i]:
 			#p = Pool()
 			#print i, convert(i), deConvert(convert(i))
-			for x in xrange(deConvert(convert(i) ** 2), accumulativeLength, convert(i)):
-				#print "i is not prime", i," : ", x, convert(x)
-				primes[x] = False
+			primes[deConvert(convert(i) ** 2)] = False
+			for x in xrange(deConvert(convert(i) ** 2), accumulativeLength - steps, steps):
+				#print "multiple of", i ,"->", x, convert(i), "->", convert(x)
+				#print (x + stepA, x + steps)
+				primes[x + stepA] = False
+				primes[x + steps] = False
+				#primes[x] = False
 				#primes.__setitem__(x, False)
+	#print [convert(i) for i, v in enumerate(primes) if primes[i]]
 	return nthTrue(primes, n)
 
 def pi(n):
@@ -56,7 +61,7 @@ def nthTrue(primes, n):
 	for i in xrange(l-1 , 0, -1):
 		if primes[i]:
 			calc -= 1
-		if calc == -2:
+		if calc == -3:
 			return convert(i)
 
 
