@@ -28,6 +28,7 @@ public class maze{
 		colorFix.put(-16777216, 0);
 		fixData(image);
 		blacks = getBlacks();
+		System.out.println("	Defining nodes.");
 		for(int x = 0; x < width; x++){
 			if(data.get(x).equals(1)){
 					Node n = new Node(x, 0);
@@ -68,50 +69,54 @@ public class maze{
 					break;
 			}
 		}
+		System.out.println("		Connecting nodes.");
 		updateConnections();
 
 	}
-	private boolean getConnectedNode(Node node, Node n){
+	private boolean getConnectedNode(Node node, int x, int y){
 		for(Node xNode : rNodes.keySet()){
-			if(xNode.equals(n)){
-				Integer [] arr  = {rNodes.get(xNode), Math.abs(xNode.x + xNode.y - node.x - node.y)};
+			if(xNode.x == x && xNode.y == y){
+				Integer [] arr  = {rNodes.get(xNode), Math.abs(xNode.x + xNode.y - x - y)};
 				node.connections.add(arr);
 				return true;
 			}
-			for(Node blackNode : blacks){
-				if(blackNode.equals(n)){
-					return true;
-				}
-			
+		}
+		for(Node blackNode : blacks){
+			if(blackNode.x == x && blackNode.y == y){
+				return true;
 			}
-		}	
+		
+		}
+			
 		return false;
 	}
 	private void updateConnections(){		
 		for(Integer iNode : nodes.keySet()){
+			//System.out.print("Node : " + iNode);
 			Node node = nodes.get(iNode);
+			
 			for(int x = node.x + 1; x < width; x++){
-				Node n = new Node(x, node.y);
-				if(getConnectedNode(node, n)){
+				//Node n = new Node(x, node.y);
+				if(getConnectedNode(node, x, node.y)){
 					break;
 				}		
 			}
 			for(int x = node.x - 1; x > 0; x--){
-				Node n = new Node(x, node.y);
-				if(getConnectedNode(node, n)){
+				//Node n = new Node(x, node.y);
+				if(getConnectedNode(node, x, node.y)){
 					break;
 				}		
 			}
 			for(int y = node.y + 1; y < height + 1; y++){
-				Node n = new Node(node.x, y);
-				if(getConnectedNode(node, n)){
+				//Node n = new Node(node.x, y);
+				if(getConnectedNode(node, node.x, y)){
 					break;
 				}		
 			}
 			for(int y = node.y - 1; y > -1; y--){
-				Node n = new Node(node.x, y);
+				//Node n = new Node(node.x, y);
 				
-				if(getConnectedNode(node, n)){					
+				if(getConnectedNode(node, node.x, y)){					
 					break;
 				}	
 								
@@ -145,19 +150,4 @@ public class maze{
     return blacks;
 	}
 	
-	public class Node{
-		public int x;
-		public int y;
-		public ArrayList<Integer []> connections = new ArrayList<Integer []>();
-		public Node(int a, int b){
-			x = a;
-			y = b;
-		}
-		public boolean equals(Node node){
-			if(node.x == x && node.y == y){
-				return true;
-			}
-			return false;
-		}
-	}
 }
