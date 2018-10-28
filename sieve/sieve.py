@@ -3,8 +3,14 @@ import time
 from math import sqrt, log
 import sys
 
-conversions = {2:(lambda x : (2*x) + 3 ), 3:(lambda x : (3*x) + 5 - (x % 2))}
-deConversions = {2:(lambda x : (x - 3) / 2), 3:(lambda x : (x - 5 + (x % 2))/3)}
+conversions = {
+    2:(lambda x : (2*x) + 3 ), 
+    3:(lambda x : (3*x) + 5 - (x % 2))
+}
+deConversions = {
+    2:(lambda x : (x - 3) / 2), 
+    3:(lambda x : (x - 5 + (x % 2))/3)
+}
 conversion = 3
 convert = conversions[conversion]
 deConvert = deConversions[conversion]
