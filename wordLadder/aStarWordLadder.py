@@ -9,9 +9,17 @@ def main():
     global theDictionary
     theDictionary = set(dictAll.read().splitlines())
     connections = returnDict(args[0])
-    answer = djikstra(connections, args[0], args[1])
-    print " -> ".join([step.upper() for step in answer])
-    
+    inputFile = open(args[0], "r").read().splitlines()
+    answers = []
+    for line in inputFile:
+        start, end = line.split(",")
+        answers.append(djikstra(connections, start, end))
+    print answers
+    #answer = djikstra(connections, args[0], args[1])
+    #if len(answer) == 1:
+    #    answer = [args[0]] + answer
+    #print " -> ".join([step.upper() for step in answer])
+    #print ", ".join([step for step in answer])
     
 def getNeighbors(word):
     words = set()
@@ -45,6 +53,8 @@ def djikstra(connections, startNode, endNode):
     while curNode:
         order.append(curNode)
         curNode = lastNode[curNode]
+    if len(order) == 1:
+        order.append(startNode)
     return order[::-1]#lastNode#valueDict
 
 
