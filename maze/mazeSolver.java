@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.awt.Color;
 public class mazeSolver{
 	public static void main(String [] args) throws IOException{
 		String readFile = args[0];
@@ -49,10 +50,18 @@ public class mazeSolver{
 			}
 		}
 		for(Node node: allPathCoords){
-			int p = (0<<24) | (255<<16) | (0<<8) | 0;
+			int p = image.getRGB(node.x, node.y);
+			System.out.println(node.y + " " + node.x + " " + p);
+			Color colour = new Color(255, 0, 0);//Color.red();
+			//imgage.setRGB(colour.getRGB());
+			//image.setRGB(node.x, node.y, colour.getRGB());
+			p = (0<<24) | (255<<16) | (0<<8) | 0;
 			image.setRGB(node.x, node.y, p);
+			System.out.println(image.getRGB(node.x, node.y));
 		}
+		System.out.println(image);
 		ImageIO.write(image, "png", new File(writeFile));
+		
 	}
 
 }

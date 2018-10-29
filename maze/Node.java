@@ -19,4 +19,10 @@ public class Node{
 		}
 		return false;
 	}
+	public boolean equalsXY(int otherX, int otherY){
+		if(otherX == x && otherY == y){
+			return true;
+		}
+		return false;	
+	}
 }
