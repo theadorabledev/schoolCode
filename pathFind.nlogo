@@ -1,4 +1,4 @@
-patches-own [wall]
+patches-own [wall dead-end]
 
 
 to make-walls
@@ -6,24 +6,36 @@ to make-walls
     ask patch mouse-xcor mouse-ycor [
       set pcolor black
       set wall True
+
     ]
   ]
 end
 
 to go
-
+  let count-color 11
   let endX 0
   let endY 0
   ask patches with [pcolor = blue][
     set endY  pycor
     set endX  pxcor
+
   ]
   ;show endX
   ;show endY
   let found False
-  while [any? patches with [plabel = "unexplored"] and found = False] [
-    ask min-one-of patches with [pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
-    ;ask min-one-of patches with [plabel != "unexplored" and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+  let lPatch patch endX endY
+  while [not any? [neighbors4 with [pcolor != white]] of patch endX endY and any? patches with [plabel = "unexplored"]] [
+    show found
+    set count-color count-color + .1
+    ;ask min-one-of patches with [any? neighbors4 with [plabel = "explored" or plabel = "start" and ] and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+    ask min-one-of patches with [not any? neighbors with [wall = True] and dead-end = False and pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+
+      set lPatch patch pxcor pycor
+      if lPatch = patch pxcor pycor[
+        set dead-end True
+      ]
+      ;show lPatch
+      ;show any? neighbors with [wall = True];
       if plabel != "start"[
         set plabel "explored"
       ]
@@ -39,9 +51,13 @@ to go
           if plabel != "start" [
             ifelse plabel = "end"[
               set found True
+              stop
+              show "hello"
             ][
               set pcolor green
-              set plabel "explored"
+              show count-color
+              ;set pcolor count-color
+              ;set plabel "explored"
             ]
           ]
         ]
@@ -58,6 +74,7 @@ to setup
     set pcolor white
     set plabel "unexplored"
     set wall False
+    set dead-end False
     if pxcor = min-pxcor or pxcor = max-pxcor or pycor = min-pycor or pycor = max-pycor [
       set wall True
       set pcolor black
@@ -501,7 +518,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.4
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
