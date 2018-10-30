@@ -1,24 +1,29 @@
-to setup
-  let known []
-  let found False
-  ask patches[
-    set pcolor white
-    set plabel "unexplored"
+patches-own [wall]
 
+
+to make-walls
+  if mouse-down? [
+    ask patch mouse-xcor mouse-ycor [
+      set pcolor black
+      set wall True
+    ]
   ]
-  ask patch (random -16) ((random 32) - 16) [
-    set pcolor red
-    set plabel "start"
+end
+
+to go
+
+  let endX 0
+  let endY 0
+  ask patches with [pcolor = blue][
+    set endY  pycor
+    set endX  pxcor
   ]
-  ask patch (random 16) ((random 32) - 16) [
-    set pcolor blue
-    set plabel "end"
-  ]
-  ask patches with [pcolor = red][
-    show plabel
-  ]
+  ;show endX
+  ;show endY
+  let found False
   while [any? patches with [plabel = "unexplored"] and found = False] [
-    ask patches with [plabel != "unexplored" and plabel != "end" ][
+    ask min-one-of patches with [pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+    ;ask min-one-of patches with [plabel != "unexplored" and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
       if plabel != "start"[
         set plabel "explored"
       ]
@@ -28,7 +33,7 @@ to setup
         ;if any? patches with [plabel =  "end"][
         ;  show neighbors4
         ;]
-        ifelse [patch-at -1 0 pxcor < pxcor] [
+        ifelse ([pxcor] of patch-at -1 0  = max-pxcor) or ([pxcor] of patch-at 1 0  = min-pxcor) or ([pycor] of patch-at 0 1  = min-pycor) or ([pycor] of patch-at 0 -1  = max-pycor) [
 
         ][
           if plabel != "start" [
@@ -43,10 +48,37 @@ to setup
       ]
       ;wait .05
       ;ask [tick]
+  ]]
+end
+
+to setup
+  let known []
+  ;global found False
+  ask patches[
+    set pcolor white
+    set plabel "unexplored"
+    set wall False
+    if pxcor = min-pxcor or pxcor = max-pxcor or pycor = min-pycor or pycor = max-pycor [
+      set wall True
+      set pcolor black
     ]
-    ;show  patches with [plabel = "unexplored"]
-    ;start = patches with [pcolor = red]
+
   ]
+  ask patch random min-pxcor ((random ((max-pycor - 1) * 2)) - max-pycor + 1) [
+    set pcolor red
+    set plabel "start"
+  ]
+  let endX (random max-pxcor - 1) + 1
+  let endY (random (max-pycor * 2)) - max-pycor + 1
+  ask patch endX endY [
+    set pcolor blue
+    set plabel "end"
+  ]
+
+
+  ;show  patches with [plabel = "unexplored"]
+  ;start = patches with [pcolor = red]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -87,6 +119,40 @@ NIL
 1
 T
 OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+58
+129
+150
+162
+NIL
+make-walls
+T
+1
+T
+PATCH
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+72
+205
+135
+238
+NIL
+go
+NIL
+1
+T
+PATCH
 NIL
 NIL
 NIL
@@ -435,7 +501,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

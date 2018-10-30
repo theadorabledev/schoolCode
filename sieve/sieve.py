@@ -2,14 +2,18 @@
 import time
 from math import sqrt, log
 import sys
-
+convert5 = [0, 0, 2, 2, 4, 4, 2, 4]
+deConvert5 = {3:0, 4:2, 5:4, 6:2, 2:4}
+#5:(lambda x : 7 + (x != 0) * ((4 * x) - (convert5[x % 8]) - (2 * (x / 8))))
 conversions = {
-    2:(lambda x : (2*x) + 3 ), 
-    3:(lambda x : (3*x) + 5 - (x % 2))
+        2:(lambda x : (2*x) + 3 ), 
+    3:(lambda x : (3*x) + 5 - (x % 2)),
+    5:(lambda x : 7 + (x != 0) * ((4 * x) - (convert5[x % 8]) - (2 * (x / 8))))
 }
 deConversions = {
-    2:(lambda x : (x - 3) / 2), 
-    3:(lambda x : (x - 5 + (x % 2))/3)
+        2:(lambda x : (x - 3) / 2), 
+    3:(lambda x : (x - 5 + (x % 2))/3),
+    5:(lambda x : (x != 7) * ((c - 7 + deConvert5[(x % 3) + (x % 5)])/4) + (x + 28)/60)
 }
 conversion = 3
 convert = conversions[conversion]

@@ -1,6 +1,7 @@
+#! /usr/bin/python
 import sys
-import time
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+#ALPHABET = set(ALPHABET)
 INFINITY = float("inf")
 
 def main():
@@ -8,13 +9,33 @@ def main():
     dictAll = open("dictall.txt", "r")
     global theDictionary
     theDictionary = set(dictAll.read().splitlines())
-    connections = returnDict(args[0])
+    #connections = returnDict()
+    grandConnections = {}
+    #print "tail" in connections
     inputFile = open(args[0], "r").read().splitlines()
     answers = []
+    wordLens = set()
+    startWords = set()
+    paths = {}
     for line in inputFile:
         start, end = line.split(",")
-        answers.append(djikstra(connections, start, end))
+        wordLens.add(len(start))
+        startWords.add(start)
+    for l in wordLens:
+        grandConnections[l] = returnDict(l)
+    for word in startWords:
+        paths[word] = djikstra(grandConnections[len(word)], word, "fish")
+    
+    for line in inputFile:
+        start, end = line.split(",")    
+        x = len(start) == len(end)
+        #print connections[end]
+        #paths[start] = djikstra(grandConnections[len(start)], start, end)
+        answers.append(",".join(getOrder(paths[start], start, end)) + "\n")
+        
+        #answers.append(djikstra(connections, start, end))
     print answers
+    open(args[1], "w").writelines(answers)
     #answer = djikstra(connections, args[0], args[1])
     #if len(answer) == 1:
     #    answer = [args[0]] + answer
@@ -24,14 +45,14 @@ def main():
 def getNeighbors(word):
     words = set()
     for i in xrange(len(word)):
-        for letter in ALPHABET:
-            if letter != word[i] and (word[:i] + letter + word[i+1:]) in theDictionary:
-                words.add(word[:i] + letter + word[i+1:])
-    #print count
-    return words
+        for letter in xrange(len(ALPHABET) - 1):
+        #for letter in ALPHABET:
+            words.add(word[:i] + ALPHABET[letter] + word[i+1:])
+
+    return words & theDictionary
     
-def returnDict(argWord):
-    return {word:getNeighbors(word) for word in theDictionary if len(word)==len(argWord)}
+def returnDict(argLen):
+    return {word:getNeighbors(word) for word in theDictionary if len(word)==argLen}
 
 def djikstra(connections, startNode, endNode):
     valueDict = {i:INFINITY for i in connections}
@@ -39,15 +60,21 @@ def djikstra(connections, startNode, endNode):
     lastNode = {i: None for i in connections}
     valueDict[startNode] = 0
     unknown = {i for i in connections}
-    known = set()
-    while known != unknown:
-        unseen = unknown - known
-        curNode = min(unseen , key = valueDict.get)
-        known.add(curNode)
+    while unknown:
+
+        curNode = min(unknown , key = valueDict.get)
+        unknown.discard(curNode)
+        #if curNode == endNode:
+        #    break
         for node in connections[curNode]:
             if valueDict[node] > valueDict[curNode] + 1:
                 valueDict[node] = valueDict[curNode] + 1
                 lastNode[node] = curNode
+
+    return lastNode
+
+
+def getOrder(lastNode, startNode, endNode):
     order = [endNode]
     curNode = lastNode[endNode]
     while curNode:
@@ -55,9 +82,6 @@ def djikstra(connections, startNode, endNode):
         curNode = lastNode[curNode]
     if len(order) == 1:
         order.append(startNode)
-    return order[::-1]#lastNode#valueDict
-
-
-
+    return order[::-1]
 if __name__ == "__main__":
     main()
