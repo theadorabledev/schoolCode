@@ -16,12 +16,28 @@ deConversions = {
 conversion = 5
 convert = conversions[conversion]
 deConvert = deConversions[conversion]
-primes = [i for i in xrange(2, 1000) if (i % 2 != 0) and (i % 3 != 0) and (i % 5 != 0)]
-lp = [0]
-for i in primes:
-    if i % 17 == 0:
-        lp.append(deConvert(i))
-        print deConvert(i),"-->", i, deConvert(i)-lp[-2]
+primes = [i for i in xrange(2, 10000) if (i % 2 != 0) and (i % 3 != 0) and (i % 5 != 0)]
+
+for d in primes[:11]:
+        #print "\n\n", d
+
+        lp = [deConvert(d**2)]
+        p = []
+        for i in primes:
+
+                if i % d == 0 and i > d**2:
+                        lp.append(deConvert(i))
+                        #print deConvert(i),"-->", i, deConvert(i)-lp[-2]
+                        p.append(deConvert(i)-lp[-2])
+        print d
+        print p[:8]
+        print [x - d for x in p[:8]]
+pPrimes = range(2, 10000)
+y = len(pPrimes)
+
+for i in [2,3,5,7,11,13,17,19,23,29]:
+        pPrimes = [x for x in pPrimes if x % i != 0]
+        print i, len(pPrimes),float(y)/ len(pPrimes)
 #for i in xrange(20):
 #    print i, (4 * i) + 7,  (4 * i) + 7 - primes[i]
 #for x in range(10):
