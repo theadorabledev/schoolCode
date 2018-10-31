@@ -28,7 +28,7 @@ to go
     show found
     set count-color count-color + .1
     ;ask min-one-of patches with [any? neighbors4 with [plabel = "explored" or plabel = "start" and ] and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
-    ask min-one-of patches with [not any? neighbors with [wall = True] and dead-end = False and pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+    ask min-one-of patches with [not any? neighbors4 with [wall = True] and dead-end = False and pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
 
       set lPatch patch pxcor pycor
       if lPatch = patch pxcor pycor[
@@ -68,6 +68,7 @@ to go
 end
 
 to setup
+  resize-word -(world-size / 2) (world-size / 2) -(world-size / 2) (world-size / 2)
   let known []
   ;global found False
   ask patches[
@@ -176,10 +177,25 @@ NIL
 NIL
 1
 
+SLIDER
+21
+19
+193
+52
+world-size
+world-size
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+	An A* Algorithm for finding shortest path between 2 nodes
 
 ## HOW IT WORKS
 
@@ -187,7 +203,9 @@ NIL
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+	- Press setup
+	- Press create walls, press on the screen to create wall there
+	- Press go
 
 ## THINGS TO NOTICE
 
