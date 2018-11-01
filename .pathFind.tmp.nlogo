@@ -1,26 +1,43 @@
-to setup
-  let known []
-  let found False
-  ask patches[
-    set pcolor white
-    set plabel "unexplored"
+patches-own [wall dead-end]
+
+
+to make-walls
+  if mouse-down? [
+    ask patch mouse-xcor mouse-ycor [
+      set pcolor black
+      set wall True
+
+    ]
+  ]
+end
+
+to go
+  let count-color 11
+  let endX 0
+  let endY 0
+  ask patches with [pcolor = blue][
+    set endY  pycor
+    set endX  pxcor
 
   ]
-  ask patch (random -16) ((random 32) - 16) [
-    set pcolor red
-    set plabel "start"
-  ]
-   ask patch (random 16) ((random 32) - 16) [
-    set pcolor blue
-    set plabel "end"
-  ]
-  ask patches with [pcolor = red][
-    show plabel
-  ]
-  while [any? patches with [plabel = "unexplored"] and found = False] [
-    ask patches with [plabel != "unexplored" and plabel != "end" ][
+  ;show endX
+  ;show endY
+  let found False
+  let lPatch patch endX endY
+  while [not any? [neighbors4 with [pcolor != white]] of patch endX endY and any? patches with [plabel = "unexplored"]] [
+    show found
+    set count-color count-color + .1
+    ;ask min-one-of patches with [any? neighbors4 with [plabel = "explored" or plabel = "start" and ] and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+    ask min-one-of patches with [not any? neighbors4 with [wall = True] and dead-end = False and pcolor != white and plabel != "end" and wall = False] [distance-nowrap patch endX endY][
+
+      set lPatch patch pxcor pycor
+      if lPatch = patch pxcor pycor[
+        set dead-end True
+      ]
+      ;show lPatch
+      ;show any? neighbors with [wall = True];
       if plabel != "start"[
-      set plabel "explored"
+        set plabel "explored"
       ]
       ;show neighbors4
 
@@ -28,22 +45,58 @@ to setup
         ;if any? patches with [plabel =  "end"][
         ;  show neighbors4
         ;]
-        if patch-at -1 0 pxcor > p
-        if plabel != "start" [
-          ifelse plabel = "end"[
-            set found True
-          ][
-            set pcolor green
-            set plabel "explored"
+        ifelse ([pxcor] of patch-at -1 0  = max-pxcor) or ([pxcor] of patch-at 1 0  = min-pxcor) or ([pycor] of patch-at 0 1  = min-pycor) or ([pycor] of patch-at 0 -1  = max-pycor) [
+
+        ][
+          if plabel != "start" [
+            ifelse plabel = "end"[
+              set found True
+              stop
+              show "hello"
+            ][
+              set pcolor green
+              show count-color
+              ;set pcolor count-color
+              ;set plabel "explored"
+            ]
           ]
         ]
       ]
       ;wait .05
       ;ask [tick]
+  ]]
+end
+
+to setup
+  resize-world (- world-size / 2) (world-size / 2) (- world-size / 2) (world-size / 2)
+  let known []
+  ;global found False
+  ask patches[
+    set pcolor white
+    set plabel "unexplored"
+    set wall False
+    set dead-end False
+    if pxcor = min-pxcor or pxcor = max-pxcor or pycor = min-pycor or pycor = max-pycor [
+      set wall True
+      set pcolor black
     ]
-    ;show  patches with [plabel = "unexplored"]
-    ;start = patches with [pcolor = red]
+
   ]
+  ask patch random min-pxcor ((random ((max-pycor - 1) * 2)) - max-pycor + 1) [
+    set pcolor red
+    set plabel "start"
+  ]
+  let endX (random max-pxcor - 1) + 1
+  let endY (random (max-pycor * 2)) - max-pycor + 1
+  ask patch endX endY [
+    set pcolor blue
+    set plabel "end"
+  ]
+
+
+  ;show  patches with [plabel = "unexplored"]
+  ;start = patches with [pcolor = red]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -90,10 +143,59 @@ NIL
 NIL
 1
 
+BUTTON
+58
+129
+150
+162
+NIL
+make-walls
+T
+1
+T
+PATCH
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+72
+205
+135
+238
+NIL
+go
+NIL
+1
+T
+PATCH
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+21
+19
+193
+52
+world-size
+world-size
+0
+100
+33.0
+1
+1
+NIL
+HORIZONTAL
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+	An A* Algorithm for finding shortest path between 2 nodes
 
 ## HOW IT WORKS
 
@@ -101,31 +203,23 @@ NIL
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+	- Press setup
+	- Press create walls, press on the screen to create wall there
+	- Press go
 
-## THINGS TO NOTICE
+## NEW STUFF
 
-(suggested things for the user to notice while running the model)
 
-## THINGS TO TRY
+	- 'distance-nowrap' was used to find the closest link between the explored nodes  and the end nodes
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
 
-## EXTENDING THE MODEL
+	- 'neighbors' and 'neighbors4' was used to get the nearby patches of the current patch
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
 
-## NETLOGO FEATURES
+	- 'resize-world' was used to hack the NSA
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
 
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+	- 'mouse-down?' , 'mouse-xcor' and 'mouse-ycor' were used to detect clicks and ositions of the mouse
 @#$#@#$#@
 default
 true
@@ -432,7 +526,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

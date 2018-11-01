@@ -68,7 +68,7 @@ to go
 end
 
 to setup
-  resize-word -(world-size / 2) (world-size / 2) -(world-size / 2) (world-size / 2)
+  resize-world (- world-size / 2) (world-size / 2) (- world-size / 2) (world-size / 2)
   let known []
   ;global found False
   ask patches[
@@ -186,7 +186,7 @@ world-size
 world-size
 0
 100
-50.0
+33.0
 1
 1
 NIL
@@ -202,34 +202,25 @@ HORIZONTAL
 (what rules the agents use to create the overall behavior of the model)
 
 ## HOW TO USE IT
+	-
 
-	- Press setup
-	- Press create walls, press on the screen to create wall there
-	- Press go
+	* Press setup
+	* Press create walls, press on the screen to create wall there
+	* Press go
 
-## THINGS TO NOTICE
+## NEW STUFF
+	- 
 
-(suggested things for the user to notice while running the model)
+	- 'distance-nowrap' was used to find the closest link between the explored nodes  and the end nodes
 
-## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+	- 'neighbors' and 'neighbors4' was used to get the nearby patches of the current patch
 
-## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+	- 'resize-world' was used to hack the NSA
 
-## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+	- 'mouse-down?' , 'mouse-xcor' and 'mouse-ycor' were used to detect clicks and ositions of the mouse
 @#$#@#$#@
 default
 true
@@ -536,7 +527,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
