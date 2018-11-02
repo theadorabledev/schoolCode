@@ -31,6 +31,7 @@ def generateMaze(width, height):
         maze.append([(x, y) for x in xrange(width)])
    # mazeWalls=[sorted(tuple(node, neighbor)) for neighbor in getNeighbors(node, width, height) for row in maze for node in maze ]
     mazeWalls = set()
+    mazePassages = set()
     for row in maze:
         print row
     cells = set()
@@ -40,7 +41,8 @@ def generateMaze(width, height):
             for neighbor in getNeighbors(node, width, height):
                 mazeWalls.add(tuple(sorted([node, neighbor])))
             if node[0] == 0 or node[1] == 0 or node[0] == width - 1 or node[1] == height - 1:
-                cells.add(node)
+                pass
+                #cells.add(node)
     start = ((random.randint(2, width - 2)), 0)
     cells.add(start)
     print "start", start
@@ -57,7 +59,7 @@ def generateMaze(width, height):
             cells.add(cell)
             #cells.add(wall[1])
             mazeWalls.discard(wall)
-            
+            mazePassages.add(wall)
             for node in getNeighbors(cell, width, height):
                 if node not in cells and tuple(sorted([cell, node])) in mazeWalls:
                     walls.add(tuple(sorted([cell, node])))
@@ -72,20 +74,38 @@ def generateMaze(width, height):
 
     data = np.full(((height * 2)  - 1, (width * 2) - 1, 3), (255, 255, 255), dtype=np.uint8)
     for cell in cells:
-
         data[cell[1] * 2, cell[0] * 2] = [255, 0, 0]
+
+    img = Image.fromarray(data, "RGB")
+    img.save("gMaze1.png")    
+    
     for wall in mazeWalls:
         cell1, cell2 = wall
         #print [(cell1[1] + cell2[1]), (cell1[0] + cell2[0])]
         data[(cell1[1] + cell2[1]), (cell1[0] + cell2[0])] = (0, 0, 0)
-    data = data[1:-1, 1:-1]
-    data[:,[0,-1]] = data[[0,-1]] = (0, 0, 0)
-    data[start[1] * 2, start[0] * 2] = (255, 255, 255)
-    #data[2, 2] = (255, 0, 0)
+  
+    
     img = Image.fromarray(data, "RGB")
-    img.save("gMaze.png")
+    img.save("gMaze2.png")    
+    
+    data[start[1] * 2, start[0] * 2] = (255, 255, 255)
+    data = data[1:-1, 1:-1]
+    
+    
+    img = Image.fromarray(data, "RGB")
+    img.save("gMaze3.png")        
+    
+    data[:,[0,-1]] = data[[0,-1]] = (0, 0, 0)
+    #data[(start[1] * 2) - 2, (start[0] * 2) - 2] = (255, 255, 255)
+    data[0, (2 * start[0]) - 1] = (255, 255, 255)
+    print 0, (2 * start[0]) - 1
+    #data[2, 2] = (255, 0, 0)
+    
+    img = Image.fromarray(data, "RGB")
+    img.save("gMaze4.png")
+    
     #for wall in mazeWalls:
         
     
-generateMaze(4, 4)
-        
+#generateMaze(4, 4)
+generateMaze(5, 5)       
