@@ -100,9 +100,9 @@ to setup
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+230
 10
-647
+667
 448
 -1
 -1
