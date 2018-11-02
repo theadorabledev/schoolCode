@@ -43,17 +43,17 @@ def generateMaze(width, height):
             if node[0] == 0 or node[1] == 0 or node[0] == width - 1 or node[1] == height - 1:
                 pass
                 #cells.add(node)
-    start = ((random.randint(2, width - 2)), 0)
+    start = ((random.randint(2, width - 2)), 1)
     cells.add(start)
     print "start", start
-    print getNeighbors(start, width, height)
+    #print getNeighbors(start, width, height)
     #for node in getNeighbors(start, width, height):
     #    walls.add(tuple(sorted([start, node])))
     walls.add(tuple(sorted([start, (start[0], start[1] + 1)])))
     while walls:
         
         wall = walls.pop()
-        print "wall", wall
+        #print "wall", wall
         if not (wall[0] in cells and wall[1] in cells):
             cell = wall[1] if wall[0] in cells else wall[1]
             cells.add(cell)
@@ -64,43 +64,28 @@ def generateMaze(width, height):
                 if node not in cells and tuple(sorted([cell, node])) in mazeWalls:
                     walls.add(tuple(sorted([cell, node])))
             #print "hello"
-        for row in maze:
-            print "".join([printLambda(n) for n in row])
-        print "Walls", walls
+
+        #print "Walls", walls
         #raw_input("--> ")
-    print len(mazeWalls)
-    for w in mazeWalls:
-        print w
+    #print len(mazeWalls)
 
-    data = np.full(((height * 2)  - 1, (width * 2) - 1, 3), (255, 255, 255), dtype=np.uint8)
-    for cell in cells:
-        data[cell[1] * 2, cell[0] * 2] = [255, 0, 0]
 
+    data = np.full(((height * 2)  - 1, (width * 2) - 1, 3), (0, 0, 0), dtype=np.uint8)
+    for passage in mazePassages:
+        cell1, cell2 = passage
+        middle = (
+            (cell1[0] * 2 + cell2[0] * 2)/2,
+            (cell1[1] * 2 + cell2[1] * 2)/2
+            )
+        nCell1 = (cell1[0] * 2, cell1[1] * 2)
+        nCell2 = (cell2[0] * 2, cell2[1] * 2)
+        print "passage", nCell1, middle, nCell2
+        data[nCell1[1], nCell1[0]] = data[middle[1], middle[0]] = data[nCell2[1], nCell2[0]] = (255, 255, 255)
+        #data[(cell1[1] + cell2[1]), (cell1[0] + cell2[0])] = (0, 0, 0)
+
+    data[:,[0,-1]] = data[[0,-1]] = (255, 0, 0)
     img = Image.fromarray(data, "RGB")
-    img.save("gMaze1.png")    
-    
-    for wall in mazeWalls:
-        cell1, cell2 = wall
-        #print [(cell1[1] + cell2[1]), (cell1[0] + cell2[0])]
-        data[(cell1[1] + cell2[1]), (cell1[0] + cell2[0])] = (0, 0, 0)
-  
-    
-    img = Image.fromarray(data, "RGB")
-    img.save("gMaze2.png")    
-    
-    data[start[1] * 2, start[0] * 2] = (255, 255, 255)
-    data = data[1:-1, 1:-1]
-    
-    
-    img = Image.fromarray(data, "RGB")
-    img.save("gMaze3.png")        
-    
-    data[:,[0,-1]] = data[[0,-1]] = (0, 0, 0)
-    #data[(start[1] * 2) - 2, (start[0] * 2) - 2] = (255, 255, 255)
-    data[0, (2 * start[0]) - 1] = (255, 255, 255)
-    print 0, (2 * start[0]) - 1
-    #data[2, 2] = (255, 0, 0)
-    
+    img.save("gMazeX.png")  
     img = Image.fromarray(data, "RGB")
     img.save("gMaze4.png")
     
@@ -108,4 +93,4 @@ def generateMaze(width, height):
         
     
 #generateMaze(4, 4)
-generateMaze(5, 5)       
+generateMaze(100, 100)       
