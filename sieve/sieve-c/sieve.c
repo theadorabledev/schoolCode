@@ -2,6 +2,7 @@
 #include<stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 //unsigned int log(unsigned int n)
 //{
 //   return (n > 1)? 1 + log(n/2): 0;
@@ -15,49 +16,40 @@ int pi(int n){
 int main(int argc,char *argv[]){	
 	int n = atoi( argv[1]);
 	int lenPrimes = pi(n);
-	bool primes[lenPrimes];
+	//define lenPrimes pi(n)
+	_Bool primes[lenPrimes] ;
+	time_t start, finish;
+	start = time(0);
+	for(int i =0; i < lenPrimes; i++){
+		primes[i] = false;
+	}
+	//printf("%d\n", lenPrimes);
 	for(int i = 2; i < (int) sqrt(lenPrimes) + 2; i++){
 		if(!primes[i]){
 			//printf("\nprime %d", i);
-			for(int z = (i * i); z < lenPrimes - i; z += i){
-				//printf("%d %d\n", i, z);
+			//printf("%d %d\n", i, i*i);
+			for(int z = (i * i); z < lenPrimes ; z += i){
 				primes[z] = true;
+				//if(primes[3203]){printf("??? %d %d\n", i, z);}
+
 			}
 			//printf("%d\n", i);
-		}else{
-			//printf("\ncomposite %d", i);
 		}
 	}
-	int count = 5;
-	int y = primes.Count(x => x);
+	int count = 0;
 	for(int i = 2; i < lenPrimes + 2; i++){
 		if(!primes[i]){
-			for(int z = 2; z < sqrt(i); z++){
-				if(i % z == 0){
-					printf("\ncomposite %d", i);
-				}
-			}
 			count++;
-			printf("%d\n", i);
-			if(count == n ){
-				printf("\n\n%d", i);
-				
+			//printf("%d %d\n",count, i);
+			if(count == n){
+				printf("Prime number %d is %d" ,n, i);
 				break;
 			}
-		}else{
-			//for(int z = 2; z < sqrt(i); z++){
-				//if(i % z == 0){
-					//printf("\ncomposite %d", i);
-				//}
-			//}
 		}
 	}
-	printf("\n\n%d\n\n", lenPrimes);
-	//printf("%d", lenPrimes);
-    //while(argc--)
-    //{
-    //    printf("%s\n",argv[argc]);
-    //}
 
+    finish = time(0);
+    //printf("\nTime for sort %d: ", ((double)(finish - start))/CLOCKS_PER_SEC);
+	printf("\nTime for sort %d: ", (double)(finish - start));
 return 0;
 }
