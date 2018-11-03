@@ -2,6 +2,7 @@ import pprint
 import random
 import numpy as np
 from PIL import Image
+import sys
 sampleData = [("A", "B", 5), ("A", "C", 6), ("A", "D", 4), ("B", "C", 1), ("B", "D", 2), ("C", "D", 2), ("C", "E", 5), ("C", "F", 3), ("D", "F", 4), ("E", "F", 4)]
 def minSpanTree(connections):
     """ Returns the minumum spanning tree using Kruskal's algorithm. """
@@ -16,7 +17,7 @@ def minSpanTree(connections):
             nodes.add(edge[1])
     print edges
     return sortedConnections
-print minSpanTree(sampleData)
+#print minSpanTree(sampleData)
 
 def getNeighbors(node , width, height):
     x, y = node
@@ -24,16 +25,12 @@ def getNeighbors(node , width, height):
     return [node for node in neighbors if not (node[0] < 0 or node[1] < 0 or node[0] > width - 1 or node[1] > height - 1)]
 
 def generateMaze(width, height):
-    """ Generates a maze of given dimensions. """
-    printLambda = lambda x: "XX" if x in walls else "  " if x in cells else "[]"
+    """ Generates a maze of given dimensions using Prim's algorithm. """
     maze = []
     for y in xrange(height):
         maze.append([(x, y) for x in xrange(width)])
-   # mazeWalls=[sorted(tuple(node, neighbor)) for neighbor in getNeighbors(node, width, height) for row in maze for node in maze ]
     mazeWalls = set()
     mazePassages = set()
-    for row in maze:
-        print row
     cells = set()
     walls = set()
     for row in maze:
@@ -42,55 +39,58 @@ def generateMaze(width, height):
                 mazeWalls.add(tuple(sorted([node, neighbor])))
             if node[0] == 0 or node[1] == 0 or node[0] == width - 1 or node[1] == height - 1:
                 pass
-                #cells.add(node)
-    start = ((random.randint(2, width - 2)), 1)
+
+    start = (1, 1)
     cells.add(start)
-    print "start", start
-    #print getNeighbors(start, width, height)
-    #for node in getNeighbors(start, width, height):
-    #    walls.add(tuple(sorted([start, node])))
     walls.add(tuple(sorted([start, (start[0], start[1] + 1)])))
+    
+    print len(mazeWalls)
+    print len(walls)    
     while walls:
-        
-        wall = walls.pop()
-        #print "wall", wall
+        wall = random.choice(tuple(walls))
+        walls.discard(wall)
         if not (wall[0] in cells and wall[1] in cells):
             cell = wall[1] if wall[0] in cells else wall[1]
             cells.add(cell)
-            #cells.add(wall[1])
             mazeWalls.discard(wall)
             mazePassages.add(wall)
             for node in getNeighbors(cell, width, height):
                 if node not in cells and tuple(sorted([cell, node])) in mazeWalls:
                     walls.add(tuple(sorted([cell, node])))
-            #print "hello"
-
-        #print "Walls", walls
-        #raw_input("--> ")
-    #print len(mazeWalls)
-
-
     data = np.full(((height * 2)  - 1, (width * 2) - 1, 3), (0, 0, 0), dtype=np.uint8)
     for passage in mazePassages:
         cell1, cell2 = passage
         middle = (
-            (cell1[0] * 2 + cell2[0] * 2)/2,
-            (cell1[1] * 2 + cell2[1] * 2)/2
+            (cell1[0] * 2 + cell2[0] * 2)/2, 
+            (cell1[1] * 2 + cell2[1] * 2)/2 
             )
         nCell1 = (cell1[0] * 2, cell1[1] * 2)
         nCell2 = (cell2[0] * 2, cell2[1] * 2)
-        print "passage", nCell1, middle, nCell2
-        data[nCell1[1], nCell1[0]] = data[middle[1], middle[0]] = data[nCell2[1], nCell2[0]] = (255, 255, 255)
+        #print "passage", nCell1, middle, nCell2
+        data[nCell1[1] - 1, nCell1[0] - 1] = data[middle[1] - 1, middle[0] - 1] = data[nCell2[1] - 1, nCell2[0] - 1] = (255, 255, 255)
         #data[(cell1[1] + cell2[1]), (cell1[0] + cell2[0])] = (0, 0, 0)
 
-    data[:,[0,-1]] = data[[0,-1]] = (255, 0, 0)
+    data[:,[0,-1]] = data[[0,-1]] = data[[1,-1]] = (0, 0, 0)
+    #data[start[1] * 2, start[0] * 2 - 1] = (255, 0, 0)
+    return data
     img = Image.fromarray(data, "RGB")
     img.save("gMazeX.png")  
     img = Image.fromarray(data, "RGB")
     img.save("gMaze4.png")
-    
+    img.show()
     #for wall in mazeWalls:
         
     
 #generateMaze(4, 4)
-generateMaze(100, 100)       
+#generateMaze(100, 100)       
+
+def main():
+    args = sys.argv[1:]
+    mazeData = generateMaze(int(args[0]), int(args[1]))
+    imgFile = "gMazeX.png" if len(args) < 2 else args[2]
+    #print imgFile
+    img = Image.fromarray(mazeData, "RGB")
+    img.save(imgFile)  
+    img.show()    
+if __name__ == "__main__":
+    main()
