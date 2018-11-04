@@ -14,33 +14,20 @@ def main():
         c[len(word)] +=1
     #print c
     theDictionary = {word for word in theDictionary if len(word) == int(n)}
-    
-    #print getAnagrams("binary")
-    anagrams = returnDict(int(n))
-    longest = max(anagrams, key=lambda k: len(anagrams[k]))
-    l = len(anagrams[longest])
-    answer = []
-    checked = set()
-    for word in anagrams:
-        if len(anagrams[word]) == l:
-            a = anagrams[word]
-            if not (a & checked):
-                answer.append(tuple(anagrams[word]))
-            for w in anagrams[word]:
-                checked.add(w)
-    print "Largest anagram sets of word length", n
-    for s in answer:
-        print s
-def getAnagrams(argWord):
-    anagrams = set()
+    anagrams = {}
     for word in theDictionary:
-        if (set(word) == set(argWord)) :
-            anagrams.add(word)
+        if tuple(set(word)) in anagrams:
+            anagrams[tuple(set(word))].add(word)
+        else:
+            anagrams[tuple(set(word))] = set([word])
+    l =  len(anagrams[max(anagrams, key=lambda k: len(anagrams[k]))])
+    print l
+    print "Largest anagram sets of word length", n
+    for s in anagrams:
+        if len(anagrams[s]) == l:
+            print anagrams[s]
 
-    return anagrams
-    
-def returnDict(argLen):
-    return {word:getAnagrams(word) for word in theDictionary }
+
 
 
 if __name__ == "__main__":
