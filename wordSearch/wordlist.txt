@@ -1,0 +1,6 @@
+cat
+rat
+fish
+spam
+eggs
+purple
