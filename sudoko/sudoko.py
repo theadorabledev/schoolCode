@@ -38,7 +38,7 @@ class SudokoPuzzle:
         else:
             for line in lines:
                 self.data.append([int(i) for i in line.strip().replace("_", "0").split(",")])
-#        #self.printData()
+#        self.printData()
         self.initValues()
         self.rows = {row:set(self.data[row]) - {0} for row in xrange(9)}
         self.columns = {col:set(row[col] for row in self.data) - {0} for col in xrange(9)}
@@ -46,7 +46,7 @@ class SudokoPuzzle:
         self.initGroups()
         while not self.solved:
             self.solve()
-            ##self.printData()
+            #self.printData()
             #raw_input("-->")
         self.spam = 0
         #random
@@ -60,7 +60,7 @@ class SudokoPuzzle:
                 #z = self.getNeighbors(coord)
 
                 #if len(self.possibleValues[coord]) != 1:
-                #    self.possibleValues[coord] = set(range(1, 10)) - self.getNeighbors(coord) - self.impossibleValues[coord]  - {0}
+                 #   self.possibleValues[coord] = set(range(1, 10)) - self.getNeighbors(coord) - self.impossibleValues[coord]  - {0}
                 self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})
                                 
                 if len(self.possibleValues[coord]) == 1: # One spot solved for
@@ -70,7 +70,7 @@ class SudokoPuzzle:
                     x, y = coord
                     rows, cols, groups = self.rows[y], self.columns[x], self.groups[self.getGroup(x, y)]
                     self.solved = False
-                    ##self.printData()
+                    #self.printData()
                     self.reloadState()
                     break
             if count == self.knownCount: # dead end
@@ -87,7 +87,7 @@ class SudokoPuzzle:
             for y in xrange(9):
                 if self.data[y][x] > 0:
                     self.possibleValues[(x, y)] = {self.data[y][x]}
-                    self.knownValues.add((x, y))
+                    
                     self.countValues[self.data[y][x]] += 1
                     self.knownCount += 1
 
@@ -115,8 +115,6 @@ class SudokoPuzzle:
             val = (self.possibleValues[coord] - self.impossibleValues[coord]).pop()
             self.possibleValues[coord].remove(val)
             self.possibleValues[coord] = {val}
-        if val > 9:
-            return
         if self.data[y][x] != val:
             self.rows[y].add(val)
             self.columns[x].add(val)
@@ -130,9 +128,12 @@ class SudokoPuzzle:
         state["savedStates"] = None
         self.savedStates.append(state)
         if not self.root:
+            for coord in self.possibleValues:
+                if len(self.possibleValues[coord]) == 1:
+                    self.knownValues.add((coord, sum(self.possibleValues[coord])))
             self.default = state
             
-        print "saved state"
+        #print "saved state"
         #self.printData()
     def reloadState(self):
         """ Reloads the last saved state from the stack. """
@@ -142,11 +143,12 @@ class SudokoPuzzle:
             self.savedStates.append(self.default)
         state = self.savedStates.pop(-1)
         if self.root:
+            state["impossibleValues"][self.root[0]].add(self.root[1])
             self.impossibleValues[self.root[0]].add(self.root[1])
         c = 0
         for i in self.impossibleValues:
             c += len(self.impossibleValues[i])
-        state["impossibleValues"] = self.impossibleValues
+        #state["impossibleValues"] = self.impossibleValues
         state["backTracks"] = self.backTracks
         state["default"] = self.default
         state["savedStates"] = self.savedStates
@@ -154,7 +156,7 @@ class SudokoPuzzle:
         #for i in vars(self):
         #    self.__dict__[i] = state[i]
             
-        print "Reloaded state"
+        #print "Reloaded state"
         #self.printData()
 
     def guessBest(self):
@@ -165,7 +167,7 @@ class SudokoPuzzle:
         c = self.possibleValues[bestCoord] - self.impossibleValues[bestCoord]
         self.setValue(bestCoord, guess=True)
         self.root = (bestCoord, self.getCoordValue(bestCoord))
-        print "guessed" , self.root
+        #print "guessed" , self.root
         self.possibleValues[bestCoord] = {self.getCoordValue(bestCoord)}
         #self.solve()
         #print 1
