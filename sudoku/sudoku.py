@@ -1,6 +1,7 @@
 #! /usr/bin/python
 import sys
 import copy
+import time
 deepcopy = copy.deepcopy
 """ 
 sudoku.py  <input-filename> <output-filename>  <name-of-sudoku-board> 
@@ -186,7 +187,10 @@ class SudokoPuzzle:
         
     
 def main():
-    args = sys.argv[1:] 
+    x = time.time()
+    args = sys.argv[1:]
+    showTracks = "-t" in args
+    s = None
     if len(args) == 1:
         s = SudokoPuzzle(args[0])
         s.printData()
@@ -194,13 +198,13 @@ def main():
         if len(args) > 2:
             name = args[2]
             s = SudokoPuzzle(args[0], name=args[2])
-            s.printData()
-            s.writeData(args[1])
+
         elif len(args) == 2:
             s = SudokoPuzzle(args[0])
-            s.printData()
-            s.writeData(args[1])
-    
-
+        s.printData()
+        s.writeData(args[1])
+    #if showTracks:
+    print "BackTracks :", s.backTracks
+    print "Seconds: ", time.time() - x
 if __name__ == "__main__":
     main()
