@@ -1,8 +1,6 @@
 #! /usr/bin/python
 import sys
-import copy
 import time
-deepcopy = copy.deepcopy
 """ 
 sudoku.py  <input-filename> <output-filename>  <name-of-sudoku-board> 
 
@@ -13,18 +11,17 @@ If no output file is specified, the program prints the solved puzzle.
 """
 class SudokoPuzzle:
     """ A class for sudoku puzzles. """
-    def __init__(self, fileName,name=None):
+    getGroup = staticmethod(lambda x, y: ((x + 3)/3) + ((y/3) * 3))
+    
+    
+    def __init__(self, fileName,name=None, naive=False):
         self.data = []
         self.solved = False
-        self.getGroup = lambda x, y: ((x + 3)/3) + ((y/3) * 3)
         self.possibleValues = {(x, y):set(range(1, 10)) for x in xrange(9) for y in xrange(9)}
         self.impossibleValues = {coor:set() for coor in self.possibleValues}
         self.knownValues = set()
-        self.unknownValues = set()
-        self.countValues = {num:0 for num in xrange(1, 10)}
         self.knownCount = 0
         self.savedStates = []
-        self.default = None
         self.root = None
         self.backTracks = 0
         self.name = name
@@ -47,8 +44,6 @@ class SudokoPuzzle:
         self.initGroups()
         while not self.solved:
             self.solve()
-            #self.printData()
-            #raw_input("-->")
         self.spam = 0
         #random
     def solve(self):
@@ -58,12 +53,7 @@ class SudokoPuzzle:
         while self.knownCount < 81:
             count = self.knownCount
             for coord in self.possibleValues:
-                #z = self.getNeighbors(coord)
-
-                #if len(self.possibleValues[coord]) != 1:
-                 #   self.possibleValues[coord] = set(range(1, 10)) - self.getNeighbors(coord) - self.impossibleValues[coord]  - {0}
-                self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})
-                                
+                self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})               
                 if len(self.possibleValues[coord]) == 1: # One spot solved for
                     self.setValue(coord)
                     self.solved = False
@@ -75,10 +65,7 @@ class SudokoPuzzle:
                     self.reloadState()
                     break
             if count == self.knownCount: # dead end
-                
                 self.saveState()
-                if not self.root:
-                    self.default = deepcopy(self.__dict__)
                 self.guessBest()
                 
                 break
@@ -88,8 +75,6 @@ class SudokoPuzzle:
             for y in xrange(9):
                 if self.data[y][x] > 0:
                     self.possibleValues[(x, y)] = {self.data[y][x]}
-                    
-                    self.countValues[self.data[y][x]] += 1
                     self.knownCount += 1
 
     def printData(self):
@@ -122,9 +107,36 @@ class SudokoPuzzle:
             self.groups[self.getGroup(x, y)].add(val)
             self.data[y][x] = val
             self.knownCount += 1
+    def s_deepcopy(self):
+        data = {
+            "columns":{},
+            "rows":{},
+            "groups":{},
+            "data":[],
+            "impossibleValues":{},
+            "possibleValues":{},
+            "knownCount":self.knownCount,
+            "backTracks":self.backTracks,
+            "knownValues":self.knownValues.copy(),
+            "name":self.name,
+            "root":self.root,
+            "savedStates":None,
+            "solved":self.solved
+            }
+        #data["knownValues"] = copy(self.knownValues)
+        for i in xrange(9):
+            data["columns"][i] = self.columns[i].copy()
+            data["rows"][i] = self.rows[i].copy()
+            data["groups"][i + 1] = self.groups[i + 1].copy()
+            data["data"].append(self.data[i][:])
+        for i in self.impossibleValues:
+            data["impossibleValues"][i] = self.impossibleValues[i].copy()
+            data["possibleValues"][i] = self.possibleValues[i].copy()
+        return data   
     def saveState(self):
         """ Saves the current board state. """
-        state = deepcopy(self.__dict__)
+        state=self.s_deepcopy()
+        #state = deepcopy(self.__dict__)
         #state["impossibleValues"] = self.impossibleValues
         state["savedStates"] = None
         self.savedStates.append(state)
@@ -132,16 +144,14 @@ class SudokoPuzzle:
             for coord in self.possibleValues:
                 if len(self.possibleValues[coord]) == 1:
                     self.knownValues.add((coord, sum(self.possibleValues[coord])))
-            self.default = state
             
         #print "saved state"
         #self.printData()
     def reloadState(self):
         """ Reloads the last saved state from the stack. """
-        self.backTracks += 1
+        #self.backTracks += 1
         if not self.savedStates:
             print "default"
-            self.savedStates.append(self.default)
         state = self.savedStates.pop(-1)
         if self.root:
             state["impossibleValues"][self.root[0]].add(self.root[1])
@@ -149,14 +159,9 @@ class SudokoPuzzle:
         c = 0
         for i in self.impossibleValues:
             c += len(self.impossibleValues[i])
-        #state["impossibleValues"] = self.impossibleValues
-        state["backTracks"] = self.backTracks
-        state["default"] = self.default
+        state["backTracks"] = self.backTracks + 1
         state["savedStates"] = self.savedStates
         self.__dict__ = state
-        #for i in vars(self):
-        #    self.__dict__[i] = state[i]
-            
         #print "Reloaded state"
         #self.printData()
 
