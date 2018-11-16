@@ -12,9 +12,11 @@ If no output file is specified, the program prints the solved puzzle.
 class SudokoPuzzle:
     """ A class for sudoku puzzles. """
     getGroup = staticmethod(lambda x, y: ((x + 3)/3) + ((y/3) * 3))
+    rowCoords = [[(x, y) for x in xrange(9)] for y in xrange(9)]
+    columnCoords = [[(x, y) for y in xrange(9)] for x in xrange(9)]
+    groupCoords = [[(x, y) for x in xrange(9) for y in xrange(9) if getGroup.__func__(x, y) == z] for z in xrange(1, 10)]
     
-    
-    def __init__(self, fileName,name=None, naive=False):
+    def __init__(self, fileName,name=None, naked=False):
         self.data = []
         self.solved = False
         self.possibleValues = {(x, y):set(range(1, 10)) for x in xrange(9) for y in xrange(9)}
@@ -25,6 +27,7 @@ class SudokoPuzzle:
         self.root = None
         self.backTracks = 0
         self.name = name
+        self.naked = naked
         lines = open(fileName).readlines()
         if name:
             for i in xrange(len(lines) - 1):
@@ -43,7 +46,7 @@ class SudokoPuzzle:
         self.groups = {group:set() for group in xrange(1, 10)}
         self.initGroups()
         while not self.solved:
-            self.solve()
+            self.solveNaked()
         self.spam = 0
         #random
     def solve(self):
@@ -63,12 +66,37 @@ class SudokoPuzzle:
                     self.solved = False
                     #self.printData()
                     self.reloadState()
-                    break
-            if count == self.knownCount: # dead end
+                    break                
+
+            if count == self.knownCount:# and not nakedNums: # dead end
+                self.saveState()
+                self.guessBest()                
+            
+            break
+    def solveNaked(self):
+        """ Solves the sudoko until their is a solution, contradiction, or dead end while taking naked pairs/triplets into account. """
+        #self.root = root
+        self.solved = True
+        while self.knownCount < 81:
+            count = self.knownCount
+            nakedNums = self.nakedPairs()
+            for coord in self.possibleValues:
+                self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})               
+                if len(self.possibleValues[coord]) == 1: # One spot solved for
+                    self.setValue(coord)
+                    self.solved = False
+                elif not self.possibleValues[coord]: # Empty set = contradiction
+                    x, y = coord
+                    rows, cols, groups = self.rows[y], self.columns[x], self.groups[self.getGroup(x, y)]
+                    self.solved = False
+                    #self.printData()
+                    self.reloadState()
+                    break                
+            if count == self.knownCount and not nakedNums: # dead end
                 self.saveState()
                 self.guessBest()
-                
                 break
+
     def initValues(self):
         """ Initializes the values."""
         for x in xrange(9):
@@ -121,7 +149,8 @@ class SudokoPuzzle:
             "name":self.name,
             "root":self.root,
             "savedStates":None,
-            "solved":self.solved
+            "solved":self.solved,
+            "naked":self.naked
             }
         #data["knownValues"] = copy(self.knownValues)
         for i in xrange(9):
@@ -190,7 +219,22 @@ class SudokoPuzzle:
         for row in self.data:
             f.write(sep.join([str(i) for i in row]) + "\n")
         
-    
+    def nakedSub(self, coords):
+        """ Deals with rpetive subproblems for naked pairs. Also serves as reminder to read code out loud. """
+        change = False
+        nakedGroups = [[self.possibleValues[coord] for coord in group] for group in coords]
+        for i in xrange(9):
+            for x in xrange(9):
+                groupCount = nakedGroups[i].count(nakedGroups[i][x])
+                if groupCount > 1 and groupCount == len(nakedGroups[i][x]):
+                    for coord in coords[i]:
+                        if self.possibleValues[coord] != nakedGroups[i][x]:
+                            self.impossibleValues[coord] |= nakedGroups[i][x]
+                            change = True
+        return change
+    def nakedPairs(self):
+        """ Deals with naked pairs, triplets, etc... ."""
+        return self.nakedSub(self.rowCoords) + self.nakedSub(self.columnCoords) + self.nakedSub(self.groupCoords)
 def main():
     x = time.time()
     args = sys.argv[1:]
