@@ -2,11 +2,13 @@
 import sys
 import time
 """ 
-sudoku.py  <input-filename> <output-filename>  <name-of-sudoku-board> 
+sudoku.py  <input-filename> <output-filename>  <name-of-sudoku-board> <search-for-naked>
 
 If no output file is specified, the program prints the solved puzzle.
 
 <name-of-sudoku-board> is for when there are multiple puzzles in the file.
+
+<search-for-naked> is true by default, can be 1 or 0
 
 """
 class SudokoPuzzle:
@@ -16,7 +18,7 @@ class SudokoPuzzle:
     columnCoords = [[(x, y) for y in xrange(9)] for x in xrange(9)]
     groupCoords = [[(x, y) for x in xrange(9) for y in xrange(9) if getGroup.__func__(x, y) == z] for z in xrange(1, 10)]
     
-    def __init__(self, fileName,name=None, naked=False):
+    def __init__(self, fileName,name=None, naked=True):
         self.data = []
         self.solved = False
         self.possibleValues = {(x, y):set(range(1, 10)) for x in xrange(9) for y in xrange(9)}
@@ -45,8 +47,12 @@ class SudokoPuzzle:
         self.columns = {col:set(row[col] for row in self.data) - {0} for col in xrange(9)}
         self.groups = {group:set() for group in xrange(1, 10)}
         self.initGroups()
-        while not self.solved:
-            self.solveNaked()
+        if self.naked:
+            while not self.solved:
+                self.solveNaked()
+        else:
+            while not self.solved:
+                self.solve()
         self.spam = 0
         #random
     def solve(self):
@@ -228,9 +234,11 @@ class SudokoPuzzle:
                 groupCount = nakedGroups[i].count(nakedGroups[i][x])
                 if groupCount > 1 and groupCount == len(nakedGroups[i][x]):
                     for coord in coords[i]:
-                        if self.possibleValues[coord] != nakedGroups[i][x]:
+                        if self.possibleValues[coord] != nakedGroups[i][x] and not (nakedGroups[i][x] <= self.impossibleValues[coord] ):
                             self.impossibleValues[coord] |= nakedGroups[i][x]
                             change = True
+                        #else:
+                         #   print coord, self.possibleValues[coord], nakedGroups[i][x]
         return change
     def nakedPairs(self):
         """ Deals with naked pairs, triplets, etc... ."""
@@ -245,8 +253,11 @@ def main():
         s.printData()
     else:
         if len(args) > 2:
+            isNaked = True
+            if len(args) > 3:
+                isNaked =  args[3] == "1"
             name = args[2]
-            s = SudokoPuzzle(args[0], name=args[2])
+            s = SudokoPuzzle(args[0], name=args[2], naked=isNaked)
 
         elif len(args) == 2:
             s = SudokoPuzzle(args[0])
