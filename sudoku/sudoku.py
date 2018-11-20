@@ -1,6 +1,7 @@
 #! /usr/bin/python
 import sys
 import time
+
 """ 
 sudoku.py  <input-filename> <output-filename>  <name-of-sudoku-board> <search-for-naked>
 
@@ -11,14 +12,18 @@ If no output file is specified, the program prints the solved puzzle.
 <search-for-naked> is true by default, can be 1 or 0
 
 """
+
 class SudokoPuzzle:
     """ A class for sudoku puzzles. """
+    flatten = staticmethod(lambda l: [item for sublist in l for item in sublist])
     getGroup = staticmethod(lambda x, y: ((x + 3)/3) + ((y/3) * 3))
     rowCoords = [[(x, y) for x in xrange(9)] for y in xrange(9)]
     columnCoords = [[(x, y) for y in xrange(9)] for x in xrange(9)]
     groupCoords = [[(x, y) for x in xrange(9) for y in xrange(9) if getGroup.__func__(x, y) == z] for z in xrange(1, 10)]
-    
-    def __init__(self, fileName,name=None, naked=True):
+    rectCoords = [((x, y), (x1, y), (x, y1), (x1, y1)) for y in xrange(9) for x in xrange(9) for y1 in xrange(y + 1, 9) for x1 in xrange(x + 1, 9) ]
+    # a b ---> (a, c, b, d)
+    # c d
+    def __init__(self, fileName,name=None, naked=2):
         self.data = []
         self.solved = False
         self.possibleValues = {(x, y):set(range(1, 10)) for x in xrange(9) for y in xrange(9)}
@@ -85,7 +90,7 @@ class SudokoPuzzle:
         self.solved = True
         while self.knownCount < 81:
             count = self.knownCount
-            nakedNums = self.nakedPairs()
+            nakedNums = self.forbiddenFruit()
             for coord in self.possibleValues:
                 self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})               
                 if len(self.possibleValues[coord]) == 1: # One spot solved for
@@ -95,7 +100,6 @@ class SudokoPuzzle:
                     x, y = coord
                     rows, cols, groups = self.rows[y], self.columns[x], self.groups[self.getGroup(x, y)]
                     self.solved = False
-                    #self.printData()
                     self.reloadState()
                     break                
             if count == self.knownCount and not nakedNums: # dead end
@@ -225,8 +229,32 @@ class SudokoPuzzle:
         for row in self.data:
             f.write(sep.join([str(i) for i in row]) + "\n")
         
+    def hiddenSub(self, coords):
+        """ Deals with repetive subproblems for hiddden groups. Not as fun a name."""
+        change = False
+        nakedGroups = [[self.possibleValues[coord] for coord in group] for group in coords]
+        for i in xrange(9):
+            for x in xrange(9):
+                curSet = nakedGroups[i][x]
+                # Create possible super-sets of values
+                possibleGroups = {frozenset(curSet)}
+                if 1 < len(curSet)  <= 3:
+                    for p in xrange(1, 10):
+                        possibleGroups.add(frozenset(curSet | {p}))
+                        if len(curSet) == 2:
+                            for q in xrange(1, 10):
+                                possibleGroups.add(frozenset(curSet | {p, q}))
+                
+                for pGroup in possibleGroups: #For each possible supergroup
+                    groupCount = sum([len(group) > 1 and group <= pGroup for group in nakedGroups[i]]) # get the count of elements with subset possible values
+                    if groupCount == len(pGroup): # Make sure 2 elements in pair, 3 in triple, 4 in qaud
+                        for coord in coords[i]:
+                            if not (self.possibleValues[coord] <= pGroup) and not (pGroup <= self.impossibleValues[coord]):
+                                self.impossibleValues[coord] |= pGroup
+                                
+        return change
     def nakedSub(self, coords):
-        """ Deals with rpetive subproblems for naked pairs. Also serves as reminder to read code out loud. """
+        """ Deals with repetive subproblems for naked pairs. Also serves as reminder to read code out loud. """
         change = False
         nakedGroups = [[self.possibleValues[coord] for coord in group] for group in coords]
         for i in xrange(9):
@@ -237,12 +265,51 @@ class SudokoPuzzle:
                         if self.possibleValues[coord] != nakedGroups[i][x] and not (nakedGroups[i][x] <= self.impossibleValues[coord] ):
                             self.impossibleValues[coord] |= nakedGroups[i][x]
                             change = True
-                        #else:
-                         #   print coord, self.possibleValues[coord], nakedGroups[i][x]
         return change
-    def nakedPairs(self):
-        """ Deals with naked pairs, triplets, etc... ."""
-        return self.nakedSub(self.rowCoords) + self.nakedSub(self.columnCoords) + self.nakedSub(self.groupCoords)
+    def forbiddenFruit(self):
+        """ Deals with all hidden possibilities. Pairs to Quads. 
+        
+        Biblical references make code interesting (hidden pairs --> hidden pears --> forbidden fruit)"""
+        #self.xWing()
+        if self.naked == 1:
+            return self.nakedSub(self.rowCoords) + self.nakedSub(self.columnCoords) + self.nakedSub(self.groupCoords)
+        else:
+            return self.hiddenSub(self.rowCoords) + self.hiddenSub(self.columnCoords) + self.hiddenSub(self.groupCoords) #+ self.xWing()
+    def xWing(self):
+        """ Finds x-wing patterns in the puzzle. Apparently sudoku and star wars coincide. """
+        change = False
+        # a b ---> (a, c, b, d)
+        # c d        
+        nakedWing =  [[self.possibleValues[coord] for coord in rect] for rect in self.rectCoords]
+        for i in range(len(nakedWing)):
+            rect = nakedWing[i]
+            commonVals = rect[0] & rect[1] & rect[2] & rect[3]
+            if commonVals:
+                realRect = self.rectCoords[i]
+                col1, row1 = realRect[0]
+                col2, row2 = realRect[3] 
+                nakedRow1 = self.flatten([self.possibleValues[coord] for coord in self.rowCoords[row1]])
+                nakedRow2 = self.flatten([self.possibleValues[coord] for coord in self.rowCoords[row2]])
+                nakedColumn1 = self.flatten([self.possibleValues[coord] for coord in self.columnCoords[col1]])
+                nakedColumn2 = self.flatten([self.possibleValues[coord] for coord in self.columnCoords[col2]])                
+                for val in commonVals:
+                
+                    if nakedRow1.count(val) == 2 and nakedRow2.count(val) == 2:
+                        for coord in self.rowCoords[row1] + self.rowCoords[row2]:
+                            if coord not in realRect and not ({val} <= self.impossibleValues[coord]):
+                                self.possibleValues[coord] |= {val}
+                                change = True
+                    if nakedColumn1.count(val) == 2 and nakedColumn2.count(val) == 2:
+                        for coord in self.columnCoords[col1] + self.columnCoords[col2]:
+                            if coord not in realRect and not ({val} <= self.impossibleValues[coord]):
+                                self.possibleValues[coord] |= {val}
+                                change = True            
+
+                    
+        #x = a
+        return change
+
+                
 def main():
     x = time.time()
     args = sys.argv[1:]
@@ -253,11 +320,11 @@ def main():
         s.printData()
     else:
         if len(args) > 2:
-            isNaked = True
+            isNaked = 3
             if len(args) > 3:
-                isNaked =  args[3] == "1"
+                isNaked =  int(args[3])
             name = args[2]
-            s = SudokoPuzzle(args[0], name=args[2], naked=isNaked)
+            s = SudokoPuzzle(args[0], name=args[2])#, naked=isNaked)
 
         elif len(args) == 2:
             s = SudokoPuzzle(args[0])
