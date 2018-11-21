@@ -1,28 +1,68 @@
+breed [joints joint]
 to setup
   ca
-  crt 4
-  ask turtle 0 [
+  create-joints 6
+  ask joints [
     set shape "circle"
     set size 2
-    setxy xcor - 2 ycor + 2
-    create-link-with turtle 1
-    create-link-with turtle 2
   ]
-  ask turtle 1 [
-    set shape "circle"
-    set size 2
-    setxy xcor + 2 ycor + 2
-    create-link-with turtle 0
-    create-link-with turtle 3
+  ask joint 0 [
+    ; neck joint?
+    set ycor ycor + 2
+    create-link-with joint 1
+    create-link-with joint 2
+    create-link-with joint 5
   ]
-  ask turtle 2 [
+  ask joint 1 [
+    setxy xcor - 2.5 ycor + 2
+    create-link-with joint 3
+  ]
+  ask joint 2 [
+
+    setxy xcor + 2.5 ycor + 2
+    create-link-with joint 4
+  ]
+  ask joint 3 [
     setxy xcor - 5 ycor - 2
   ]
-   ask turtle 3 [
+   ask joint 4 [
     setxy xcor + 5 ycor - 2
+  ]
+  ask joint 5 [
+    set ycor ycor - 3
   ]
   ask links [
     set thickness .5
+  ]
+  ask link 0 5 [
+    set shape "rib"
+
+  ]
+end
+
+to go
+  ask joint 3 [
+    pd
+    set shape "default"
+    circle-turtle 1 2 200
+    ;move-along-circle 2
+  ]
+end
+
+to move-along-circle [r dist]
+  repeat dist [
+    fd (pi * r / 180) * (25 / 50)
+    rt 25 / 50
+  ]
+end
+to circle-turtle [num r dist]
+  repeat dist [
+  ;fd 1
+  face joint num
+  rt 90
+
+    fd (pi * r / 180) * (25 / 50)
+    rt 25 / 50
   ]
 end
 @#$#@#$#@
@@ -60,6 +100,23 @@ BUTTON
 137
 NIL
 setup\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+103
+43
+166
+76
+NIL
+go\n
 NIL
 1
 T
@@ -461,6 +518,29 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
+
+rib
+0.0
+-0.2 0 0.0 1.0
+0.0 1 1.0 0.0
+0.2 0 0.0 1.0
+link direction
+true
+0
+Line -7500403 true 150 150 90 180
+Line -7500403 true 150 150 210 180
+Line -7500403 true 90 195 150 165
+Line -7500403 true 210 195 150 165
+Line -7500403 true 90 165 150 135
+Line -7500403 true 210 165 150 135
+Line -7500403 true 90 150 150 120
+Line -7500403 true 90 135 150 105
+Line -7500403 true 90 120 150 90
+Line -7500403 true 90 210 150 180
+Line -7500403 true 210 210 150 180
+Line -7500403 true 210 150 150 120
+Line -7500403 true 210 135 150 105
+Line -7500403 true 210 120 150 90
 @#$#@#$#@
 0
 @#$#@#$#@
