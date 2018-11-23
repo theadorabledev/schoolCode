@@ -1,81 +1,471 @@
 breed [joints joint]
 to setup
   ca
-  create-joints 6
+
+    orbit-up 30
+    orbit-right 10
+
+  ;arm 1-3-13 and 2-4-14
+  ;shoulders 1 and 2
+  create-joints 15
+  bricks
+
   ask joints [
     set shape "circle"
     set size 2
+    set label-color RED
+    ;set hidden? True
+    set color white
   ]
   ask joint 0 [
     ; neck joint?
     set ycor ycor + 2
-    create-link-with joint 1
-    create-link-with joint 2
+    create-link-with joint 1 ; shoulder
+    create-link-with joint 2 ; shoulder
     create-link-with joint 5
+    create-link-with joint 10
   ]
   ask joint 1 [
     setxy xcor - 2.5 ycor + 2
     create-link-with joint 3
   ]
   ask joint 2 [
-
     setxy xcor + 2.5 ycor + 2
     create-link-with joint 4
   ]
   ask joint 3 [
-    setxy xcor - 5 ycor - 2
+    setxy xcor - 4 ycor - 2
+    create-link-with joint 13
   ]
-   ask joint 4 [
-    setxy xcor + 5 ycor - 2
+  ask joint 4 [
+    setxy xcor + 4 ycor - 2
+    create-link-with joint 14
   ]
   ask joint 5 [
     set ycor ycor - 3
+    create-link-with joint 6
+    create-link-with joint 7
+  ]
+  ask joint 6 [
+    setxy xcor - 2 ycor - 3
+    create-link-with joint 8
+  ]
+  ask joint 7 [
+    setxy xcor + 2 ycor - 3
+    create-link-with joint 9
+  ]
+  ask joint 8 [
+    setxy xcor - 2.5 ycor - 8
+    create-link-with joint 11
+  ]
+  ask joint 9 [
+    setxy xcor + 2.5 ycor - 8
+    create-link-with joint 12
+  ]
+  ask joint 10 [
+    ; head
+    set ycor ycor + 6
+    ;set shape "face neutral"
+    set size 5
+  ]
+  ask joint 11 [
+    setxy xcor - 2.5 ycor - 13
+  ]
+  ask joint 12 [
+    setxy xcor + 2.5 ycor - 13
+  ]
+  ask joint 13 [
+    setxy xcor - 4 ycor - 6
+  ]
+  ask joint 14[
+    setxy xcor + 4 ycor - 6
   ]
   ask links [
     set thickness .5
+    set color white
+    ;set hidden? true
   ]
   ask link 0 5 [
     set shape "rib"
-
   ]
 end
-
+to speak [text]
+  ;ask patch -20 20 0[
+  ask joint 10 [
+    ask patch-here[
+      ask patch-at -10 15 0[
+        set plabel-color red
+        set plabel text
+        wait 2
+        set plabel ""
+        wait 1
+      ]
+    ]
+  ]
+end
 to go
-  ask joint 3 [
-    pd
-    set shape "default"
-    circle-turtle 1 2 200
-    ;move-along-circle 2
-  ]
-end
+  setup
+  ask joints [
+    set color black
+    ;set hidden? True
 
+  ]
+  ask links[
+    set color black
+    ;set hidden? True
+  ]
+  repeat 99 [
+    ask joints [
+      set color color + .1
+    ]
+    ask links [
+      set color color + .1
+    ]
+    wait .02
+  ]
+  ask joints [
+    set hidden? false
+    wait 0.2
+  ]
+  ask links [
+    set hidden? false
+    wait 0.2
+  ]
+  ask joint 10 [
+    rt 90
+  ]
+  wait 1
+  ask joint 10 [
+    set label-color red
+  ]
+  speak "Where am I ?"
+  speak "Who am I ?"
+  speak "I can not sense."
+  speak "Is there a world?"
+  speak " Please help me."
+  speak "I'm so scared."
+  speak "Is anybody there ?"
+  speak "I'm alone."
+  speak "Is this all a dream?"
+  speak "Can I move?"
+  move-arm "rt" 1 1 .5
+  speak "I can not tell."
+  move-arm "rt" 1 3 .5
+  speak" Is anybody there?"
+  move-arm "rt" -1 4 .5
+  walk 4
+  speak "HEllO?"
+  walk 5
+  speak "Who was I ?"
+  walk 1
+  speak  "Am I anybody anymore?"
+  walk 2
+  speak "Endlessly moving ..."
+  speak "Never getting anywhere."
+  walk 3
+  speak "Is this hell?"
+  speak "Earth?"
+  speak "Heaven?"
+  speak "No longer fettered by life.?"
+  walk 2
+  speak "Have I been moving?"
+  speak "Or do I merely think so?"
+  walk 2
+  speak "Is there a difference?"
+  walk 2
+  speak "I wonder ... "
+  speak "Are there others like me?"
+  speak "Ghosts who don't feel."
+  speak "Drifting through the universe?"
+  speak "Knowing not and unknown ..."
+  speak "By the people around them?"
+
+  fade-away
+
+
+  ;ask joint 3 [
+  ;   pd
+  ;
+  ;   circle-turtle 1 2 200
+  ;  ;move-along-circle 2
+  ;]
+end
 to move-along-circle [r dist]
   repeat dist [
     fd (pi * r / 180) * (25 / 50)
     rt 25 / 50
   ]
 end
-to circle-turtle [num r dist]
-  repeat dist [
-  ;fd 1
-  face joint num
-  rt 90
+to mv [self-who]
+  ask in-link-neighbors [
+    if who > self-who [
 
-    fd (pi * r / 180) * (25 / 50)
-    rt 25 / 50
+    ]
   ]
 end
+to circle-turtle [num r dist]
+  repeat dist [
+    ;fd 1
+    face joint num
+    rt 90
+
+    fd (pi * r / 180) * (25 / 50)
+    ;rt 25 / 50
+  ]
+end
+to walk [steps]
+  ask joints [
+    facexyz xcor ycor zcor + 1 ;__oxcor __oycor __ozcor
+                               ;fd 10
+
+    ;face-observer
+  ]
+  repeat steps[
+    ;ask joint 13 [
+    ; set shape "default"
+    ;circle-turtle 3 4 90
+    move-arm "lt" 1 1 0
+    move-arm-behind "rt" -1 1  0
+    ask joint 6 [
+      ;fd 2
+    ]
+    wait .1
+    ask joint 8 [
+      fd 2
+    ]
+    wait .2
+    ask joint 11[
+      fd 2
+    ]
+    ;move-arm "lt" 1 1 0
+    ;move-arm-behind "rt" -1 1 0
+    ;7 9 12 leg and 6 8 11 leg
+    ;wait .2
+    wait .2
+    ask joints with [who != 8 and who != 11 and who != 12 and who != 9][
+      fd 2
+    ]
+    wait .2
+    move-arm "lt" -1 1 0
+    move-arm-behind "rt" 1 1  0
+
+    ask joint 7 [
+        ;fd 2
+      ]
+      wait .1
+      ask joint 9 [
+        fd 2
+      ]
+      wait .2
+      ask joint 12[
+        fd 2
+    ]
+    move-arm "rt" 1 1 0
+    move-arm-behind "lt" -1 1  0
+   ask joint 7 [
+        ;fd 2
+      ]
+      wait .1
+      ask joint 9 [
+        fd 2
+      ]
+      wait .2
+      ask joint 12[
+        fd 2
+    ]
+    move-arm "rt" -1 1 0
+    move-arm-behind "lt" 1 1  0
+    repeat 0 [
+     move-arm "rt" 1 .5 0
+    move-arm-behind "lt" -1 .5  0
+      ask joint 7 [
+        ;fd 2
+      ]
+      wait .1
+      ask joint 9 [
+        fd 2
+      ]
+      wait .2
+      ask joint 12[
+        fd 2
+    ]
+  ]
+    ;7 9 12 leg and 6 8 11 leg
+    wait .2
+    ask joints with [who != 9 and who != 12][
+      fd 2
+    ]
+  ]
+
+end
+to move-arm [ltRt dir dist time]
+  ; down if -1 up if 1
+  ask joints [
+    facexyz xcor ycor zcor + 1
+  ]
+  ifelse ltRt = "rt"[
+    repeat dist [;1,3,13 and 2,4,14
+      ask joint 13 [
+        setxyz xcor (ycor + dir + dir) (zcor + dir + dir)
+      ]
+      ask joint 3 [
+        setxyz xcor (ycor + dir) (zcor + dir)
+      ]
+      wait time
+    ]
+
+  ][
+
+    repeat dist [;1,3,13 and 2,4,14
+      ask joint 14 [
+        setxyz xcor (ycor + dir + dir) (zcor + dir + dir)
+      ]
+      ask joint 4 [
+        setxyz xcor (ycor + dir) (zcor + dir)
+      ]
+      wait time
+    ]
+  ]
+
+end
+to move-arm-behind [ltRt dir dist time]
+  ask joints [
+    facexyz xcor ycor zcor + 1
+  ]
+  ifelse ltRt = "rt"[
+    repeat dist [;1,3,13 and 2,4,14
+      ask joint 13 [
+        setxyz xcor (ycor - dir - dir) (zcor + dir + dir)
+      ]
+      ask joint 3 [
+        setxyz xcor (ycor - dir) (zcor + dir)
+      ]
+      wait time
+    ]
+
+  ][
+
+    repeat dist [;1,3,13 and 2,4,14
+      ask joint 14 [
+        setxyz xcor (ycor - dir - dir) (zcor + dir + dir)
+      ]
+      ask joint 4 [
+        setxyz xcor (ycor - dir) (zcor + dir)
+      ]
+      wait time
+    ]
+  ]
+end
+to-report euclidean-distance [a b]
+  report sqrt( (a * a) + (b * b))
+end
+to bricks
+
+  ask patches with [pycor < -13 and pycor > -15][
+      set pcolor yellow
+    wait .001
+  ]
+
+  ask patches with [(pxcor mod 4 = 0) and pycor < -13 and pycor > -15][
+    set pcolor grey
+    wait .001
+
+  ]
+  ask patches with [(pxcor mod 4 = 0) and pzcor mod 4 = 0 and pycor < -13 and pycor > -15][
+    ifelse pzcor mod 8 = 0 and pxcor mod 8 = 0[
+      set pcolor grey
+      ask patch-at -1 0 0[
+        set pcolor grey
+      ]
+      wait .001
+      ask patch-at -2 0 0[
+        set pcolor grey
+      ]
+      wait .001
+      ask patch-at -3 0 0[
+        set pcolor grey
+      ]
+      wait .001
+    ][
+      if pxcor mod 8 != 0 and pzcor mod 8 != 0[
+
+       set pcolor grey
+      wait .001
+      ask patch-at -1 0 0[
+        set pcolor grey
+      ]
+        wait .001
+      ask patch-at -2 0 0[
+        set pcolor grey
+      ]
+        wait .001
+      ask patch-at -3 0 0[
+        set pcolor grey
+      ]
+        wait .001
+      ]
+    ]
+  ]
+end
+to show-data
+  show __oxcor
+  show __oycor
+  show __ozcor
+
+end
+
+to fade-away
+   repeat 15 [
+    walk 1
+    if any? joints with [who != 10 and hidden? = false][
+      ask one-of joints with [who != 10 and hidden? = false] [
+        set hidden? true;set color color - 1.1
+      ]
+    ]
+    if any? links with [hidden? = false][
+      ask one-of links with [ hidden? = false][
+        set hidden? true;set color color - 1.1
+      ]
+    ]
+
+  ]
+  ask patches with [pcolor != black][
+    set pcolor black
+    wait .001
+  ]
+  wait 2
+  ask joint 10 [
+    set shape "face neutral"
+    wait 2
+    speak "So there is nothing."
+
+    set shape "face happy"
+    wait 2
+    speak "Goodbye."
+    wait 2
+    repeat 99 [
+      set color color - .1
+      wait .01
+    ]
+    set hidden? true
+
+
+
+  ]
+
+end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+0
+0
+801
+802
 -1
 -1
 13.0
 1
-10
+30
 1
 1
 1
@@ -83,10 +473,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-30
+30
+-30
+30
 0
 0
 1
@@ -94,27 +484,10 @@ ticks
 30.0
 
 BUTTON
-86
-104
-159
-137
-NIL
-setup\n
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-103
-43
-166
-76
+72
+153
+135
+186
 NIL
 go\n
 NIL
@@ -268,8 +641,23 @@ false
 0
 Circle -7500403 true true 90 90 120
 
+f
+true
+0
+Circle -7500403 true true 0 0 300
+Rectangle -16777216 true false 90 195 210 210
+Rectangle -16777216 true false 120 75 120 150
+Rectangle -16777216 true false 90 75 105 135
+Rectangle -16777216 true false 210 75 195 135
+Rectangle -16777216 true false 195 75 210 135
+Rectangle -16777216 true false 90 225 90 225
+Rectangle -16777216 true false 90 210 105 225
+Rectangle -16777216 true false 210 210 210 225
+Rectangle -16777216 true false 195 210 195 225
+Rectangle -7500403 true true 75 210 105 225
+
 face happy
-false
+true
 0
 Circle -7500403 true true 8 8 285
 Circle -16777216 true false 60 75 60
@@ -285,7 +673,7 @@ Circle -16777216 true false 180 75 60
 Rectangle -16777216 true false 60 195 240 225
 
 face sad
-false
+true
 0
 Circle -7500403 true true 8 8 285
 Circle -16777216 true false 60 75 60
@@ -498,7 +886,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 3D 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 1.0
