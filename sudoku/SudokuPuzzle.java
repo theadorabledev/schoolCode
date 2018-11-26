@@ -10,7 +10,6 @@ public class SudokuPuzzle implements Serializable{
 	
 	private HashMap<Coordinate, HashSet<Integer>> possibleValues = new HashMap<Coordinate, HashSet<Integer>>();
 	private HashMap<Coordinate, HashSet<Integer>> impossibleValues = new HashMap<Coordinate, HashSet<Integer>>();
-
 	private HashMap<Integer, HashSet<Integer>> groups = new HashMap<Integer, HashSet<Integer>>();
 	private HashMap<Integer, HashSet<Integer>> rows = new HashMap<Integer, HashSet<Integer>>();
 	private HashMap<Integer, HashSet<Integer>> columns = new HashMap<Integer, HashSet<Integer>>();
@@ -45,6 +44,19 @@ public class SudokuPuzzle implements Serializable{
 			}			
 		}
 		return vals;
+		
+	}
+	private void copy(SudokuPuzzle other){
+		this.possibleValues = other.possibleValues;
+		this.impossibleValues = other.impossibleValues;
+		this.groups = other.groups;
+		this.rows = other.rows;
+		this.columns = other.columns;
+		this.startTime = other.startTime;
+		this.knownCount = other.knownCount;
+		this.backTracks = other.backTracks;
+		this.root = other.root;
+		this.rootVal = other.rootVal;
 		
 	}
 	private void init(){
@@ -94,6 +106,10 @@ public class SudokuPuzzle implements Serializable{
 		SudokuPuzzle s = new SudokuPuzzle(args[0]);
 		//s.init();
 		s.solve();
+		s.printData();
+		System.out.println("Stats: ");
+		System.out.println("Backtracks : " + s.backTracks);
+		System.out.println("It took " + (System.currentTimeMillis() - s.startTime) + " milliseconds.");
 	}
 	public void printData(){
 		for(Integer [] line : data){
@@ -129,14 +145,14 @@ public class SudokuPuzzle implements Serializable{
 		while(!solved){
 			subSolve();
 			//break;
-		}
+		}/*
 		printData();
 		System.out.println("Stats: ");
 		System.out.println("Backtracks : " + backTracks);
-		System.out.println("It took " + (System.currentTimeMillis() - startTime) + " milliseconds.");
+		System.out.println("It took " + (System.currentTimeMillis() - startTime) + " milliseconds.");*/
 		
 	}
-	public void subSolve(){
+	private void subSolve(){
 		solved = true;
 		while(knownCount < 81){
 			int count = knownCount;
@@ -161,7 +177,7 @@ public class SudokuPuzzle implements Serializable{
 				break;
 			}
 		}
-		
+		//solved = true;
 	}
 	private void setValue(Coordinate coord, boolean guess){
 		int x = coord.x;
@@ -182,7 +198,7 @@ public class SudokuPuzzle implements Serializable{
 		}
 		
 	}
-	public HashSet<Integer> getNeighbors(Coordinate coord){
+	private HashSet<Integer> getNeighbors(Coordinate coord){
 		HashSet<Integer> neighbors = new HashSet<Integer>();
 		
 		neighbors.addAll(rows.get(coord.y));
@@ -211,19 +227,26 @@ public class SudokuPuzzle implements Serializable{
 		
 	}
 	private void saveState(){
+		System.out.println("Saved the state");
 		SudokuPuzzle state = (SudokuPuzzle) clone(this);
-		state.savedStates = null;
+		state.savedStates = null;//new ArrayList<SudokuPuzzle>();//null;
+		savedStates.add(state);
 	}
 	private void reloadState(){
 		//printData();
+		System.out.println("Reloading state, root " +  root + " = " + rootVal + " was wrong");
 		SudokuPuzzle state = savedStates.get(savedStates.size() - 1);
 		savedStates.remove(savedStates.size() - 1);
 		state.impossibleValues.get(root).add(rootVal);
 		state.backTracks = backTracks + 1;
 		state.savedStates = savedStates;
-		state.solve();
+		System.out.println("Reloaded state");
+		copy(state);
+		//state.solve();
+		
 		
 	}
+
 	private void guessBest(){
 		HashMap<Coordinate, HashSet<Integer>> newValues = new HashMap<Coordinate, HashSet<Integer>>(possibleValues);
 		//HashMap<Coordinate, HashSet<Integer>> newValues = (HashMap) possibleValues.clone();
@@ -231,15 +254,20 @@ public class SudokuPuzzle implements Serializable{
 			newValues.get(coord).removeAll(impossibleValues.get(coord));
 		}
 		Coordinate bestCoord = (Coordinate) getMinKey(newValues);
+		System.out.println(newValues.get(bestCoord));
 		setValue(bestCoord, true);
 		root = bestCoord;
 		rootVal = data[bestCoord.y][bestCoord.x];
+		System.out.println("Guessed "+  root + " = " + rootVal);
+		System.out.println(knownCount);
+		printData();
 	}
 	private static Coordinate getMinKey(HashMap<Coordinate ,HashSet<Integer>> dict){
 		Coordinate minKey = new Coordinate(0, 0);
 		for(Coordinate key : dict.keySet()){
-			if(1 < dict.get(key).size() && dict.get(key).size() < dict.get(minKey).size()){
-				minKey = key;
+			//System.out.println(key + " " + dict.get(key) + " " + minKey + " " + dict.get(minKey));
+			if(((1 < dict.get(key).size()) && (dict.get(key).size() < dict.get(minKey).size())) || ( 1 == dict.get(minKey).size())){
+				minKey = key;	
 			}
 		}
 		return minKey;
