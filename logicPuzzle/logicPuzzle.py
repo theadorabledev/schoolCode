@@ -14,10 +14,16 @@ class logicPuzzle:
         group2, thing2 = thing2a
         self.allDict[group1][thing1][group2] = set([thing2])
         self.allDict[group2][thing2][group1] = set([thing1])
+    def disconnect(self, thing1a, thing2a):
+        group1, thing1 = thing1a
+        group2, thing2 = thing2a
+        self.allDict[group1][thing1][group2].remove(thing2)
+        self.allDict[group2][thing2][group1].remove(thing1)
     def followConnect(self, thing1a, thing2a):
         """ Disconnects connected items from others."""
         group1, thing1 = thing1a
         group2, thing2 = thing2a
+        print "follow connect", thing1a, thing2a
         for thing in self.allDict[group1]:
             if thing != thing1:
                 self.allDict[group1][thing][group2].discard(thing2)
@@ -33,17 +39,18 @@ class logicPuzzle:
             for group in self.allDict:
                 for thing in self.allDict[group]:
                     for subGroup in self.allDict[group][thing]:
-                        thing2 = self.allDict[group][thing][subGroup]
+                        thing2 = tuple(self.allDict[group][thing][subGroup])[0]
                         if len(self.allDict[group][thing][subGroup]) == 1 and frozenset([thing, thing2]) not in self.connected:
-                            self.followConnect((group, thing), (subGroup, str(self.allDict[group][thing][subGroup])))
+                            self.followConnect((group, thing), (subGroup, tuple(self.allDict[group][thing][subGroup])[0]))
                             change = True
-                            self.connected.add(frozenset([thing, thing2]))
+                            self.connected.add( frozenset([thing, thing2]))
                         elif len(self.allDict[group][thing][subGroup]) == 0:
-                            print "messed up"
+                            print "messed up",group,thing,subGroup, self.allDict[group][thing][subGroup]
                         
 def main():
     l = logicPuzzle( {'Name':['Bill','Karl','Joy'],'Politics':['Republican','Democrat','Libertarian'],'Course':['Biology','AI','APUSH']})
     l.connect(("Name", "Bill"), ("Course", "APUSH"))
+    l.disconnect(("Name", "Joy"), ("Course", "AI"))
     #print l.properties
     print l.allDict
     l.update()
