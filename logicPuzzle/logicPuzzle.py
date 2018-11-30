@@ -27,9 +27,19 @@ class logicPuzzle:
         for thing in self.allDict[group1]:
             if thing != thing1:
                 self.allDict[group1][thing][group2].discard(thing2)
+            else:
+                for g in self.allDict[group1][thing]:
+                    print self.properties[g]
+                    print self.allDict[group1]
+                    for notThing in (self.properties[g] - self.allDict[group1][thing2][g]):
+                        self.allDict[group1][thing][g].discard(notThing)
         for thing in self.allDict[group2]:
             if thing != thing2:
                 self.allDict[group2][thing][group1].discard(thing1)
+            else:
+                for g in self.allDict[group2][thing]:
+                    for notThing in (self.properties[g] - self.allDict[group2][thing1][g]):
+                        self.allDict[group2][thing][g].discard(notThing)
     def disconnect(sef, thing1a, thing2a):
         pass
     def update(self):
