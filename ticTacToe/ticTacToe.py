@@ -7,19 +7,23 @@ class BoardNode:
     winners = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]    
     def __init__(self,layout):
         self.grid = layout
+        self.mover = 'X' if layout.count('X') == layout.count('O') else 'O'
+        self.lastMover = "X" if self.mover == "O" else "X"
         self.endState = "d" 
         self.parents = set() 
         self.children = set() 
         if not self.isDraw() and not self.isWinner():
             for pos in xrange(9):
                 if self.grid[pos] == "_":
-                    if self.grid.count("X") - self.grid.count("O") == 0: #X's turn or not
-                        self.children.add(self.grid[:pos] + "X" +self.grid[pos + 1:])
-                    else:
-                        self.children.add(self.grid[:pos] + "O" +self.grid[pos + 1:])
-            self.endState = None #Move was made   
+                    self.children.add(self.grid[:pos] + self.mover +self.grid[pos + 1:])
+                
+            self.endState = None #Move was made
         for pos in xrange(9):
-            self.parents.add(self.grid[:pos] + "_" +self.grid[pos + 1:])
+            if self.grid[pos] == self.lastMover:
+                    self.parents.add(self.grid[:pos] + "_" + self.grid[pos + 1:])
+
+        #for pos in xrange(9):
+         #   self.parents.add(self.grid[:pos] + "_" +self.grid[pos + 1:])
         if self.endState and self.isWinner():
             self.endState = self.isWinner()            
     def display(self):
@@ -54,5 +58,5 @@ def main():
     print "Count of wins for O:", allOutcomes.count("O") 
     print "Count of draws: ", allOutcomes.count("d")
     print "Count of boring boards: ", allOutcomes.count(None)
-
+    print allBoards["XO_X_OX__"].__dict__
 main()
