@@ -5,23 +5,23 @@ public class SudokuPuzzle implements Serializable{
 	public static final HashMap<Integer, HashSet<Coordinate>> groupCoords =  getCoords("groups");
 	public static final HashMap<Integer, HashSet<Coordinate>> rowCoords =  getCoords("rows");
 	public static final HashMap<Integer, HashSet<Coordinate>> columnCoords =  getCoords("columns");
-	private static final List<Integer> defaultValues = Arrays.asList(1,2,3,4,5,6,7,8,9);
-	private final boolean debug = false;
+	protected static final List<Integer> defaultValues = Arrays.asList(1,2,3,4,5,6,7,8,9);
+	protected final boolean debug = false;
 	
-	private Integer[][] data = new Integer[9][9];
-	private boolean solved = false;
-	private HashMap<Coordinate, HashSet<Integer>> possibleValues = new HashMap<Coordinate, HashSet<Integer>>();
-	private HashMap<Coordinate, HashSet<Integer>> impossibleValues = new HashMap<Coordinate, HashSet<Integer>>();
-	private HashMap<Integer, HashSet<Integer>> groups = new HashMap<Integer, HashSet<Integer>>();
-	private HashMap<Integer, HashSet<Integer>> rows = new HashMap<Integer, HashSet<Integer>>();
-	private HashMap<Integer, HashSet<Integer>> columns = new HashMap<Integer, HashSet<Integer>>();
-	private ArrayList<SudokuPuzzle> savedStates = new ArrayList<SudokuPuzzle>();
-	private long startTime = System.currentTimeMillis();
-	private int knownCount = 0;
-	private int backTracks = 0;
-	private int rootVal;
-	private Coordinate root = null;
-	
+	protected Integer[][] data = new Integer[9][9];
+	protected boolean solved = false;
+	protected HashMap<Coordinate, HashSet<Integer>> possibleValues = new HashMap<Coordinate, HashSet<Integer>>();
+	protected HashMap<Coordinate, HashSet<Integer>> impossibleValues = new HashMap<Coordinate, HashSet<Integer>>();
+	protected HashMap<Integer, HashSet<Integer>> groups = new HashMap<Integer, HashSet<Integer>>();
+	protected HashMap<Integer, HashSet<Integer>> rows = new HashMap<Integer, HashSet<Integer>>();
+	protected HashMap<Integer, HashSet<Integer>> columns = new HashMap<Integer, HashSet<Integer>>();
+	protected ArrayList<SudokuPuzzle> savedStates = new ArrayList<SudokuPuzzle>();
+	protected long startTime = System.currentTimeMillis();
+	protected int knownCount = 0;
+	protected int backTracks = 0;
+	protected int rootVal;
+	protected Coordinate root = null;
+	public SudokuPuzzle(){}
 	public SudokuPuzzle(String fileName, String boardName){
 		loadFromFile(fileName, boardName);
 		init();
@@ -89,7 +89,7 @@ public class SudokuPuzzle implements Serializable{
 		return (((x + 3)/3) + ((y/3) * 3)) - 1;
 	}
 	/**Gets the key with the minimum value in a dict.*/
-	private static Coordinate getMinKey(HashMap<Coordinate ,HashSet<Integer>> dict){
+	protected static Coordinate getMinKey(HashMap<Coordinate ,HashSet<Integer>> dict){
 		Coordinate minKey = new Coordinate(0, 0);
 		for(Coordinate key : dict.keySet()){
 			if(((1 < dict.get(key).size()) && (dict.get(key).size() < dict.get(minKey).size())) || ( 1 == dict.get(minKey).size())){
@@ -99,7 +99,7 @@ public class SudokuPuzzle implements Serializable{
 		return minKey;	
 	}
 	/**Returns the count of spaces known.*/
-	private int getKnownCount(){
+	protected int getKnownCount(){
 		int kk = 0;
 		for(int x = 0; x < 9; x ++){
 			for(int y = 0; y < 9; y ++){
@@ -111,7 +111,7 @@ public class SudokuPuzzle implements Serializable{
 		return kk;
 	}
 	/**Returns the values of the neigbors of a coordinate. */
-	private HashSet<Integer> getNeighbors(Coordinate coord){
+	protected HashSet<Integer> getNeighbors(Coordinate coord){
 		HashSet<Integer> neighbors = new HashSet<Integer>();
 		neighbors.addAll(rows.get(coord.y));
 		neighbors.addAll(columns.get(coord.x));
@@ -120,7 +120,7 @@ public class SudokuPuzzle implements Serializable{
 		return neighbors;
 	}
 	/**Finds hidden pairs, triples, and quads.*/
-	private boolean hiddenSub(HashMap<Integer, HashSet<Coordinate>> coords){
+	protected boolean hiddenSub(HashMap<Integer, HashSet<Coordinate>> coords){
 		boolean change = false;
 		ArrayList<ArrayList<HashSet<Integer>>> nakedGroups = new ArrayList<ArrayList<HashSet<Integer>>>();
 		for(Integer key : coords.keySet()){
@@ -170,14 +170,14 @@ public class SudokuPuzzle implements Serializable{
 		return change;
 	}
 	/**Checks for hidden groups and returns if present.*/
-	private boolean forbiddenFruit(){
+	protected boolean forbiddenFruit(){
 		boolean row = hiddenSub(rowCoords);
 		boolean col = hiddenSub(columnCoords);
 		boolean box = hiddenSub(groupCoords);
 		return row || col || box;
 	}
 	/**Copies the values of another instance to this one.*/
-	private void copy(SudokuPuzzle other){
+	protected void copy(SudokuPuzzle other){
 		this.data = other.data;
 		this.possibleValues = other.possibleValues;
 		this.impossibleValues = other.impossibleValues;
@@ -192,7 +192,7 @@ public class SudokuPuzzle implements Serializable{
 		this.solved = other.solved;
 	}
 	/**Initializes the puzzle.*/
-	private void init(){
+	protected void init(){
 		for(int y = 0; y < 9; y++){
 			for(int x = 0; x < 9; x++){
 				possibleValues.put(new Coordinate(x, y), new HashSet<Integer>(defaultValues));//defaultValues));
@@ -238,7 +238,7 @@ public class SudokuPuzzle implements Serializable{
 		
 	}
 	/**The subroutine that does the actual solving.*/
-	private void subSolve(){
+	protected void subSolve(){
 		solved = true;
 		while(getKnownCount() < 81){
 			int count = knownCount;
@@ -308,7 +308,7 @@ public class SudokuPuzzle implements Serializable{
 		System.out.println("\n");		
 	}
 	/**Prints the value if debugging.*/
-	private void print(String x){
+	protected void print(String x){
 		if(debug){
 			System.out.println(x);
 		}
@@ -353,7 +353,7 @@ public class SudokuPuzzle implements Serializable{
 		}	
 	}	
 	/**Sets the value of a spot, guessing if need be.*/
-	private void setValue(Coordinate coord, boolean guess){
+	protected void setValue(Coordinate coord, boolean guess){
 		int x = coord.x;
 		int y = coord.y;
 		int val = (int) possibleValues.get(coord).toArray()[0];
@@ -373,14 +373,14 @@ public class SudokuPuzzle implements Serializable{
 		
 	}
 	/**Saves the state to the stack.*/
-	private void saveState(){
+	protected void saveState(){
 		print("Saving state.");
 		SudokuPuzzle state = (SudokuPuzzle) clone(this);
 		state.savedStates = null;//new ArrayList<SudokuPuzzle>();//null;
 		savedStates.add(state);
 	}
 	/**Pops and reloads the latest state from the stack.*/
-	private void reloadState(){
+	protected void reloadState(){
 		print("RELOADING STATE.");
 		print("	Bad root : "+root+ " as " + rootVal + "\n\n");
 		SudokuPuzzle state = savedStates.get(savedStates.size() - 1);
@@ -395,7 +395,7 @@ public class SudokuPuzzle implements Serializable{
 		
 	}
 	/**Infers the best value.*/
-	private void guessBest(){
+	protected void guessBest(){
 		HashMap<Coordinate, HashSet<Integer>> newValues = new HashMap<Coordinate, HashSet<Integer>>(possibleValues);
 		//HashMap<Coordinate, HashSet<Integer>> newValues = (HashMap) possibleValues.clone();
 		for(Coordinate coord: newValues.keySet()){
