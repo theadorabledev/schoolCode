@@ -11,7 +11,7 @@ If no output file is specified, the program prints the solved puzzle.
 
 <search-for-naked> is true by default, can be 1 or 0
 """
-class SudokoPuzzle:
+class SudokuPuzzle:
     """ A class for sudoku puzzles. """
     flatten = staticmethod(lambda l: [item for sublist in l for item in sublist])
     getGroup = staticmethod(lambda x, y: ((x + 3)/3) + ((y/3) * 3))
@@ -48,33 +48,19 @@ class SudokoPuzzle:
         self.columns = {col:set(row[col] for row in self.data) - {0} for col in xrange(9)}
         self.groups = {group:set() for group in xrange(1, 10)}
         self.initGroups()
-        if self.naked:
-            while not self.solved:
-                self.solveNaked()
-        else:
-            while not self.solved:
-                self.solve()
+        #if self.naked:
+        #    while not self.solved:
+        #        self.solveNaked()
+        #else:
+        #    while not self.solved:
+        #        self.solve()
         self.spam = 0
     def solve(self):
-        """ Solves the sudoko until their is a solution, contradiction, or dead end. """
-        self.solved = True
-        while self.knownCount < 81:
-            count = self.knownCount
-            for coord in self.possibleValues:
-                self.possibleValues[coord] -= (self.getNeighbors(coord) | self.impossibleValues[coord]  | {0})               
-                if len(self.possibleValues[coord]) == 1: # One spot solved for
-                    self.setValue(coord)
-                    self.solved = False
-                elif not self.possibleValues[coord]: # Empty set = contradiction
-                    self.solved = False
-                    self.reloadState()
-                    break                
-            if count == self.knownCount:# and not nakedNums: # dead end
-                self.saveState()
-                self.guessBest()                
-            break
+        """ Solves the sudoku until their is a solution, contradiction, or dead end. """
+        while not self.solved:
+            self.solveNaked()
     def solveNaked(self):
-        """ Solves the sudoko until their is a solution, contradiction, or dead end while taking naked pairs/triplets into account. """
+        """ Solves the sudoku until their is a solution, contradiction, or dead end while taking naked pairs/triplets into account. """
         self.solved = True
         while self.knownCount < 81:
             count = self.knownCount
@@ -103,6 +89,10 @@ class SudokoPuzzle:
         """ Prints the data. """
         for line in self.data:
             print " ".join([str(i) for i in line])  
+    def printDataFile(self):
+        """ Prints the Sudoku grid for a file in readable output. """
+        for line in self.data:
+            print ",".join([str(i).replace("0", "_") for i in line])          
     def initGroups(self):
         """ Initializes the groups(boxes). """
         for x in xrange(9):
@@ -271,16 +261,18 @@ def main():
     args = sys.argv[1:]
     s = None
     if len(args) == 1:
-        s = SudokoPuzzle(args[0])
+        s = SudokuPuzzle(args[0])
+        s.solve()
         s.printData()
     else:
         if len(args) > 2:
             #isNaked = 3
             #isNaked = int(args[3])
-            s = SudokoPuzzle(args[0], name=args[2])#, naked=isNaked)
+            s = SudokuPuzzle(args[0], name=args[2])#, naked=isNaked)
 
         elif len(args) == 2:
-            s = SudokoPuzzle(args[0])
+            s = SudokuPuzzle(args[0])
+        s.solve()
         s.printData()
         s.writeData(args[1])
     print "BackTracks :", s.backTracks
