@@ -16,6 +16,7 @@ public class SudokuPuzzle implements Serializable{
 	protected HashMap<Integer, HashSet<Integer>> rows = new HashMap<Integer, HashSet<Integer>>();
 	protected HashMap<Integer, HashSet<Integer>> columns = new HashMap<Integer, HashSet<Integer>>();
 	protected ArrayList<SudokuPuzzle> savedStates = new ArrayList<SudokuPuzzle>();
+	protected SudokuPuzzle defaultState;
 	protected long startTime = System.currentTimeMillis();
 	protected int knownCount = 0;
 	protected int backTracks = 0;
@@ -24,6 +25,10 @@ public class SudokuPuzzle implements Serializable{
 	public SudokuPuzzle(){}
 	public SudokuPuzzle(String fileName, String boardName){
 		loadFromFile(fileName, boardName);
+		init();
+	}
+	public SudokuPuzzle(Integer[][] data){
+		this.data = data;
 		init();
 	}
 	public static void main(String[] args){
@@ -190,6 +195,7 @@ public class SudokuPuzzle implements Serializable{
 		this.root = other.root;
 		this.rootVal = other.rootVal;
 		this.solved = other.solved;
+		this.defaultState = other.defaultState;
 	}
 	/**Initializes the puzzle.*/
 	protected void init(){
@@ -227,7 +233,8 @@ public class SudokuPuzzle implements Serializable{
 			rows.put(i, rowValues);
 			columns.put(i, colValues);
 			
-		}		
+		}	
+		defaultState = (SudokuPuzzle) clone(this);
 	}
 	/** Solves the puzzle.*/
 	public void solve(){
@@ -383,11 +390,17 @@ public class SudokuPuzzle implements Serializable{
 	protected void reloadState(){
 		print("RELOADING STATE.");
 		print("	Bad root : "+root+ " as " + rootVal + "\n\n");
-		SudokuPuzzle state = savedStates.get(savedStates.size() - 1);
-		
-		savedStates.remove(savedStates.size() - 1);
-		state.impossibleValues.get(root).add(rootVal);
-		impossibleValues.get(root).add(rootVal);
+		SudokuPuzzle state;
+		if(savedStates.size() > 0){
+			state = savedStates.get(savedStates.size() - 1);
+			savedStates.remove(savedStates.size() - 1);
+		}else{
+			state = defaultState;
+		}
+		if(root != null){
+			state.impossibleValues.get(root).add(rootVal);
+			impossibleValues.get(root).add(rootVal);
+		}
 		state.backTracks = backTracks + 1;
 		state.savedStates = savedStates;
 		copy(state);
