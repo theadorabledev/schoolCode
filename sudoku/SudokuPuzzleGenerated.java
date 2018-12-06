@@ -8,6 +8,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	public static final ArrayList<String> conversionValues = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I"));
 	private String[][] subData = new String[9][9];
 	private Random rand;
+    private boolean shuffled = false;
 	public static void main(String[] args){
 		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard");
 		s.printData();
@@ -18,9 +19,12 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	}
 	public SudokuPuzzleGenerated(String boardName){
 		super();
-		rand = new Random(123);
-		loadFromFile(templateFile, "Hard");
-		randomShuffle();
+		if (!shuffled){
+		    rand = new Random(123);
+		    loadFromFile(templateFile, "Hard");
+		    randomShuffle();
+		    shuffled = true;
+		}
 		//printData();
 	}
 	public void loadFromFile(String fileName, String boardName){
