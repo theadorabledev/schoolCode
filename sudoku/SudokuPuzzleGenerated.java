@@ -10,13 +10,18 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	private Random rand;
 	public static void main(String[] args){
 		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard");
+		s.printData();
+		//System.out.println(rand.seed);
+		SudokuPuzzle p = new SudokuPuzzle(s.getData());
+		p.solve();
+		p.printData();
 	}
 	public SudokuPuzzleGenerated(String boardName){
 		super();
-		rand = new Random();
+		rand = new Random(123);
 		loadFromFile(templateFile, "Hard");
 		randomShuffle();
-		printData();
+		//printData();
 	}
 	public void loadFromFile(String fileName, String boardName){
 		try{
@@ -46,11 +51,15 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		ArrayList<String> values = shuffled();
 		//String values = new String(shuffled());
 		for(int i = 0; i < 10; i++){
-			int a = rand.nextInt(9);
-			if(a % 2 == 0){
+			int a = rand.nextInt(4);
+			if(a == 0){
 				shuffleRows();
-			}else{
+			}else if (a == 1){
 				shuffleCols();
+			}else if (a == 2){
+				shuffleBoxRows();
+			}else{
+				shuffleBoxCols();
 			}
 		}
 		for(int x = 0; x < 9; x++){
@@ -60,19 +69,57 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		}
 	}
 	private void shuffleRows(){
-		int a = rand.nextInt(9);
-		int b = rand.nextInt(9);
+		int box = rand.nextInt(3);
+		int a = rand.nextInt(3);
+		int b = rand.nextInt(3);
+		if(box == 0){
+			a += 3;
+			b += 3;
+		}else if (box == 1){
+			a += 6;
+			b += 6;
+		}
 		String[] temp = subData[a];
 		subData[a] = subData[b];
 		subData[b] = temp;
 	}
 	private void shuffleCols(){
-		int a = rand.nextInt(9);
-		int b = rand.nextInt(9);
+		int box = rand.nextInt(3);
+		int a = rand.nextInt(3);
+		int b = rand.nextInt(3);
+		if(box == 0){
+			a += 3;
+			b += 3;
+		}else if (box == 1){
+			a += 6;
+			b += 6;
+		}
 		for(int i = 0; i < 9; i++){
 			String temp = subData[i][a];
 			subData[i][a] = subData[i][b];
 			subData[i][b] = temp;
+		}
+	}
+	private void shuffleBoxRows(){
+		int a = rand.nextInt(3) * 3;
+		int b = rand.nextInt(3) * 3;
+		for(int i = 0; i < 3; i++){
+			String[] temp = subData[a];
+			subData[a] = subData[b];
+			subData[b] = temp;
+			a++;
+			b++;
+		}
+	}
+	private void shuffleBoxCols(){
+		int a = rand.nextInt(3) * 3;
+		int b = rand.nextInt(3) * 3;
+		for(int i = 0; i < 3; i++){
+			String temp = subData[i][a];
+			subData[i][a] = subData[i][b];
+			subData[i][b] = temp;
+			a++;
+			b++;
 		}
 	}
 	private ArrayList<String> shuffled(){
@@ -80,5 +127,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		Collections.shuffle(shuffleOrder, rand);
 		return shuffleOrder;
 	}
-
+	public Integer[][] getData(){
+		return data;
+	}
 }
