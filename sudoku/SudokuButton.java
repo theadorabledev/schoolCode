@@ -7,6 +7,7 @@ public class SudokuButton extends JButton implements ActionListener{
     public Coordinate coord;
 	public boolean pressed;
 	public Sudoku parent;
+	private boolean setValue = false;
     public SudokuButton(Coordinate coord, Sudoku parent){
 		super("");//coord.toString());
 		this.coord = coord;
@@ -16,9 +17,11 @@ public class SudokuButton extends JButton implements ActionListener{
 		//setBackground(Color.cyan);
 	}
 	public void actionPerformed(ActionEvent e) {
-        System.out.println(coord);
-		pressed = !pressed;
-		parent.press(this);
+        if(!setValue){
+			System.out.println(coord);
+			pressed = !pressed;
+			parent.press(this);
+		}
     }
     public void setBorders(){
 		int bottom = 1;
@@ -40,6 +43,8 @@ public class SudokuButton extends JButton implements ActionListener{
 		//System.out.println(coord + " " + bottom + " " + left + " " + right +  " " + top);
 		setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, Color.black));
     } 
-	
+	public void permanent(){
+		setValue = true;
+	}
 }
 
