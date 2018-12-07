@@ -5,26 +5,23 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	public static final HashMap<String, Integer> conversion = new HashMap<String, Integer>() {{
 		put("A",1); put("B",2); put("C",3); put("D",4); put("E",5); put("F",6); put("G",7); put("H",8); put("I",9);
 	}};
-	public static final ArrayList<String> conversionValues = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I"));
+	private ArrayList<String> conversionValues = new ArrayList<String>(Arrays.asList(new String[] {"A", "B", "C", "D", "E", "F", "G", "H", "I"}));
 	private String[][] subData = new String[9][9];
 	private Random rand;
-    private boolean shuffled = false;
 	public static void main(String[] args){
-		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard");
+		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard", "123");
 		s.printData();
 		//System.out.println(rand.seed);
 		SudokuPuzzle p = new SudokuPuzzle(s.getData());
 		p.solve();
 		p.printData();
 	}
-	public SudokuPuzzleGenerated(String boardName){
+	public SudokuPuzzleGenerated(String boardName, String seed){
 		super();
-		if (!shuffled){
-		    rand = new Random(123);
-		    loadFromFile(templateFile, "Hard");
-		    randomShuffle();
-		    shuffled = true;
-		}
+		rand = new Random(Long.parseLong(seed, 36));
+		loadFromFile(templateFile, boardName);
+		randomShuffle();
+		    
 		//printData();
 	}
 	public void loadFromFile(String fileName, String boardName){
@@ -127,8 +124,11 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		}
 	}
 	private ArrayList<String> shuffled(){
+		
 		ArrayList<String> shuffleOrder = conversionValues;
+		System.out.println(shuffleOrder);
 		Collections.shuffle(shuffleOrder, rand);
+		System.out.println(shuffleOrder);
 		return shuffleOrder;
 	}
 	public Integer[][] getData(){
