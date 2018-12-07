@@ -16,13 +16,15 @@ public class Sudoku{
     private HashMap<Coordinate, SudokuButton> gridButtons = new HashMap<Coordinate, SudokuButton>();
 	private String [] difficulties = new String[] {"Easy", "Medium", "Hard", "Evil"};
 	private JComboBox<String> difficultiesBox = new JComboBox<String>(difficulties);
-	
+    private JComboBox numberChoice = new JComboBox<String>(new String [] {"", "1", "2", "3", "4", "5", "6", "7", "8", "9"}); 
 	private JTextField seedInput = new JTextField("Seed");
 	
 	public Sudoku(){
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setupGrid();
 		setupGenerator();
+		control.setLayout(new BoxLayout(control, BoxLayout.PAGE_AXIS));
+		control.add(numberChoice);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, control, gridContainer);
 		frame.getContentPane().add(splitPane);
 		frame.pack();
@@ -67,10 +69,11 @@ public class Sudoku{
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
+		
         gbc.gridwidth = 2;
 		generatorContainer.add(generatePuzzleButton, gbc);
 		generatorContainer.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
-		
+		generatorContainer.setPreferredSize(new Dimension(200, 200));
 		control.add(generatorContainer);
 		generatePuzzleButton.addActionListener(new ActionListener() {
 			@Override
