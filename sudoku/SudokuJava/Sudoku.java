@@ -124,6 +124,7 @@ public class Sudoku{
 			timer.stop();
 			numberBox.setVisible(false);
 			winnerLabel.setVisible(true);
+			undoRedo.setVisible(false);
 			
 		}
 	}
@@ -231,7 +232,6 @@ public class Sudoku{
 		if(!value.equals("Value:") && !value.equals("0")){
 			if(puzzle.isValidPlay(currentGridButton.coord, Integer.valueOf(value))){
 				if(!undoing){
-					System.out.println("??");
 					addToHistory(currentGridButton.coord, Integer.valueOf(value));
 				}
 				puzzle.fillValue(currentGridButton.coord, Integer.valueOf(value));
@@ -265,9 +265,6 @@ public class Sudoku{
 			for(int i = historyPosition; i < history.size(); i ++){
 				history.remove(i);
 			}
-			System.out.println("Adding to history");
-			System.out.println(coord + " " + value + " " + historyPosition);
-			System.out.println(history + " " + historyPosition);
 	
 	}
 	/**Sets up the timer.*/
@@ -304,6 +301,7 @@ public class Sudoku{
 					generatorContainer.setVisible(false);
 					puzzle = new SudokuPuzzlePlayable();
 					solve.setToolTipText("Press to solve with the given puzzle. ");
+					undoRedo.setVisible(true);
 				}else{
 					
 					SudokuPuzzle s = new SudokuPuzzle(puzzle.getData());
@@ -314,6 +312,10 @@ public class Sudoku{
 						sb.setText(String.valueOf(d[sb.coord.y][sb.coord.x]));
 						sb.permanent();
 					}
+					undoRedo.setVisible(false);
+					numberBox.setVisible(false);
+					solve.setVisible(false);
+					currentGridButton.setBackground(null);
 				}
 			}
 		});
