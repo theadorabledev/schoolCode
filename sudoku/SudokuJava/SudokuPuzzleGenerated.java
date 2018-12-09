@@ -7,7 +7,9 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	}};
 	private ArrayList<String> conversionValues = new ArrayList<String>(Arrays.asList(new String[] {"A", "B", "C", "D", "E", "F", "G", "H", "I"}));
 	private String[][] subData = new String[9][9];
+	private ArrayList<String> values;
 	private Random rand;
+	private long seed;
 	public static void main(String[] args){
 		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard", "123");
 		s.printData();
@@ -16,14 +18,32 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		p.solve();
 		p.printData();
 	}
+	/**Creates teh board with the given seed, if an impossible board, tries again.*/
 	public SudokuPuzzleGenerated(String boardName, String seed){
 		super();
-		rand = new Random(Long.parseLong(seed, 36));
-		loadFromFile(templateFile, boardName);
-		randomShuffle();
-		    
-		//printData();
+		boolean created = false;
+		this.seed = Long.parseLong(seed, 36);
+		
+		while(!created){
+			try{
+				rand = new Random(this.seed);
+				loadFromFile(templateFile, boardName);
+				randomShuffle();
+				SudokuPuzzle p = new SudokuPuzzle(getData());
+				p.solve();   
+				created = true;
+			}catch(Exception e){
+				this.seed++;
+				created = false;
+				resetStuff();
+				//rand = new Random(this.seed);
+			}
+			
+			
+		}	
+		stringData2Data();
 	}
+	/** Overrides loadFromFile for generated purposes. */
 	public void loadFromFile(String fileName, String boardName){
 		try{
 			Scanner scanner = new Scanner(new File(fileName));
@@ -48,8 +68,10 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 			System.out.println("Whoops! ");
 		}	
 	}
+	/** Randomly shuffles the board. */
 	private void randomShuffle(){
-		ArrayList<String> values = shuffled();
+		
+		values = shuffled();
 		//String values = new String(shuffled());
 		for(int i = 0; i < 10; i++){
 			int a = rand.nextInt(4);
@@ -63,12 +85,26 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 				shuffleBoxCols();
 			}
 		}
+		stringData2Data();
+	}
+	/** Undoes the damage done by a bad board configuration.*/
+	private void resetStuff(){
+		for(int i = 0; i < 9; i ++){
+			for(int k = 0; k < 9; k ++){
+				subData[i][k] = "0";
+				data[i][k] = null;
+			}
+		}
+	}
+	/**Turns the local string data into integers.*/
+	private void stringData2Data(){
 		for(int x = 0; x < 9; x++){
 			for(int y = 0; y < 9; y++){
 				data[y][x] = values.indexOf(subData[y][x]) + 1;
 			}
 		}
 	}
+	/** Shuffles the rows. */
 	private void shuffleRows(){
 		int box = rand.nextInt(3);
 		int a = rand.nextInt(3);
@@ -84,6 +120,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		subData[a] = subData[b];
 		subData[b] = temp;
 	}
+	/** Shuffles the columns. */
 	private void shuffleCols(){
 		int box = rand.nextInt(3);
 		int a = rand.nextInt(3);
@@ -101,6 +138,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 			subData[i][b] = temp;
 		}
 	}
+	/** Shuffles the boxes of rows. */
 	private void shuffleBoxRows(){
 		int a = rand.nextInt(3) * 3;
 		int b = rand.nextInt(3) * 3;
@@ -112,6 +150,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 			b++;
 		}
 	}
+	/** Shuffles the boxes of columns. */
 	private void shuffleBoxCols(){
 		int a = rand.nextInt(3) * 3;
 		int b = rand.nextInt(3) * 3;
@@ -123,15 +162,11 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 			b++;
 		}
 	}
-	private ArrayList<String> shuffled(){
-		
+	/** Shuffles the digits. */
+	private ArrayList<String> shuffled(){		
 		ArrayList<String> shuffleOrder = conversionValues;
-		System.out.println(shuffleOrder);
 		Collections.shuffle(shuffleOrder, rand);
-		System.out.println(shuffleOrder);
 		return shuffleOrder;
 	}
-	public Integer[][] getData(){
-		return data;
-	}
+
 }

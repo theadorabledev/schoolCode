@@ -22,7 +22,14 @@ public class SudokuPuzzle implements Serializable{
 	protected int backTracks = 0;
 	protected int rootVal;
 	protected Coordinate root = null;
-	public SudokuPuzzle(){}
+	public SudokuPuzzle(){
+		for(int i = 0; i < 9; i ++){
+			for(int k = 0; k < 9; k++){
+				data[i][k] = 0;
+			}
+		}
+		init();
+	}
 	public SudokuPuzzle(String fileName, String boardName){
 		loadFromFile(fileName, boardName);
 		init();
@@ -104,7 +111,7 @@ public class SudokuPuzzle implements Serializable{
 		return minKey;	
 	}
 	/**Returns the count of spaces known.*/
-	protected int getKnownCount(){
+	public int getKnownCount(){
 		int kk = 0;
 		for(int x = 0; x < 9; x ++){
 			for(int y = 0; y < 9; y ++){
@@ -259,9 +266,7 @@ public class SudokuPuzzle implements Serializable{
 					print(coord + " must be " + possibleValues.get(coord));
 					print("	Neighbors are: " + getNeighbors(coord));
 					print("	Impossible Values are: " + impossibleValues.get(coord));
-					
 					setValue(coord, false);
-					
 					solved = false;
 				}else if(possibleValues.get(coord).size() == 0){
 					solved = false;
@@ -424,4 +429,14 @@ public class SudokuPuzzle implements Serializable{
 		root = bestCoord;
 		rootVal = data[bestCoord.y][bestCoord.x];
 	}
+	/** Returns a copy of the data. */
+	public Integer[][] getData(){
+		Integer[][] d = new Integer[9][9];
+		for(int i = 0; i < 9; i++){
+			for(int k = 0; k < 9; k ++){
+				d[i][k] = data[i][k];
+			}
+		}
+		return d;
 }
+	}
