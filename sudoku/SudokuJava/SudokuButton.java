@@ -14,15 +14,17 @@ public class SudokuButton extends JButton implements ActionListener{
 		this.parent = parent;
 		setBorders();
 		addActionListener(this);
+		setFont(new Font("Arial", Font.PLAIN, 30));
 		//setBackground(Color.cyan);
 	}
+	/**Deals with button press. */
 	public void actionPerformed(ActionEvent e) {
         if(!setValue){
-			System.out.println(coord);
 			pressed = !pressed;
 			parent.press(this);
 		}
     }
+	/** Creates the borders based on position. */
     public void setBorders(){
 		int bottom = 1;
 		int left = 1;
@@ -40,11 +42,12 @@ public class SudokuButton extends JButton implements ActionListener{
 		if(coord.y == 3 || coord.y == 6){
 			top = 3;
 		}
-		//System.out.println(coord + " " + bottom + " " + left + " " + right +  " " + top);
 		setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, Color.black));
     } 
+	/** Marks it as a permanent unclickable value. */
 	public void permanent(){
 		setValue = true;
+		setFont(new Font("Arial", Font.BOLD, 30));
 	}
 }
 
