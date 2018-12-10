@@ -16,6 +16,14 @@ public class SudokuButton extends JButton implements ActionListener{
 		addActionListener(this);
 		setFont(new Font("Arial", Font.PLAIN, 30));
 		//setBackground(Color.cyan);
+		this.addKeyListener(new KeyAdapter (){
+			public void keyPressed(KeyEvent e) {
+			    if(pressed){
+				System.out.println(e);
+				//parent.setGridSpot(e.keyChar, false);
+			    }
+			}
+		});
 	}
 	/**Deals with button press. */
 	public void actionPerformed(ActionEvent e) {
@@ -24,6 +32,8 @@ public class SudokuButton extends JButton implements ActionListener{
 			parent.press(this);
 		}
     }
+    
+    
 	/** Creates the borders based on position. */
     public void setBorders(){
 		int bottom = 1;

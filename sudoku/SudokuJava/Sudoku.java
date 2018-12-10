@@ -53,6 +53,8 @@ public class Sudoku{
 		setupGenerator();
 		//control.setLayout()//new BoxLayout(control, BoxLayout.PAGE_AXIS));
 		control.setLayout(new GridBagLayout());
+
+	        
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTH;
@@ -187,6 +189,11 @@ public class Sudoku{
 			    SudokuButton b = new SudokuButton(new Coordinate(x, y),this);
 				gridPanel.add(b);
 				gridButtons.put(b.coord, b);
+				b.addKeyListener(new KeyAdapter (){
+					public void keyPressed(KeyEvent e) {
+					    // System.out.println(e);
+					}
+				    });
 			}
 		}
 		gridPanel.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.blue));
@@ -209,6 +216,7 @@ public class Sudoku{
 				setGridSpot((String) numberChoice.getSelectedItem(), false);
 			}
 		});
+	        
 		gbc.gridy = 1;
 		numberBox.add(showValues, gbc);
 		showValues.addItemListener(new ItemListener() {
@@ -228,7 +236,7 @@ public class Sudoku{
 		numberBox.setVisible(false);
 	}
 	/** Changes the value of a spot on the grid.*/
-	private void setGridSpot(String value,  boolean isUndoRedo){
+	public void setGridSpot(String value,  boolean isUndoRedo){
 		if(!value.equals("Value:") && !value.equals("0")){
 			if(puzzle.isValidPlay(currentGridButton.coord, Integer.valueOf(value))){
 				if(!undoing){
