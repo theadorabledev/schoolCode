@@ -42,13 +42,14 @@ public class Sudoku{
 	private ArrayList<Move> history = new ArrayList<Move>();
 	private int historyPosition = 0;
 	private JPanel undoRedo = new JPanel();
-	private JButton undo = new JButton("Undo");
-	private JButton redo = new JButton("Redo");
+	public JButton undo = new JButton("Undo");
+	public JButton redo = new JButton("Redo");
 	private boolean undoing;
 	//Misc
 	private JLabel winnerLabel = new JLabel("You won!");
 	private JLabel seedLabel = new JLabel();
 	private javax.swing.Timer pauseTimer;
+    private JButton giveUp = new JButton("Cede Defeat.");
 	public Sudoku(){
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setupGrid();
@@ -74,9 +75,12 @@ public class Sudoku{
 		setupNumberBox();
 		control.add(numberBox, c);
 		c.gridy = 4;
+		control.add(giveUp, c);
+		giveUp.setVisible(false);
+		c.gridy = 5;
 		setupUndoRedo();
 		control.add(undoRedo, c);
-		c.gridy = 5;
+		c.gridy = 6;
 		control.add(winnerLabel, c);
 		winnerLabel.setVisible(false);
 		winnerLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -175,6 +179,19 @@ public class Sudoku{
 				startTimer();		
 				solve.setVisible(false);
 				undoRedo.setVisible(true);
+				giveUp.setVisible(true);
+				giveUp.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+					    solving = true;
+					    solve.doClick();
+					    checkForWin();
+					    winnerLabel.setText("Once again, the machines have won.");
+					    giveUp.setVisible(false);
+					    winnerLabel.setVisible(true);
+					   
+					}
+				    });
 			}
 		});
 		generatePuzzleButton.setToolTipText("Press to generate a puzzle of the given difficulty from the given seed. ");
