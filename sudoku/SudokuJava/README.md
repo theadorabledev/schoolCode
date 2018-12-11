@@ -13,7 +13,8 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
     2) Input the data into the blank board.
     3) Press solve once again.
     4) Congratulations! You now have a solved sudoku puzzle!
-    
+#### Load
+* Coming soon!    
 #### Play
 ###### Selecting spot on grid
 	* The spot can either be pressed or the arrow keys can be used to navigate.
@@ -28,7 +29,9 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 	* There are buttons that do that.
 	* This can also be achieved with Control-z and Control-Shift-z
 ##### Give up
-      * In the near future there shall be a button that weill solve the puzzle for you, then belittle you
+      * There is a button that will solve the puzzle for you, then belittle you.
+##### Save
+* Coming soon!
 ## General information
 
 #### Classes used
