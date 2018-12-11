@@ -183,12 +183,24 @@ public class Sudoku{
 				giveUp.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-					    solving = true;
-					    solve.doClick();
+					    SudokuPuzzle s = new SudokuPuzzle(myPuzzle.getData());
+						s.solve();
+						Integer[][] d = s.getData();
+						for(Coordinate coord : gridButtons.keySet()){
+							SudokuButton sb = gridButtons.get(coord);
+							sb.setText(String.valueOf(d[sb.coord.y][sb.coord.x]));
+							sb.permanent();
+						}
+						timer.stop();
+						undoRedo.setVisible(false);
+						numberBox.setVisible(false);
+						solve.setVisible(false);
+						//currentGridButton.setBackground(null);
 					    checkForWin();
-					    winnerLabel.setText("Once again, the machines have won.");
+					    JOptionPane.showMessageDialog(frame, "Once again, the machines have won.");
+						//winnerLabel.setFont(new Font());
 					    giveUp.setVisible(false);
-					    winnerLabel.setVisible(true);
+					    //winnerLabel.setVisible(true);
 					   
 					}
 				    });
