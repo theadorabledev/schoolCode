@@ -7,8 +7,10 @@ public class SudokuButton extends JButton implements ActionListener{
     public Coordinate coord;
 	public boolean pressed;
 	public Sudoku parent;
-	private boolean setValue = false;
-    public SudokuButton(Coordinate coord, Sudoku parent){
+	private boolean valueIsSet = false;
+	private HashSet<String> numStrings = new HashSet<String>(Arrays.asList(new String [] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}));
+    private HashSet<String> directions = new HashSet<String>(Arrays.asList(new String [] {"Left", "Right", "Up", "Down"}));
+	public SudokuButton(Coordinate coord, Sudoku parent){
 		super("");//coord.toString());
 		this.coord = coord;
 		this.parent = parent;
@@ -19,20 +21,28 @@ public class SudokuButton extends JButton implements ActionListener{
 		this.addKeyListener(new KeyAdapter (){
 			public void keyPressed(KeyEvent e) {
 			    if(pressed){
-				System.out.println(e);
-				//parent.setGridSpot(e.keyChar, false);
-			    }
+				//System.out.println(e);
+					String val = e.getKeyText(e.getKeyCode());
+					//System.out.println(val);
+					if(numStrings.contains(val)){
+						parent.setGridSpot(val, false);
+						//parent.numberChoice.;
+					}else if(val.equals("Backspace")){
+						parent.setGridSpot("0", false);
+					}else if(directions.contains(val)){
+						parent.moveSelected(val);
+					}
+				}	
 			}
 		});
 	}
 	/**Deals with button press. */
 	public void actionPerformed(ActionEvent e) {
-        if(!setValue){
+        if(!valueIsSet){
 			pressed = !pressed;
 			parent.press(this);
 		}
     }
-    
     
 	/** Creates the borders based on position. */
     public void setBorders(){
@@ -56,8 +66,11 @@ public class SudokuButton extends JButton implements ActionListener{
     } 
 	/** Marks it as a permanent unclickable value. */
 	public void permanent(){
-		setValue = true;
+		valueIsSet = true;
 		setFont(new Font("Arial", Font.BOLD, 30));
+	}
+	public boolean isPermanent(){
+		return valueIsSet;
 	}
 }
 

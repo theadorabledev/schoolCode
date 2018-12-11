@@ -1,11 +1,12 @@
 import java.util.*; 
+import java.util.concurrent.*;
 import java.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 public class Sudoku{
 	private JFrame frame = new JFrame();
-	
+	private JSplitPane splitPane;
 	//Deals with the grid
 	private JPanel gridPanel = new JPanel();
 	private JPanel gridContainer = new JPanel();
@@ -47,6 +48,7 @@ public class Sudoku{
 	//Misc
 	private JLabel winnerLabel = new JLabel("You won!");
 	private JLabel seedLabel = new JLabel();
+	private javax.swing.Timer pauseTimer;
 	public Sudoku(){
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setupGrid();
@@ -54,8 +56,6 @@ public class Sudoku{
 		//control.setLayout()//new BoxLayout(control, BoxLayout.PAGE_AXIS));
 		control.setLayout(new GridBagLayout());
 
-	        
-		
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTH;
 		c.insets = new Insets(10, 5, 0, 5);
@@ -65,8 +65,6 @@ public class Sudoku{
 		c.gridy = 0;
 		setupTimer();
 		control.add(timerBox, c);
-		
-		
 		c.gridy = 1;
 		control.add(generatorContainer, c);
 		c.gridy = 2;
@@ -83,8 +81,8 @@ public class Sudoku{
 		winnerLabel.setVisible(false);
 		winnerLabel.setFont(new Font("Arial", Font.BOLD, 30));
 		controlSuper.add(control);
-
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controlSuper, gridContainer);
+		setupPauseTimer();
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controlSuper, gridContainer);
 		frame.getContentPane().add(splitPane);
 		frame.pack();
         frame.setVisible(true);
@@ -237,25 +235,37 @@ public class Sudoku{
 	}
 	/** Changes the value of a spot on the grid.*/
 	public void setGridSpot(String value,  boolean isUndoRedo){
-		if(!value.equals("Value:") && !value.equals("0")){
-			if(puzzle.isValidPlay(currentGridButton.coord, Integer.valueOf(value))){
-				if(!undoing){
-					addToHistory(currentGridButton.coord, Integer.valueOf(value));
+		if(pressable){
+			if(!value.equals("Value:") && !value.equals("0")){
+				if(puzzle.isValidPlay(currentGridButton.coord, Integer.valueOf(value))){
+					if(!undoing){
+						addToHistory(currentGridButton.coord, Integer.valueOf(value));
+					}
+					puzzle.fillValue(currentGridButton.coord, Integer.valueOf(value));
+					currentGridButton.setText(value);
+				}else{
+					//numberChoice.setSelectedItem("Value:");
+					//System.out.println("Wrong");
+					SudokuButton b = currentGridButton;
+					b.setBackground(Color.RED);
+					b.setText(value);
+					
+					pressable = false;
+
+					pauseTimer.start();
+					//TimeUnit.SECONDS.sleep(1);
+					
 				}
-				puzzle.fillValue(currentGridButton.coord, Integer.valueOf(value));
-				currentGridButton.setText(value);
 			}else{
-				numberChoice.setSelectedItem("Value:");
+				if(!undoing){
+					addToHistory(currentGridButton.coord, 0);
+				}
+				puzzle.fillValue(currentGridButton.coord, 0);
+				currentGridButton.setText("");
+				
 			}
-		}else{
-			if(!undoing){
-				addToHistory(currentGridButton.coord, 0);
-			}
-			puzzle.fillValue(currentGridButton.coord, 0);
-			currentGridButton.setText("");
-			
+			checkForWin();
 		}
-		checkForWin();
 	}
 	/** Adds the last move to the undo/redo history and deals with changes. */
 	private void addToHistory(Coordinate coord, int value){
@@ -289,7 +299,7 @@ public class Sudoku{
 			public void actionPerformed(ActionEvent evt) {
 				secondsElapsed++;
 				if(secondsElapsed == 60){
-					secondsElapsed = 0;
+					secondsElapsed = secondsElapsed % 60;
 					minutesElapsed++;
 				}
 				timerLabel.setText(String.format("%2s", String.valueOf(minutesElapsed)).replace(' ', '0') + ":" + String.format("%2s", String.valueOf(secondsElapsed)).replace(' ', '0'));
@@ -371,6 +381,50 @@ public class Sudoku{
 		});
 		undoRedo.add(redo, g);
 		undoRedo.setVisible(false);
+	}
+	/**Moves the selected spot on grid.*/
+	public void moveSelected(String move){
+		Coordinate coord = currentGridButton.coord;
+		int x = coord.x, y = coord.y, xInc = 0, yInc = 0;
+		if(move.equals("Left")){
+			xInc = -1;
+		}else if(move.equals("Right")){
+			xInc = 1;
+		}else if(move.equals("Up")){
+			yInc = -1;
+		}else{
+			yInc = 1;
+		}
+		x += xInc;
+		y += yInc;
+		if(x < 0 && xInc == -1) x = 8;
+		if(x > 8 && xInc == 1) x = 0;
+		if(y < 0 && yInc == -1) y = 8;
+		if(y > 8 && yInc == 1) y = 0;
+		//System.out.println(x + " " + y + " " + xInc + " " + yInc);
+		while(gridButtons.get(new Coordinate(x, y)).isPermanent()){
+			x += xInc;
+			y += yInc;
+			if(x < 0 && xInc == -1) x = 8;
+			if(x > 8 && xInc == 1) x = 0;
+			if(y < 0 && yInc == -1) y = 8;
+			if(y > 8 && yInc == 1) y = 0;
+			
+		}
+		press(gridButtons.get(new Coordinate(x, y)));
+	}
+	/** Sets up the pause timer for incorrect responses.*/
+	private void setupPauseTimer(){
+		pauseTimer = new javax.swing.Timer(3000, new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				currentGridButton.setBackground(null);
+				currentGridButton.setText("");
+				numberChoice.setSelectedItem("Value:");
+				pressable = true;
+			}			 
+		});	
+		pauseTimer.setRepeats(false);
+		//timer.start();
 	}
 }
 
