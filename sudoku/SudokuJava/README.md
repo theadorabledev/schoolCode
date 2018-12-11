@@ -23,11 +23,12 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 	* Values can be set in two ways.
 		1) Manually change the value in the control panel.
         	2) Type a key 1-9. "0" and "Backspace" clear the spot.
-    * An incorrect value entered will result in a three second penalty, freezing the board.
+    * An incorrect(contradictory) value entered will result in a three second penalty, freezing the board.
 ###### Undo & Redo
 	* There are buttons that do that.
-	* In future they will be linked to Control-z and Control-Shift-z
-
+	* This can also be achieved with Control-z and Control-Shift-z
+##### Give up
+      * In the near future there shall be a button that weill solve the puzzle for you, then belittle you
 ## General information
 
 #### Classes used

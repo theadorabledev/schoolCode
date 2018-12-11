@@ -21,9 +21,8 @@ public class SudokuButton extends JButton implements ActionListener{
 		this.addKeyListener(new KeyAdapter (){
 			public void keyPressed(KeyEvent e) {
 			    if(pressed){
-				//System.out.println(e);
+				
 					String val = e.getKeyText(e.getKeyCode());
-					//System.out.println(val);
 					if(numStrings.contains(val)){
 						parent.setGridSpot(val, false);
 						//parent.numberChoice.;
@@ -31,6 +30,12 @@ public class SudokuButton extends JButton implements ActionListener{
 						parent.setGridSpot("0", false);
 					}else if(directions.contains(val)){
 						parent.moveSelected(val);
+					}else if(val.toLowerCase().equals("z") && e.isControlDown()){
+					    if( e.isShiftDown()){
+						    parent.redo.doClick();
+						}else{
+						parent.undo.doClick();
+					    }
 					}
 				}	
 			}
