@@ -71,4 +71,130 @@ def challenge3b():
         if perfect:
             print z
             break
-challenge3b()
+def challenge4a():
+    d = sorted([line.strip() for line in open("input4a.txt").readlines()] )
+    guards = {}
+    guard = None
+    time = 0
+    for line in d:
+        #print line#line[line.index(" ") + 1: line.index("]")]
+        if "Guard" in line:
+            guard = line[line.index("#") + 1: line.index(" beg")]
+            time = 0
+            if guard not in guards:
+                guards[guard] = []
+                
+            #print line[line.index("#") + 1: line.index(" beg")]
+        else:
+            if "sleep" in line:
+                time = int(line[line.index(" ") + 1: line.index("]")].split(":")[1])
+            else:
+                for t in xrange(time, int(line[line.index(" ") + 1: line.index("]")].split(":")[1])):
+                    guards[guard].append(t)
+                #print guard, range(time, int(line[line.index(" ") + 1: line.index("]")].split(":")[1]))
+    sleepiestGuard = max(guards, key = lambda k : len(guards[k]))
+    sleepiestMinute = max(guards[sleepiestGuard], key = lambda k : guards[sleepiestGuard].count(k))
+    print sleepiestMinute * int(sleepiestGuard)
+def challenge4b():
+    d = sorted([line.strip() for line in open("input4a.txt").readlines()] )
+    guards = {}
+    guard = None
+    time = 0    
+    minutes = {m:[] for m in xrange(0, 60)}
+    for line in d:
+        #print line#line[line.index(" ") + 1: line.index("]")]
+        if "Guard" in line:
+            guard = line[line.index("#") + 1: line.index(" beg")]
+            time = 0
+            sleeping = False
+            if guard not in guards:
+                guards[guard] = []
+                
+            #print line[line.index("#") + 1: line.index(" beg")]
+        else:
+            if "sleep" in line:
+                time = int(line[line.index(" ") + 1: line.index("]")].split(":")[1])
+            else:
+                for t in xrange(time, int(line[line.index(" ") + 1: line.index("]")].split(":")[1])):
+                    #guards[guard].append(t)      
+                    minutes[t].append(guard)
+    highestMinute = max(minutes, key = lambda k : max({minutes[k].count(i) for i in minutes[k]}) if len(minutes[k]) > 0 else 0)
+    sleepiestGuard = int(max(guards, key = lambda k : minutes[highestMinute].count(k)))
+    print sleepiestGuard * highestMinute
+def challenge5a():
+    d = open("input5a.txt").readlines()[0].strip()
+    #d = "dabAcCaCBAcCcaDA"
+    change = True
+    lastPos = 3
+    #print range(len(d) - 1, 0, 2)
+    while change == True:
+        change = False
+        for i in xrange(lastPos - 2, len(d) - 1):
+            
+            if d[i].lower() == d[i + 1].lower() and d[i] != d[i + 1]:
+                d = d[:i] + d[i + 2:]
+                lastPos = i
+                change = True
+                #break
+            if change:
+                break 
+    change = False
+    for i in xrange(0, len(d) - 1):
+        
+        if d[i].lower() == d[i + 1].lower() and d[i] != d[i + 1]:
+            d = d[:i] + d[i + 2:]
+            lastPos = i
+            change = True
+            #break
+        if change:
+            break    
+    #print d
+    print len(d)
+
+def challenge5b():
+    allDict = {}
+    otherDict = {}
+    a = open("input5a.txt").readlines()[0].strip()
+    for let in "abcdefghijklmnopqrstuvwxyz":
+        d = a.replace(let, "").replace(let.upper(), "")
+        #d = "dabAcCaCBAcCcaDA"
+        change = True
+        lastPos = 3
+        #print range(len(d) - 1, 0, 2)
+        while change == True:
+            change = False
+            
+            for i in xrange(lastPos -2, len(d) - 1):
+                
+                if d[i].lower() == d[i + 1].lower() and d[i] != d[i + 1]:
+                    d = d[:i] + d[i + 2:]
+                    lastPos = i + 1
+                    change = True
+                    #break
+                if change:
+                    break 
+            """    
+            if not change:
+                for i in xrange(0, len(d) - 1):
+            
+                    if d[i].lower() == d[i + 1].lower() and d[i] != d[i + 1]:
+                        change = True
+                        break
+                    if change:
+                        break"""
+        change = False
+        for i in xrange(0, len(d) - 1):
+            
+            if d[i].lower() == d[i + 1].lower() and d[i] != d[i + 1]:
+                d = d[:i] + d[i + 2:]
+                lastPos = i
+                change = True
+                #break
+            if change:
+                break    
+        #print d
+        print let
+        allDict[let] = len(d)   
+        #otherDict[let] = d
+    print allDict[min(allDict, key = lambda k : allDict[k])]
+challenge5b()
