@@ -286,10 +286,10 @@ public class SudokuPuzzle implements Serializable{
 	/**Prints the puzzle. */
 	public void printData(){
 		for(Integer [] line : data){
-				System.out.println(Arrays.toString(line).replace(", ", " ").replace("[", "").replace("]",""));
-			}
-			System.out.println("\n");		
+			System.out.println(Arrays.toString(line).replace(", ", " ").replace("[", "").replace("]",""));
 		}
+		System.out.println("\n");		
+	}
 	/**Prints the puzzle for debugging. */
 	public void printData(int x){
 		if(!debug){
@@ -318,6 +318,15 @@ public class SudokuPuzzle implements Serializable{
 			i++;
 		}
 		System.out.println("\n");		
+	}
+	/**Returns the data as a string for file output*/
+	public String dataForFile(){
+		String s = "";
+		for(Integer [] line : data){
+			s += Arrays.toString(line).replace(", ", ",").replace("[", "").replace("]","").replace("0", "_") + "\n";
+		}
+					
+		return s;
 	}
 	/**Prints the value if debugging.*/
 	protected void print(String x){

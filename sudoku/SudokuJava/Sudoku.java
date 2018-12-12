@@ -2,6 +2,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.filechooser.*;
 import java.awt.*;
 import java.awt.event.*;
 public class Sudoku{
@@ -21,6 +22,8 @@ public class Sudoku{
 	private JButton generatePuzzleButton = new JButton("Generate Puzzle.");
 	private JComboBox<String> difficultiesBox = new JComboBox<String>(new String[] {"Easy", "Medium", "Hard", "Evil"});
 	private JTextField seedInput = new JTextField("Seed");
+	private String seed;
+	private String difficulty;
 	//Sudoku Puzzles
     private SudokuPuzzleGenerated myPuzzle;
 	private SudokuPuzzlePlayable puzzle;
@@ -45,6 +48,33 @@ public class Sudoku{
 	public JButton undo = new JButton("Undo");
 	public JButton redo = new JButton("Redo");
 	private boolean undoing;
+	//Deals with saving and loading files
+
+	
+	private FileNameExtensionFilter filter = new FileNameExtensionFilter(".sudoku files", "sudoku");
+	private JFileChooser fileChooser = new JFileChooser(){{
+		setFileFilter(filter);
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		setCurrentDirectory(workingDirectory);
+	}};
+	private JButton loadButton = new JButton("Load."){
+		{
+			addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						loadFile();
+					}
+			});
+		}
+	};
+	private JButton saveButton = new JButton("Save"){{
+		addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						saveFile();
+					}
+			});
+	}};
 	//Misc
 	private JLabel winnerLabel = new JLabel("You won!");
 	private JLabel seedLabel = new JLabel();
@@ -66,21 +96,26 @@ public class Sudoku{
 		c.gridy = 0;
 		setupTimer();
 		control.add(timerBox, c);
-		c.gridy = 1;
+		c.gridy ++;		
 		control.add(generatorContainer, c);
-		c.gridy = 2;
+		c.gridy ++;
+		control.add(loadButton,c);
+		c.gridy ++;
 		setupSolver();
 		control.add(solve, c);
-		c.gridy = 3;
+		c.gridy ++;
 		setupNumberBox();
 		control.add(numberBox, c);
-		c.gridy = 4;
+		c.gridy ++;
 		control.add(giveUp, c);
 		giveUp.setVisible(false);
-		c.gridy = 5;
+		c.gridy ++;
 		setupUndoRedo();
 		control.add(undoRedo, c);
-		c.gridy = 6;
+		c.gridy ++;
+		saveButton.setVisible(false);
+		control.add(saveButton, c);
+		c.gridy ++;
 		control.add(winnerLabel, c);
 		winnerLabel.setVisible(false);
 		winnerLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -156,8 +191,6 @@ public class Sudoku{
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		
-		
 		generatorContainer.add(difficultiesBox, gbc);
 		gbc.gridx = 1;
 		generatorContainer.add(seedInput, gbc);
@@ -173,13 +206,17 @@ public class Sudoku{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 			    myPuzzle = new SudokuPuzzleGenerated((String) difficultiesBox.getSelectedItem(), seedInput.getText());
-			    loadPuzzleData();
+			    seed = seedInput.getText();
+				difficulty = (String) difficultiesBox.getSelectedItem();
+				loadPuzzleData();
 				puzzle = new SudokuPuzzlePlayable(myPuzzle.data);
 				pressable = true;
 				startTimer();		
 				solve.setVisible(false);
 				undoRedo.setVisible(true);
 				giveUp.setVisible(true);
+				loadButton.setVisible(false);
+				saveButton.setVisible(true);
 				giveUp.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -273,17 +310,11 @@ public class Sudoku{
 					puzzle.fillValue(currentGridButton.coord, Integer.valueOf(value));
 					currentGridButton.setText(value);
 				}else{
-					//numberChoice.setSelectedItem("Value:");
-					//System.out.println("Wrong");
 					SudokuButton b = currentGridButton;
 					b.setBackground(Color.RED);
 					b.setText(value);
-					
 					pressable = false;
-
 					pauseTimer.start();
-					//TimeUnit.SECONDS.sleep(1);
-					
 				}
 			}else{
 				if(!undoing){
@@ -346,6 +377,7 @@ public class Sudoku{
 					solving = true;
 					pressable = true;
 					generatorContainer.setVisible(false);
+					loadButton.setVisible(false);
 					puzzle = new SudokuPuzzlePlayable();
 					solve.setToolTipText("Press to solve with the given puzzle. ");
 					undoRedo.setVisible(true);
@@ -385,8 +417,7 @@ public class Sudoku{
 					undoing = true;
 					setGridSpot(String.valueOf(move.lastValue), true);
 					currentGridButton = lastbutton;
-					undoing = false;
-					
+					undoing = false;		
 				}
 			}
 		});
@@ -455,5 +486,33 @@ public class Sudoku{
 		pauseTimer.setRepeats(false);
 		//timer.start();
 	}
+	private void loadFile(){
+		int returnVal = fileChooser.showOpenDialog(frame);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			System.out.println("You chose to open this file: " + fileChooser.getSelectedFile().getName());
+		}
+	}
+	private void saveFile(){
+		fileChooser.setSelectedFile(new File(difficulty + "-" + seed + ".sudoku"));
+		int returnVal = fileChooser.showOpenDialog(frame);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			//System.out.println("You chose to save this file: " + fileChooser.getSelectedFile().getName());
+			//System.out.println(difficulty + "-" + seed);
+			//System.out.println(puzzle.dataForFile());
+			//System.out.println(history);
+			try{
+				FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile().getName());
+				PrintWriter printWriter = new PrintWriter(fileWriter);
+				printWriter.print(difficulty + "-" + seed + "\n");
+				printWriter.print(puzzle.dataForFile());
+				printWriter.print(historyPosition + "\n");
+				printWriter.print(history);
+				printWriter.close();
+			}catch(IOException e){
+				
+			}	
+		}
+	}
 }
+
 
