@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.charset.StandardCharsets; 
+import java.nio.file.*; 
 public class Sudoku{
 	private JFrame frame = new JFrame();
 	private JSplitPane splitPane;
@@ -490,11 +492,36 @@ public class Sudoku{
 		int returnVal = fileChooser.showOpenDialog(frame);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			System.out.println("You chose to open this file: " + fileChooser.getSelectedFile().getName());
+			ArrayList<String> lines;
+			try{
+			    Scanner sc = new Scanner(new File(fileChooser.getSelectedFile().getName()));
+			    lines = new ArrayList<String>();
+			    while (sc.hasNextLine()) {
+				lines.add(sc.nextLine());
+			    }
+
+			    String[] arr = lines.toArray(new String[0]);
+			    System.out.println(arr);
+			    System.out.println(lines);
+			    for(String l : lines){
+				System.out.println(l);
+			    }
+			    String [] gData = arr[0].split("-");
+			    //difficultiesBox.getSelectedItem(), seedInput.getText()
+			    difficultiesBox.setSelectedItem(gData[0]);
+			    seedInput.setText(gData[1]);
+			    generatePuzzleButton.doClick();
+			    /*
+			    lines = new ArrayList<String>(Files.readAllLines(Paths.get(fileChooser.getSelectedFile().getName()), StandardCharsets.UTF_8));
+			    System.out.println(lines);*/
+			 }catch (IOException e){ 
+			        e.printStackTrace(); 
+			 } 
 		}
 	}
 	private void saveFile(){
 		fileChooser.setSelectedFile(new File(difficulty + "-" + seed + ".sudoku"));
-		int returnVal = fileChooser.showOpenDialog(frame);
+		int returnVal = fileChooser.showSaveDialog(frame);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			//System.out.println("You chose to save this file: " + fileChooser.getSelectedFile().getName());
 			//System.out.println(difficulty + "-" + seed);

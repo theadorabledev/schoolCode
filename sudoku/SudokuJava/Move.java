@@ -7,9 +7,17 @@ public class Move{
 		this.value = value;
 		this.lastValue = lastValue;
 	}
+    public Move(String str){
+	str = str.substring(0, str.length());
+	String [] items = str.split(",");
+	this.coord = new Coordinate(Integer.valueOf(items[0]), Integer.valueOf(items[1]));
+	this.value = Integer.valueOf(items[2]);
+	this.lastValue = Integer.valueOf(items[3]);
+	
+    }
 	@Override
 	public String toString(){
-		return "("+ coord + ", " + value + ", " + lastValue + ")";
+		return "("+ coord.x + ", " + coord.y + ", " + value + ", " + lastValue + ")";
 		
 	}
 }
