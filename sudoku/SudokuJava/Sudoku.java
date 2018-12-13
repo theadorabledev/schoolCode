@@ -411,7 +411,7 @@ public class Sudoku{
 		undo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(historyPosition > 0){
+				if(historyPosition > 1){
 					historyPosition--;
 					Move move = history.get(historyPosition);
 					SudokuButton lastbutton = currentGridButton;
@@ -501,19 +501,29 @@ public class Sudoku{
 			    }
 
 			    String[] arr = lines.toArray(new String[0]);
-			    System.out.println(arr);
-			    System.out.println(lines);
-			    for(String l : lines){
-				System.out.println(l);
-			    }
+			    
 			    String [] gData = arr[0].split("-");
 			    //difficultiesBox.getSelectedItem(), seedInput.getText()
 			    difficultiesBox.setSelectedItem(gData[0]);
 			    seedInput.setText(gData[1]);
 			    generatePuzzleButton.doClick();
-			    /*
-			    lines = new ArrayList<String>(Files.readAllLines(Paths.get(fileChooser.getSelectedFile().getName()), StandardCharsets.UTF_8));
-			    System.out.println(lines);*/
+			    for(int i = 1; i < 10; i ++){
+				String[] newLine = arr[i].replace("_","0").split(",");
+					
+				for(int k = 0; k < 9; k++){
+				    SudokuButton b = gridButtons.get(new Coordinate(k, i - 1));
+				    if(!b.isPermanent()){
+					currentGridButton = b;
+					setGridSpot(newLine[k], true);
+				    }
+				}
+			    }
+			    historyPosition = Integer.valueOf(arr[10]) + 1;
+			    String[] copiedHistory = arr[11].substring(1, arr[11].length() - 1).replace("), ", "):").split(":");
+			    for(String move : copiedHistory){
+				history.add(new Move(move));
+			    }
+		  
 			 }catch (IOException e){ 
 			        e.printStackTrace(); 
 			 } 
