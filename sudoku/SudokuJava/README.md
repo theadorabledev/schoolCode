@@ -14,7 +14,7 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
     3) Press solve once again.
     4) Congratulations! You now have a solved sudoku puzzle!
 #### Load
-* Coming soon!    
+* Press load to load a saved suoku game.    
 #### Play
 ###### Selecting spot on grid
 	* The spot can either be pressed or the arrow keys can be used to navigate.
@@ -31,7 +31,7 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 ##### Give up
       * There is a button that will solve the puzzle for you, then belittle you.
 ##### Save
-* Coming soon!
+* Press save during a game and choose a destination.
 ## General information
 
 #### Classes used
