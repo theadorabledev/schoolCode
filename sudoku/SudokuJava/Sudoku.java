@@ -262,9 +262,11 @@ public class Sudoku{
 				    });
 			}
 		}
+		
 		gridPanel.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.blue));
         gridPanel.setPreferredSize(new Dimension(500, 500));
-        gridContainer.add(gridPanel);
+        gridContainer.setLayout(new GridBagLayout());
+		gridContainer.add(gridPanel);
 		gridContainer.setPreferredSize(new Dimension(700, 700));
 	}
 	/** Sets up the value box for each grid position. */
