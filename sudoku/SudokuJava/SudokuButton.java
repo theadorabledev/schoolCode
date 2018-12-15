@@ -10,14 +10,19 @@ public class SudokuButton extends JButton implements ActionListener{
 	private boolean valueIsSet = false;
 	private HashSet<String> numStrings = new HashSet<String>(Arrays.asList(new String [] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}));
     private HashSet<String> directions = new HashSet<String>(Arrays.asList(new String [] {"Left", "Right", "Up", "Down"}));
+	public JLabel possibleValues = new JLabel("", JLabel.CENTER);
 	public SudokuButton(Coordinate coord, Sudoku parent){
 		super("");//coord.toString());
 		this.coord = coord;
 		this.parent = parent;
 		setBorders();
+		
 		addActionListener(this);
 		setFont(new Font("Arial", Font.PLAIN, 30));
 		//setBackground(Color.cyan);
+		possibleValues.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		add(possibleValues);
+		
 		this.addKeyListener(new KeyAdapter (){
 			public void keyPressed(KeyEvent e) {
 			    if(pressed){
@@ -72,6 +77,7 @@ public class SudokuButton extends JButton implements ActionListener{
 	/** Marks it as a permanent unclickable value. */
 	public void permanent(){
 		valueIsSet = true;
+		possibleValues.setText("");
 		setFont(new Font("Arial", Font.BOLD, 30));
 	}
 	public boolean isPermanent(){

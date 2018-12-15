@@ -13,25 +13,32 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
     2) Input the data into the blank board.
     3) Press solve once again.
     4) Congratulations! You now have a solved sudoku puzzle!
+	
 #### Load
-* Press load to load a saved suoku game.    
+* Press load to load a saved suoku game.   
+ 
 #### Play
+
 ###### Selecting spot on grid
 	* The spot can either be pressed or the arrow keys can be used to navigate.
 	* A permanent spot can't be changed.
+	
 ###### Setting values
 	* Values can be set when a piece is selected.	 
-	* Values can be set in two ways.
-		1) Manually change the value in the control panel.
-        	2) Type a key 1-9. "0" and "Backspace" clear the spot.
+	* Values are set via keypress.
+    * Type a key 1-9. "0" and "Backspace" clear the spot.
     * An incorrect(contradictory) value entered will result in a three second penalty, freezing the board.
+	
 ###### Undo & Redo
 	* There are buttons that do that.
 	* This can also be achieved with Control-z and Control-Shift-z
+	
 ##### Give up
-      * There is a button that will solve the puzzle for you, then belittle you.
+* There is a button that will solve the puzzle for you, then belittle you.
+	  
 ##### Save
 * Press save during a game and choose a destination.
+
 ## General information
 
 #### Classes used
@@ -51,13 +58,14 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 5) I went overboard.
 6) WAY overboard.
 7) Here we are now.
+
 ## Installing
 1) Navigate to the directory
 2) Compile and run
     * Windows : javac *.java && java Sudoku
     * Linux / Mac : javac *.java ; java Sudoku
 
-## Authors
+## Author
 * Ian Williams
 
 ## Acknowledgments
