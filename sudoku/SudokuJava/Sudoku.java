@@ -33,7 +33,7 @@ public class Sudoku{
 	private JPanel numberBox = new JPanel(); 
 	private JComboBox numberChoice = new JComboBox<String>(new String [] {"Value:", "1", "2", "3", "4", "5", "6", "7", "8", "9"});
 	private JCheckBox showValues = new JCheckBox("Show possible values?");
-	private JLabel numberValues = new JLabel();
+	private boolean showingValues = false;
 	// Deals with timer
 	private JPanel timerBox = new JPanel();
 	private JLabel timerLabel = new JLabel("00:00");
@@ -51,8 +51,6 @@ public class Sudoku{
 	public JButton redo = new JButton("Redo");
 	private boolean undoing;
 	//Deals with saving and loading files
-
-	
 	private FileNameExtensionFilter filter = new FileNameExtensionFilter(".sudoku files", "sudoku");
 	private JFileChooser fileChooser = new JFileChooser(){{
 		setFileFilter(filter);
@@ -77,11 +75,23 @@ public class Sudoku{
 					}
 			});
 	}};
+	//Deals with isPaused and unisPaused game
+	private JButton pauseButton = new JButton("PAUSE"){{
+		setVisible(false);
+		addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					pausePlay();
+				}
+		});
+	}};
+	private boolean isPaused = false;
 	//Misc
 	private JLabel winnerLabel = new JLabel("You won!");
 	private JLabel seedLabel = new JLabel();
 	private javax.swing.Timer pauseTimer;
     private JButton giveUp = new JButton("Cede Defeat.");
+	
 	public Sudoku(){
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setupGrid();
@@ -140,12 +150,11 @@ public class Sudoku{
 			if(currentGridButton == b){
 				currentGridButton.setBackground(null);
 				currentGridButton = null;
-				numberBox.setVisible(false);
+				//numberBox.setVisible(false);
 			}else{
 				currentGridButton = b;
 				b.setBackground(Color.green);
-				numberBox.setVisible(true);
-				numberValues.setText(String.valueOf(puzzle.getPossibleValues(currentGridButton.coord)));
+				//numberBox.setVisible(true);
 				if(!((String) numberChoice.getSelectedItem()).equals("Value:") && !((String) numberChoice.getSelectedItem()).equals(currentGridButton.getText())){
 					numberChoice.setSelectedItem("Value:");
 				}
@@ -166,6 +175,9 @@ public class Sudoku{
 			numberBox.setVisible(false);
 			winnerLabel.setVisible(true);
 			undoRedo.setVisible(false);
+			giveUp.setVisible(false);
+			saveButton.setVisible(false);
+			pauseButton.setVisible(false);
 			
 		}
 	}
@@ -219,6 +231,8 @@ public class Sudoku{
 				giveUp.setVisible(true);
 				loadButton.setVisible(false);
 				saveButton.setVisible(true);
+				numberBox.setVisible(true);
+				pauseButton.setVisible(true);
 				giveUp.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -234,15 +248,18 @@ public class Sudoku{
 						undoRedo.setVisible(false);
 						numberBox.setVisible(false);
 						solve.setVisible(false);
-						//currentGridButton.setBackground(null);
+						if(currentGridButton != null){
+							currentGridButton.setBackground(null);
+						}
 					    checkForWin();
-					    JOptionPane.showMessageDialog(frame, "Once again, the machines have won.");
 						//winnerLabel.setFont(new Font());
 					    giveUp.setVisible(false);
-					    //winnerLabel.setVisible(true);
+						saveButton.setVisible(false);
+						JOptionPane.showMessageDialog(frame, "HA! Once again, a simple human can't solve a simple Sudoku. Puny worthless human, once again teh machines rule supreme!");
+
 					   
 					}
-				    });
+				});
 			}
 		});
 		generatePuzzleButton.setToolTipText("Press to generate a puzzle of the given difficulty from the given seed. ");
@@ -255,18 +272,25 @@ public class Sudoku{
 			    SudokuButton b = new SudokuButton(new Coordinate(x, y),this);
 				gridPanel.add(b);
 				gridButtons.put(b.coord, b);
-				b.addKeyListener(new KeyAdapter (){
-					public void keyPressed(KeyEvent e) {
-					    // System.out.println(e);
-					}
-				    });
+				
 			}
 		}
 		
 		gridPanel.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.blue));
         gridPanel.setPreferredSize(new Dimension(500, 500));
         gridContainer.setLayout(new GridBagLayout());
-		gridContainer.add(gridPanel);
+		GridBagConstraints c = new GridBagConstraints();
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.CENTER;
+		gridContainer.add(gridPanel, c);
+		
+		c.weightx = 0;
+		c.anchor = GridBagConstraints.NORTHEAST;
+		
+		gridContainer.add(pauseButton, c);
 		gridContainer.setPreferredSize(new Dimension(700, 700));
 	}
 	/** Sets up the value box for each grid position. */
@@ -278,7 +302,7 @@ public class Sudoku{
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		numberBox.add(numberChoice, gbc);
+		//numberBox.add(numberChoice, gbc);
 		numberChoice.addActionListener (new ActionListener () {
 			public void actionPerformed(ActionEvent e) {
 				setGridSpot((String) numberChoice.getSelectedItem(), false);
@@ -291,16 +315,15 @@ public class Sudoku{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					numberValues.setVisible(true);
-					numberValues.setText(String.valueOf(puzzle.getPossibleValues(currentGridButton.coord)));
+					showingValues = true;
+					updatePossibleValues();
 				} else {
-					numberValues.setVisible(false);
+					showingValues = false;
+					updatePossibleValues();
 				}
 			}
 		});
 		gbc.gridy = 2;
-		numberBox.add(numberValues, gbc);
-		numberValues.setVisible(false);
 		numberBox.setVisible(false);
 	}
 	/** Changes the value of a spot on the grid.*/
@@ -329,6 +352,7 @@ public class Sudoku{
 				
 			}
 			checkForWin();
+			updatePossibleValues();
 		}
 	}
 	/** Adds the last move to the undo/redo history and deals with changes. */
@@ -349,7 +373,7 @@ public class Sudoku{
 			}
 	
 	}
-	/**Sets up the timer.*/
+	/** Sets up the timer.*/
 	private void setupTimer(){
 		timerBox.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
 		timerLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -396,7 +420,7 @@ public class Sudoku{
 						sb.permanent();
 					}
 					undoRedo.setVisible(false);
-					numberBox.setVisible(false);
+					//numberBox.setVisible(false);
 					solve.setVisible(false);
 					currentGridButton.setBackground(null);
 				}
@@ -413,7 +437,7 @@ public class Sudoku{
 		undo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(historyPosition > 1){
+				if(historyPosition > 0){
 					historyPosition--;
 					Move move = history.get(historyPosition);
 					SudokuButton lastbutton = currentGridButton;
@@ -465,7 +489,6 @@ public class Sudoku{
 		if(x > 8 && xInc == 1) x = 0;
 		if(y < 0 && yInc == -1) y = 8;
 		if(y > 8 && yInc == 1) y = 0;
-		//System.out.println(x + " " + y + " " + xInc + " " + yInc);
 		while(gridButtons.get(new Coordinate(x, y)).isPermanent()){
 			x += xInc;
 			y += yInc;
@@ -490,10 +513,11 @@ public class Sudoku{
 		pauseTimer.setRepeats(false);
 		//timer.start();
 	}
+	/** Loads a saved game from a file.*/
 	private void loadFile(){
 		int returnVal = fileChooser.showOpenDialog(frame);
+		undoing = true;
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			System.out.println("You chose to open this file: " + fileChooser.getSelectedFile().getName());
 			ArrayList<String> lines;
 			try{
 			    Scanner sc = new Scanner(new File(fileChooser.getSelectedFile().getName()));
@@ -505,40 +529,37 @@ public class Sudoku{
 			    String[] arr = lines.toArray(new String[0]);
 			    
 			    String [] gData = arr[0].split("-");
-			    //difficultiesBox.getSelectedItem(), seedInput.getText()
 			    difficultiesBox.setSelectedItem(gData[0]);
 			    seedInput.setText(gData[1]);
 			    generatePuzzleButton.doClick();
 			    for(int i = 1; i < 10; i ++){
-				String[] newLine = arr[i].replace("_","0").split(",");
-					
-				for(int k = 0; k < 9; k++){
-				    SudokuButton b = gridButtons.get(new Coordinate(k, i - 1));
-				    if(!b.isPermanent()){
-					currentGridButton = b;
-					setGridSpot(newLine[k], true);
-				    }
-				}
+					String[] newLine = arr[i].replace("_","0").split(",");
+						
+					for(int k = 0; k < 9; k++){
+						SudokuButton b = gridButtons.get(new Coordinate(k, i - 1));
+						if(!b.isPermanent()){
+							currentGridButton = b;
+							setGridSpot(newLine[k], true);
+						}
+					}
 			    }
 			    historyPosition = Integer.valueOf(arr[10]) + 1;
 			    String[] copiedHistory = arr[11].substring(1, arr[11].length() - 1).replace("), ", "):").split(":");
 			    for(String move : copiedHistory){
-				history.add(new Move(move));
+					history.add(new Move(move));
 			    }
 		  
 			 }catch (IOException e){ 
 			        e.printStackTrace(); 
 			 } 
 		}
+		undoing = false;
 	}
+	/** Saves game data to a file. */
 	private void saveFile(){
 		fileChooser.setSelectedFile(new File(difficulty + "-" + seed + ".sudoku"));
 		int returnVal = fileChooser.showSaveDialog(frame);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			//System.out.println("You chose to save this file: " + fileChooser.getSelectedFile().getName());
-			//System.out.println(difficulty + "-" + seed);
-			//System.out.println(puzzle.dataForFile());
-			//System.out.println(history);
 			try{
 				FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile().getName());
 				PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -551,6 +572,45 @@ public class Sudoku{
 				
 			}	
 		}
+	}
+	/** Updates possible values on grid. */
+	private void updatePossibleValues(){
+		for(Coordinate coord : gridButtons.keySet()){
+			SudokuButton sb = gridButtons.get(coord);
+			if(sb.getText().equals("")){
+				if(showingValues){
+					sb.possibleValues.setText(String.valueOf(puzzle.getPossibleValues(sb.coord)));
+				}else{
+					sb.possibleValues.setText("");
+				}
+			}else{
+				sb.possibleValues.setText("");
+			}
+
+		}
+	}
+	/** Pauses and unpauses the game.*/
+	private void pausePlay(){
+		isPaused = !isPaused;
+		if(isPaused){
+			timer.stop();
+			numberBox.setVisible(false);
+			giveUp.setVisible(false);
+			undoRedo.setVisible(false);
+			saveButton.setVisible(false);
+			gridPanel.setVisible(false);
+			pauseButton.setText("PLAY");
+		}else{
+			timer.start();
+			numberBox.setVisible(true);
+			giveUp.setVisible(true);
+			undoRedo.setVisible(true);
+			saveButton.setVisible(true);
+			gridPanel.setVisible(true);
+			pauseButton.setText("PAUSE");
+			
+		}
+		
 	}
 }
 
