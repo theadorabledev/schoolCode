@@ -1,0 +1,8 @@
+import org.nlogo.api.*;
+public class SudokuNetlogoExtension extends DefaultClassManager {
+    
+    //http://ccl.northwestern.edu/netlogo/2.1/docs/extensions.html
+    public void load(PrimitiveManager pm){
+	pm.addPrimitive("blueFish", new IntegerList());
+    }
+}
