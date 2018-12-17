@@ -1,3 +1,4 @@
+import copy
 def challenge1a():
     print eval("0" + "".join([line.strip() for line in open("input1a.txt").readlines()]))
 def challenge1b():
@@ -197,4 +198,97 @@ def challenge5b():
         allDict[let] = len(d)   
         #otherDict[let] = d
     print allDict[min(allDict, key = lambda k : allDict[k])]
-challenge5b()
+def topologicalSort(argConnections):
+    """ Topologically sorts the given graph data using Khan's algroithm. """
+    connections = copy.deepcopy(argConnections)
+    order = []
+    nodes = [node for node in connections]
+    for node in connections:
+        for cNode in connections[node]:
+            try:
+                nodes.remove(cNode)
+            except ValueError:
+                pass
+    while nodes:
+        node = nodes.pop(0)
+        for i in xrange(nodes.count(node)):
+            nodes.remove(node)
+        order.append(node)
+        if node in connections:
+            connectedNodes = sorted(connections[node])
+            del  connections[node]
+            for cNode in connectedNodes:
+                nodes.append(cNode)
+                nodes.sort()
+                for eachNode in connections:
+                    if cNode in connections[eachNode]:
+                        nodes.remove(cNode)
+                        break
+    return order
+def challenge7a():
+    lines = sorted([line.strip() for line in open("input7.txt").readlines()])
+    connections = {}#a:[] for a in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
+    for line in lines:
+        a = line.split("tep ")[1][0]
+        b = line.split("tep ")[2][0]
+        if a not in connections:
+            connections[a] = []
+        connections[a].append(b)
+    #print connections
+    #print "".join(topologicalSort(connections))
+    return "".join(topologicalSort(connections))
+def challenge7b():
+    
+    lines = sorted([line.strip() for line in open("input7.txt").readlines()])
+    connections = {}#a:[] for a in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
+    for line in lines:
+        a = line.split("tep ")[1][0]
+        b = line.split("tep ")[2][0]
+        if a not in connections:
+            connections[a] = []
+        connections[a].append(b)    
+    order = "".join(topologicalSort(connections))
+    rOrder = order[::-1]
+    possibleWork = set(order[0])
+    numWorkers = 5
+    alphabet = set(order)
+    proles = [[0, ""] for i in xrange(numWorkers)]
+    time = 0
+    done = set()
+    workingOn = set()
+    reqs = {let:[l for l in connections if let in connections[l]] for let in order}
+    while len(done) < len(order) + 1:
+        print proles, done, len(done), possibleWork
+        #print possibleWork
+        for p in xrange(numWorkers):
+            if proles[p][0] == 0:
+                done.add(proles[p][1])
+                rOrder = rOrder.replace(proles[p][1], "")
+                if proles[p][1] in connections:
+                    for c in connections[proles[p][1]]:
+                        possibleWork.add(c)  
+                proles[p][1] = ""
+        for p in xrange(numWorkers):
+            if proles[p][0] == 0:
+                for let in order:
+                    #print [(rOrder[l] in done) for l in xrange(rOrder.index(let), len(rOrder))]
+                    #raw_input([req in done for req in reqs[let]])
+                    reqsMet = [req in done for req in reqs[let]]
+                    if let in possibleWork - done - workingOn and len(reqsMet) == reqsMet.count(True):
+                        
+                        #print p, let, possibleWork, [req for req in reqs[let]]
+                        proles[p][1] = let
+                        proles[p][0] = ord(let) - ord('A') + 1 + 60
+                        possibleWork.remove(let)
+                        workingOn.add(let)
+                        #done.add(let)
+                        break
+            if proles[p][0] > 0:
+                proles[p][0] -= 1
+        #print done, order
+        #raw_input("->")
+        if len(done) == len(order):
+            break
+        time += 1
+    print time
+challenge7b()
