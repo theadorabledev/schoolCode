@@ -1,0 +1,4 @@
+Extension-Name: example
+Class-Manager: SudokuNetlogoExtension
+NetLogo-Extension-API-Version: 6.0
+
