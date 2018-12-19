@@ -1,1 +1,26 @@
-Coordinate.class Move.class SudokuButton.class Sudoku.class SudokuPuzzle.class SudokuPuzzleGenerated.class SudokuPuzzlePlayable.class
+Coordinate.class
+Move.class
+SudokuButton.class
+Sudoku.class
+SudokuPuzzle.class
+SudokuPuzzleGenerated.class
+SudokuPuzzlePlayable.class
+Sudoku$10.class
+Sudoku$1$1.class
+Sudoku$11.class
+Sudoku$12.class
+Sudoku$1.class
+Sudoku$2$1.class
+Sudoku$2.class
+Sudoku$3$1.class
+Sudoku$3.class
+Sudoku$4$1.class
+Sudoku$4.class
+Sudoku$5$1.class
+Sudoku$5.class
+Sudoku$6.class
+Sudoku$7.class
+Sudoku$8.class
+Sudoku$9.class
+SudokuButton$1.class
+SudokuPuzzleGenerated$1.class

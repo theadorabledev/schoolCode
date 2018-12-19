@@ -1,4 +1,6 @@
 #!/bin/bash  
-t=$( cat mainClasses.txt)
-javac "${t//.class}"
-jar cfe SudokuApp.jar Sudoku $( < mainClasses.txt) templates.txt
+#t=$( cat mainClasses.txt)
+#echo "${t//.class/.java}"
+javac -verbose @mainJavaFiles.txt
+jar cfe SudokuApp.jar Sudoku @mainClasses.txt templates.txt
+chmod +x SudokuApp.jar
