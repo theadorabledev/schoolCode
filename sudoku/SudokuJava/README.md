@@ -64,6 +64,7 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 2) Compile and run
     * Windows : javac *.java && java Sudoku
     * Linux / Mac : javac *.java ; java Sudoku
+3) There is also a .jar file.
 
 ## Author
 * Ian Williams
