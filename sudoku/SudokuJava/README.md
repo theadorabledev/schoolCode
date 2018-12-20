@@ -1,5 +1,5 @@
 # Sudoku
-A collection of java classes for dealing with sudoku puzzles as well as a GUI.
+A collection of java classes for dealing with Sudoku puzzles as well as a GUI.
 ## How to use
 
 #### Generate
@@ -15,18 +15,18 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
     4) Congratulations! You now have a solved sudoku puzzle!
 	
 #### Load
-* Press load to load a saved suoku game.   
+* Press load to load a saved sudoku game (.sudoku file).   
  
 #### Play
 
 ###### Selecting spot on grid
 	* The spot can either be pressed or the arrow keys can be used to navigate.
-	* A permanent spot can't be changed.
+	* A permanent spot can't be changed and will be skipped over when navigating.
 	
 ###### Setting values
 	* Values can be set when a piece is selected.	 
 	* Values are set via keypress.
-    * Type a key 1-9. "0" and "Backspace" clear the spot.
+    * Type a key 1-9 to set the value. "0" and "Backspace" will clear the spot.
     * An incorrect(contradictory) value entered will result in a three second penalty, freezing the board.
 	
 ###### Undo & Redo
@@ -60,12 +60,15 @@ A collection of java classes for dealing with sudoku puzzles as well as a GUI.
 7) Here we are now.
 
 ## Installing
-1) Navigate to the directory
-2) Compile and run
-    * Windows : javac *.java && java Sudoku
-    * Linux / Mac : javac *.java ; java Sudoku
-3) There is also a .jar file.
+1) Try to download and run the jar present in the 'target' subdirectory. Continue if error.
+2) Clone the repository.
+3) Execute setupJar.sh. This will surprisingly set up the .jar file.
+4) Execute the jar. It will be in the 'target' subdirectory.
+### WARNING!
+DO NOT put jam in the jar. It may be tempting, but it will not work.
 
+## Coming soon
+* This repackaged as a netlogo extension.
 ## Author
 * Ian Williams
 
