@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 public class SudokuPuzzleGenerated extends SudokuPuzzle{
-	public static final String templateFile = "templates.txt";
+	public static final String templateFile = SudokuPuzzleGenerated.class.getProtectionDomain().getCodeSource().getLocation() + "/templates.txt";
 	public static final HashMap<String, Integer> conversion = new HashMap<String, Integer>() {{
 		put("A",1); put("B",2); put("C",3); put("D",4); put("E",5); put("F",6); put("G",7); put("H",8); put("I",9);
 	}};
@@ -46,7 +46,12 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	/** Overrides loadFromFile for generated purposes. */
 	public void loadFromFile(String fileName, String boardName){
 		try{
-			Scanner scanner = new Scanner(new File(fileName));
+			Scanner scanner = new Scanner(new InputStreamReader(getClass().getResourceAsStream("templates.txt")));
+
+			//InputStream is = getClass().getResourceAsStream("templates.txt");
+			//InputStreamReader isr = new InputStreamReader(is);
+			//BufferedReader scanner = new BufferedReader(isr);
+			//Scanner scanner = new Scanner(new File(urlLoader.findResource("templates.txt")));
 			int i = 0;
 			boolean found = false;
 			while (scanner.hasNextLine() && i < 9) {
@@ -64,8 +69,14 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 				}
 			}
 			
-		}catch(FileNotFoundException e){
-			System.out.println("Whoops! ");
+		}catch(Exception e){
+			
+			System.out.println("Whoops! File not found probably.");
+			//System.out.println(ClassLoader.getSystemClassLoader().getResource(".").getPath());
+			//System.out.println(jarDir.getAbsolutePath());
+			//System.out.println("Working Directory = " + SudokuPuzzleGenerated.class.getProtectionDomain().getCodeSource().getLocation());
+
+			e.printStackTrace();
 		}	
 	}
 	/** Randomly shuffles the board. */
