@@ -18,7 +18,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		p.solve();
 		p.printData();
 	}
-	/**Creates teh board with the given seed, if an impossible board, tries again.*/
+	/**Creates the board with the given seed, if an impossible board, tries again.*/
 	public SudokuPuzzleGenerated(String boardName, String seed){
 		super();
 		boolean created = false;
