@@ -1,19 +1,96 @@
 extensions [sudoku-netlogo]
-to generate
+patches-own [permanent]
+to setup
+  resize-world -4 4 -4 4
+  set-patch-size 50
+  ca
+  ask patches [
+    set plabel-color black
+    set permanent false
+    sprout 1
+    set pcolor white
+    ask turtles-here[
+      set heading 0
+      set size 1
+      fd .5
+      rt 90
+      fd .5
+      set color black
+      pd
+      repeat 4 [
+        rt 90
+        fd 1
+      ]
+      die
+
+    ]
+
+  ]
+  cro 1
+  ask turtles [
+    set color black
+    set pen-size 5
+    rt 90
+    fd 1.5
+    lt 90
+    fd 1.5
+    pd
+    repeat 3 [
+      fd 9
+      rt 90
+      fd 3
+      lt 90
+    ]
+    bk 3
+    rt 90
+    fd 9
+    die
+  ]
 
 end
-;show sudoku-netlogo:generate-puzzle 5
+
+to generate
+  setup
+  if Seed = "" [
+    set Seed "Seed"
+  ]
+  let l sudoku-netlogo:generate-puzzle Difficulty Seed
+  show l
+  populateGrid l
+end
+to-report index-to-coord [i]
+  report  list ((i mod 9) - 4) (-((floor (i / 9)) - 4) )
+end
+to populateGrid [arr]
+  foreach range 81 [
+    n ->
+    let x item 1 (index-to-coord n)
+    let y item 0 (index-to-coord n)
+    show (list n (index-to-coord n) ( item n arr ))
+    ;show list ((item n arr) n (index-to-coord n))
+    ask patch y x [
+      if (item n arr) != 0 [
+        set plabel (item n arr)
+        set permanent true
+      ]
+
+      ;show item n arr
+    ]
+
+  ]
+  show arr
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-647
-448
+668
+469
 -1
 -1
-13.0
+50.0
 1
-10
+20
 1
 1
 1
@@ -21,10 +98,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-4
+4
+-4
+4
 0
 0
 1
@@ -64,10 +141,27 @@ INPUTBOX
 179
 135
 Seed
-NIL
+Seed
 1
 0
 String
+
+BUTTON
+78
+237
+141
+270
+NIL
+setup\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

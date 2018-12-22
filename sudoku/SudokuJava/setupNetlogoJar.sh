@@ -11,5 +11,5 @@ javac -cp src/main/resources/netlogo-6.0.4.jar;src/main/resources/scala-library.
 jar cvfm target/sudoku-netlogo/sudoku-netlogo.jar src/main/resources/manifest.txt -C target/bin/nlogoClasses . -C target/bin . -C src/main/resources templates.txt
 chmod +x target/sudoku-netlogo/sudoku-netlogo.jar
 
-
+#netlogo target/Sudoku.nlogo
 $SHELL
