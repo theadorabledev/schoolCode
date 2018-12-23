@@ -1,11 +1,23 @@
 extensions [sudoku-netlogo]
-patches-own [permanent]
+patches-own [permanent coordinate]
+globals [mouse-was-down? selected-coord grid playing solving]
+
 to setup
   resize-world -4 4 -4 4
+
   set-patch-size 50
   ca
+  set playing false
+  set solving false
+  set selected-coord nobody
+  set grid []
+  repeat 81 [
+    set grid lput 0 grid
+  ]
   ask patches [
     set plabel-color black
+    set coordinate list (pxcor + 4) (( - pycor) + 4)
+    ;set plabel-size
     set permanent false
     sprout 1
     set pcolor white
@@ -48,18 +60,22 @@ to setup
   ]
 
 end
-
 to generate
   setup
+  set playing true
   if Seed = "" [
     set Seed "Seed"
   ]
   let l sudoku-netlogo:generate-puzzle Difficulty Seed
-  show l
+
+  set grid l
   populateGrid l
 end
 to-report index-to-coord [i]
   report  list ((i mod 9) - 4) (-((floor (i / 9)) - 4) )
+end
+to-report coord-to-index [x y]
+  report (( (- y) + 4) * 9) + x + 4
 end
 to populateGrid [arr]
   foreach range 81 [
@@ -70,7 +86,8 @@ to populateGrid [arr]
     ;show list ((item n arr) n (index-to-coord n))
     ask patch y x [
       if (item n arr) != 0 [
-        set plabel (item n arr)
+        set plabel word (word (item n arr)) " "
+        ;set plabel plabel + "   "
         set permanent true
       ]
 
@@ -79,6 +96,107 @@ to populateGrid [arr]
 
   ]
   show arr
+end
+to-report nearestPatch [x y]
+  let xx round x
+  let yy round y
+  report list xx yy
+end
+to play
+  if not mouse-down?[
+    set mouse-was-down? false
+  ]
+  if mouse-down? and not mouse-was-down?[
+    let xy (nearestPatch mouse-xcor mouse-ycor)
+    select-coord (item 0 xy) (item 1  xy)
+    set mouse-was-down? true
+  ]
+end
+to select-coord [x y]
+  if playing[
+    if [permanent] of patch x y = false[
+      ifelse selected-coord != patch x y[
+        if selected-coord != nobody [
+          ask selected-coord [
+            set pcolor white
+          ]
+        ]
+        set selected-coord patch x y
+        ask patch x y [
+          set pcolor green
+        ]
+      ][
+        ask selected-coord[
+          set pcolor white
+        ]
+        set selected-coord nobody
+
+      ]
+    ]
+  ]
+end
+to set-val [val]
+  if selected-coord != nobody and playing[
+    let i coord-to-index ([pxcor] of selected-coord) ([pycor] of selected-coord)
+    let x item 0 ([coordinate] of selected-coord)
+    let y item 1 ([coordinate] of selected-coord)
+
+    if selected-coord != nobody[
+      show list i val
+
+      ask selected-coord[
+        ifelse val != 0 [
+          ifelse solving[
+            set grid (replace-item i grid val)
+              set plabel word val "  "
+          ][
+            ifelse (sudoku-netlogo:is-valid-move grid x y val) [
+              set grid (replace-item i grid val)
+
+              set plabel word val "  "
+            ][
+              let lastLabel plabel
+              set plabel word val "  "
+              set pcolor red
+              wait 3
+              set pcolor green
+              set plabel ""
+            ]
+          ]
+          ;replace-item (coord-to-index x y) grid
+        ][
+          set grid (replace-item i grid val)
+          set plabel ""
+        ]
+      ]
+
+    ]
+  ]
+  check-win
+end
+to check-win
+  if not (member? 0 grid)[
+    set playing false
+    ask patches[
+      set pcolor green
+    ]
+  ]
+  stop
+
+end
+to solve
+
+  ifelse solving != 0[
+    set grid sudoku-netlogo:solve-puzzle grid
+    populateGrid grid
+    check-win
+  ][
+    setup
+    set playing true
+    set solving true
+  ]
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -90,7 +208,7 @@ GRAPHICS-WINDOW
 -1
 50.0
 1
-20
+30
 1
 1
 1
@@ -147,12 +265,199 @@ Seed
 String
 
 BUTTON
-78
-237
-141
-270
+69
+241
+132
+274
 NIL
-setup\n
+play\n
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+730
+52
+793
+85
+1
+set-val 1\n
+NIL
+1
+T
+OBSERVER
+NIL
+1
+NIL
+NIL
+1
+
+BUTTON
+805
+53
+868
+86
+2
+set-val 2
+NIL
+1
+T
+OBSERVER
+NIL
+2
+NIL
+NIL
+1
+
+BUTTON
+878
+53
+941
+86
+3
+set-val 3
+NIL
+1
+T
+OBSERVER
+NIL
+3
+NIL
+NIL
+1
+
+BUTTON
+730
+115
+793
+148
+4
+set-val 4
+NIL
+1
+T
+OBSERVER
+NIL
+4
+NIL
+NIL
+1
+
+BUTTON
+807
+115
+870
+148
+5
+set-val 5
+NIL
+1
+T
+OBSERVER
+NIL
+5
+NIL
+NIL
+1
+
+BUTTON
+882
+115
+945
+148
+6
+set-val 6
+NIL
+1
+T
+OBSERVER
+NIL
+6
+NIL
+NIL
+1
+
+BUTTON
+730
+172
+793
+205
+7
+set-val 7
+NIL
+1
+T
+OBSERVER
+NIL
+7
+NIL
+NIL
+1
+
+BUTTON
+806
+172
+869
+205
+8
+set-val 8
+NIL
+1
+T
+OBSERVER
+NIL
+8
+NIL
+NIL
+1
+
+BUTTON
+883
+171
+946
+204
+9
+set-val 9
+NIL
+1
+T
+OBSERVER
+NIL
+9
+NIL
+NIL
+1
+
+BUTTON
+806
+229
+869
+262
+Clear
+set-val 0
+NIL
+1
+T
+OBSERVER
+NIL
+0
+NIL
+NIL
+1
+
+BUTTON
+68
+197
+131
+230
+NIL
+solve
 NIL
 1
 T
@@ -166,39 +471,32 @@ NIL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+A Sudoku game for solving and playing.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+You press generate or solve, then you press play and press number keys to fill values.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
-
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+1) You press generate or solve.
+2) Then you press play and press number keys to fill values.
+3) Press solve again to solve the puzzle if solving, to cheat if playing.
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+An extension I wrote called sudoku-netlogo. It has three commands.
 
-## RELATED MODELS
+* generate-puzzle <String Difficulty> <String Seed>. Returns the Sudoku Puzzle made with the input.
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+* is-valid-move <List grid> <Int x> <Int y> <Int val>. Returns if the move was valid.
+
+* solve-puzzle <List grid>. Returns the solved grid.
+
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+THE GLORIOUS AND BENEVOLENT LEADER BROOKS!
 @#$#@#$#@
 default
 true
