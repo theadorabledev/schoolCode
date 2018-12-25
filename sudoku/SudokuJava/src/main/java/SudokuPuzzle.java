@@ -20,6 +20,7 @@ public class SudokuPuzzle implements Serializable{
 	protected long startTime = System.currentTimeMillis();
 	protected int knownCount = 0;
 	protected int backTracks = 0;
+	protected int difficultyRating = 0;
 	protected int rootVal;
 	protected Coordinate root = null;
 	public SudokuPuzzle(){
@@ -173,6 +174,7 @@ public class SudokuPuzzle implements Serializable{
 							if(!(pGroup.containsAll(possibleValues.get(coord))) && !(impossibleValues.get(coord).containsAll(pGroup))){
 								impossibleValues.get(coord).addAll(pGroup);
 								change = true;
+								difficultyRating += 2;
 							}
 						}
 					}
@@ -203,6 +205,7 @@ public class SudokuPuzzle implements Serializable{
 		this.rootVal = other.rootVal;
 		this.solved = other.solved;
 		this.defaultState = other.defaultState;
+		this.difficultyRating = other.difficultyRating;
 	}
 	/**Initializes the puzzle.*/
 	protected void init(){
@@ -248,7 +251,7 @@ public class SudokuPuzzle implements Serializable{
 		while(!solved){
 			subSolve();
 		}
-
+		difficultyRating += backTracks;
 		
 	}
 	/**The subroutine that does the actual solving.*/
@@ -447,5 +450,8 @@ public class SudokuPuzzle implements Serializable{
 			}
 		}
 		return d;
-}
 	}
+	public int getDifficultyRating(){
+		return difficultyRating();
+	}
+}
