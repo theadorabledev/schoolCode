@@ -1,4 +1,14 @@
 import argparse
+def parseInput(string, fileA=False, ook=False):
+    f = ""
+    if fileA:
+        f = open(string, "r").read().rstrip().replace(" ","").replace('\r', '').replace('\n', '')
+    if ook:
+        f = f.strip("\n").lower().replace("ook","").replace(" ","")
+        f = "".join(["(" + f[i] + f[i+1] + ")" for i in xrange(0, len(f) - 1, 2)])
+        f = f.replace("(.?)", ">").replace("(?.)","<").replace("(..)", "+").replace("(!!)", "-").replace("(!.)", ".").replace("(.!)", ",").replace("(!?)", "[").replace("(?!)", "]")
+    f = "".join([c for c in f if c in {">", "<", "+", "-", ".", ",", "[", "]"}])
+    return f
 def findBraces(args):
     stack = []
     bracePairs = {}
@@ -48,20 +58,7 @@ def main():
     parser.add_argument("-f", "--file", help="Read from file?", action="store_true")
     parser.add_argument("-o", "--ook", help="For the librarians?", action="store_true")
     args = parser.parse_args()    
-    string = args.BF
-    if args.file:
-        f = open(string, "r").read().rstrip().replace(" ","").replace('\r', '').replace('\n', '')
-        if args.ook:
-            #print f
-            f = f.strip("\n").lower().replace("ook","").replace(" ","")
-            #print f
-            f = "".join(["(" + f[i] + f[i+1] + ")" for i in xrange(0, len(f) - 1, 2)])
-            #print f
-            f = f.replace("(.?)", ">").replace("(?.)","<").replace("(..)", "+").replace("(!!)", "-").replace("(!.)", ".").replace("(.!)", ",").replace("(!?)", "[").replace("(?!)", "]")
-            #f = "".join(f)
-        f = "".join([c for c in f if c in {">", "<", "+", "-", ".", ",", "[", "]"}])
-        
-    interpret(f)
+    interpret(parseInput(args.BF, fileA=args.file, ook=args.ook))
         
     print ""    
     #interpret("+++++[->>>+<<<]>>>.")
