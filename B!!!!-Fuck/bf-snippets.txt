@@ -1,0 +1,3 @@
+Cool stuff I wrote
+Sets value equal to index (up to 255)
+	>+[[->>+<<]>>[-<+<+>>]<+]
