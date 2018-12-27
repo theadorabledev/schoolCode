@@ -195,7 +195,7 @@ public class Sudoku{
 		generatePuzzleButton.setVisible(false);
 		difficultiesBox.setVisible(false);
 		seedInput.setVisible(false);
-		generatorContainer.add(new JLabel("<HTML>Difficulty: " + difficultiesBox.getSelectedItem() + "<br/>Seed:" + seedInput.getText() + "</HTML>"));
+		generatorContainer.add(new JLabel("<HTML>Difficulty: " + difficultiesBox.getSelectedItem() + "<br/>Seed: " + seedInput.getText() + "<br/>Difficulty-Rating: " + myPuzzle.getDifficultyRating() + "</HTML>"));
 		
     }
 	/** Sets up the puzzle generator.*/
@@ -236,9 +236,7 @@ public class Sudoku{
 				giveUp.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-					    SudokuPuzzle s = new SudokuPuzzle(myPuzzle.getData());
-						s.solve();
-						Integer[][] d = s.getData();
+						Integer[][] d = myPuzzle.getSolution();
 						for(Coordinate coord : gridButtons.keySet()){
 							SudokuButton sb = gridButtons.get(coord);
 							sb.setText(String.valueOf(d[sb.coord.y][sb.coord.x]));
@@ -252,7 +250,6 @@ public class Sudoku{
 							currentGridButton.setBackground(null);
 						}
 					    checkForWin();
-						//winnerLabel.setFont(new Font());
 					    giveUp.setVisible(false);
 						saveButton.setVisible(false);
 						JOptionPane.showMessageDialog(frame, "HA! Once again, a simple human can't solve a simple Sudoku. Puny worthless human, once again teh machines rule supreme!");
@@ -586,6 +583,7 @@ public class Sudoku{
 			}else{
 				sb.possibleValues.setText("");
 			}
+			sb.updateToolTip();
 
 		}
 	}
