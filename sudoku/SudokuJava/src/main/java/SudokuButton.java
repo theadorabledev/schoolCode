@@ -53,7 +53,6 @@ public class SudokuButton extends JButton implements ActionListener{
 			parent.press(this);
 		}
     }
-    
 	/** Creates the borders based on position. */
     public void setBorders(){
 		int bottom = 1;
@@ -82,6 +81,9 @@ public class SudokuButton extends JButton implements ActionListener{
 	}
 	public boolean isPermanent(){
 		return valueIsSet;
+	}
+	public void updateToolTip(){
+		setToolTipText(possibleValues.getText());
 	}
 }
 

@@ -174,7 +174,7 @@ public class SudokuPuzzle implements Serializable{
 							if(!(pGroup.containsAll(possibleValues.get(coord))) && !(impossibleValues.get(coord).containsAll(pGroup))){
 								impossibleValues.get(coord).addAll(pGroup);
 								change = true;
-								difficultyRating += 2;
+								difficultyRating += 50;
 							}
 						}
 					}
@@ -205,7 +205,8 @@ public class SudokuPuzzle implements Serializable{
 		this.rootVal = other.rootVal;
 		this.solved = other.solved;
 		this.defaultState = other.defaultState;
-		this.difficultyRating = other.difficultyRating;
+		this.difficultyRating += other.difficultyRating;
+		this.difficultyRating += other.backTracks;
 	}
 	/**Initializes the puzzle.*/
 	protected void init(){
@@ -251,7 +252,8 @@ public class SudokuPuzzle implements Serializable{
 		while(!solved){
 			subSolve();
 		}
-		difficultyRating += backTracks;
+		difficultyRating += (backTracks * 10);
+		difficultyRating /= 10;
 		
 	}
 	/**The subroutine that does the actual solving.*/
@@ -419,6 +421,7 @@ public class SudokuPuzzle implements Serializable{
 			impossibleValues.get(root).add(rootVal);
 		}
 		state.backTracks = backTracks + 1;
+		state.difficultyRating += (backTracks * 10);
 		state.savedStates = savedStates;
 		copy(state);
 		printData(1);
@@ -426,8 +429,8 @@ public class SudokuPuzzle implements Serializable{
 	}
 	/**Infers the best value.*/
 	protected void guessBest(){
+		difficultyRating += 20;
 		HashMap<Coordinate, HashSet<Integer>> newValues = new HashMap<Coordinate, HashSet<Integer>>(possibleValues);
-		//HashMap<Coordinate, HashSet<Integer>> newValues = (HashMap) possibleValues.clone();
 		for(Coordinate coord: newValues.keySet()){
 			newValues.get(coord).removeAll(impossibleValues.get(coord));
 		}
@@ -452,6 +455,6 @@ public class SudokuPuzzle implements Serializable{
 		return d;
 	}
 	public int getDifficultyRating(){
-		return difficultyRating();
+		return difficultyRating;
 	}
 }

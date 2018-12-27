@@ -10,6 +10,7 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 	private ArrayList<String> values;
 	private Random rand;
 	private long seed;
+	private Integer [][] solution;
 	public static void main(String[] args){
 		SudokuPuzzleGenerated s = new SudokuPuzzleGenerated("Hard", "123");
 		s.printData();
@@ -30,7 +31,9 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 				loadFromFile(templateFile, boardName);
 				randomShuffle();
 				SudokuPuzzle p = new SudokuPuzzle(getData());
-				p.solve();   
+				p.solve();
+				difficultyRating = p.getDifficultyRating();
+				solution = p.getData();
 				created = true;
 			}catch(Exception e){
 				this.seed++;
@@ -48,10 +51,6 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		try{
 			Scanner scanner = new Scanner(new InputStreamReader(getClass().getResourceAsStream("templates.txt")));
 
-			//InputStream is = getClass().getResourceAsStream("templates.txt");
-			//InputStreamReader isr = new InputStreamReader(is);
-			//BufferedReader scanner = new BufferedReader(isr);
-			//Scanner scanner = new Scanner(new File(urlLoader.findResource("templates.txt")));
 			int i = 0;
 			boolean found = false;
 			while (scanner.hasNextLine() && i < 9) {
@@ -72,10 +71,6 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		}catch(Exception e){
 			
 			System.out.println("Whoops! File not found probably.");
-			//System.out.println(ClassLoader.getSystemClassLoader().getResource(".").getPath());
-			//System.out.println(jarDir.getAbsolutePath());
-			//System.out.println("Working Directory = " + SudokuPuzzleGenerated.class.getProtectionDomain().getCodeSource().getLocation());
-
 			e.printStackTrace();
 		}	
 	}
@@ -178,6 +173,9 @@ public class SudokuPuzzleGenerated extends SudokuPuzzle{
 		ArrayList<String> shuffleOrder = conversionValues;
 		Collections.shuffle(shuffleOrder, rand);
 		return shuffleOrder;
+	}
+	public Integer[][] getSolution(){
+		return solution;
 	}
 
 }
