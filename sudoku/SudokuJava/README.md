@@ -7,7 +7,8 @@ A collection of java classes for dealing with Sudoku puzzles as well as a GUI.
     2) Choose a seed for the pseudorandom generation.
     3) Press 'Generate'.
     4) Enjoy!
-
+##### Difficulty Rating
+* A relative rating of the puzzle's complexity based on backtracks, guessing, and difficulty of algorithms used.
 #### Solve
     1) Press 'Solve'.
     2) Input the data into the blank board.
@@ -15,7 +16,8 @@ A collection of java classes for dealing with Sudoku puzzles as well as a GUI.
     4) Congratulations! You now have a solved sudoku puzzle!
 	
 #### Load
-* Press load to load a saved sudoku game (.sudoku file).   
+* Press load to load a saved sudoku game (.sudoku file).
+* Game state, undo-redo history, and time at save will be loaded.   
  
 #### Play
 
@@ -32,7 +34,10 @@ A collection of java classes for dealing with Sudoku puzzles as well as a GUI.
 ###### Undo & Redo
 	* There are buttons that do that.
 	* This can also be achieved with Control-z and Control-Shift-z
-	
+###### Show Values
+    * You can toggle whether possible values are shown
+    * The values will apear on the empty spots as well as on a tooltip 	
+    * If overly long, the possible values will be truncated on the grid but not the tooltip.
 ##### Give up
 * There is a button that will solve the puzzle for you, then belittle you.
 	  
@@ -68,7 +73,7 @@ A collection of java classes for dealing with Sudoku puzzles as well as a GUI.
 DO NOT put jam in the jar. It may be tempting, but it will not work.
 
 ## Coming soon
-* This repackaged as a netlogo extension.
+* I'll think of something!
 ## Author
 * Ian Williams
 

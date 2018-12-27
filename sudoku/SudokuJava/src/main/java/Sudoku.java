@@ -542,10 +542,14 @@ public class Sudoku{
 			    }
 			    historyPosition = Integer.valueOf(arr[10]) + 1;
 			    String[] copiedHistory = arr[11].substring(1, arr[11].length() - 1).replace("), ", "):").split(":");
-			    for(String move : copiedHistory){
-					history.add(new Move(move));
-			    }
-		  
+			    minutesElapsed = Integer.valueOf(arr[12]);
+			    secondsElapsed = Integer.valueOf(arr[13]);
+			    if(copiedHistory.length > 1) {
+					for (String move : copiedHistory) {
+						history.add(new Move(move));
+					}
+				}
+
 			 }catch (IOException e){ 
 			        e.printStackTrace(); 
 			 } 
@@ -563,7 +567,9 @@ public class Sudoku{
 				printWriter.print(difficulty + "-" + seed + "\n");
 				printWriter.print(puzzle.dataForFile());
 				printWriter.print(historyPosition + "\n");
-				printWriter.print(history);
+				printWriter.print(history + "\n");
+				printWriter.print(minutesElapsed + "\n");
+				printWriter.print(secondsElapsed);
 				printWriter.close();
 			}catch(IOException e){
 				
