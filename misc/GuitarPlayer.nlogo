@@ -333,7 +333,7 @@ Sound
 Sound
 0
 127
-77.0
+127.0
 1
 1
 NIL
@@ -393,39 +393,42 @@ NIL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+A Guitar playing app.
 
 ## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
+It plays barre chords
 
 ## HOW TO USE IT
-
-(how to use the model, including a description of each of the items in the Interface tab)
-
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+1) Press setup, then play.
+2) You press a key.
+3) You press the modifiers available.
+4) Pressing the x key plays the chord
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+An extension I wrote called sudoku-netlogo. It has three commands.
 
-## RELATED MODELS
+* generate-puzzle <String Difficulty> <String Seed>. Returns the Sudoku Puzzle made with the input.
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+* is-valid-move <List grid> <Int x> <Int y> <Int val>. Returns if the move was valid.
+
+* solve-puzzle <List grid>. Returns the solved grid.
+
+## Misc
+
+The program should be run in the directory it is in with the sudoku-netlogo folder present. The jar file inside should be allowed to run as executable. 
+
+## Bugs / "Additional features"
+
+* Seeds are alpha-numeric ONLY. Length should be <= 13
+
+* Inputting an impossible value into the grid too often can mess with its recognition of actual possible value
+
+* Should be run on Netlogo 6.0.4 and up
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+THE GLORIOUS AND BENEVOLENT LEADER BROOKS!
 @#$#@#$#@
 default
 true
