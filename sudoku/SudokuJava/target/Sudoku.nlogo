@@ -1,6 +1,6 @@
 extensions [sudoku-netlogo]
 patches-own [permanent coordinate]
-globals [mouse-was-down? selected-coord grid playing solving]
+globals [mouse-was-down? selected-coord grid origGrid playing solving generated]
 
 to setup
   resize-world -4 4 -4 4
@@ -9,6 +9,7 @@ to setup
   ca
   set playing false
   set solving false
+  set generated false
   set selected-coord nobody
   set grid []
   repeat 81 [
@@ -62,6 +63,7 @@ to setup
 end
 to generate
   setup
+  set generated true
   set playing true
   if Seed = "" [
     set Seed "Seed"
@@ -69,6 +71,7 @@ to generate
   let l sudoku-netlogo:generate-puzzle Difficulty Seed
 
   set grid l
+  set origGrid l
   populateGrid l
 end
 to-report index-to-coord [i]
@@ -185,15 +188,23 @@ to check-win
 
 end
 to solve
-
-  ifelse solving != 0[
-    set grid sudoku-netlogo:solve-puzzle grid
-    populateGrid grid
-    check-win
+  ifelse not generated[
+    ifelse solving != 0[
+      set grid sudoku-netlogo:solve-puzzle grid
+      populateGrid grid
+      check-win
+    ][
+      setup
+      set playing true
+      set solving true
+    ]
   ][
-    setup
-    set playing true
-    set solving true
+
+    if solving != 0[
+      set grid sudoku-netlogo:solve-puzzle origGrid
+      populateGrid grid
+      check-win
+    ]
   ]
 
 
@@ -493,6 +504,17 @@ An extension I wrote called sudoku-netlogo. It has three commands.
 
 * solve-puzzle <List grid>. Returns the solved grid.
 
+## Misc
+
+The program should be run in the directory it is in with the sudoku-netlogo folder present. The jar file inside should be allowed to run as executable. 
+
+## Bugs / "Additional features"
+
+* Seeds are alpha-numeric ONLY. Length should be <= 13
+
+* Inputting an impossible value into the grid too often can mess with its recognition of actual possible value
+
+* Should be run on Netlogo 6.0.4 and up
 
 ## CREDITS AND REFERENCES
 
