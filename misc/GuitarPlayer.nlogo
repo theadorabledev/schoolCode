@@ -399,32 +399,15 @@ A Guitar playing app.
 It plays barre chords
 
 ## HOW TO USE IT
-1) Press setup, then play.
-2) You press a key.
-3) You press the modifiers available.
-4) Pressing the x key plays the chord
+0) Press setup, then play.
+1) You press a key.
+2) You press the modifiers available.
+3) Pressing the x key plays the chord
+4) Repeat 1-4
 
 ## NETLOGO FEATURES
 
-An extension I wrote called sudoku-netlogo. It has three commands.
-
-* generate-puzzle <String Difficulty> <String Seed>. Returns the Sudoku Puzzle made with the input.
-
-* is-valid-move <List grid> <Int x> <Int y> <Int val>. Returns if the move was valid.
-
-* solve-puzzle <List grid>. Returns the solved grid.
-
-## Misc
-
-The program should be run in the directory it is in with the sudoku-netlogo folder present. The jar file inside should be allowed to run as executable. 
-
-## Bugs / "Additional features"
-
-* Seeds are alpha-numeric ONLY. Length should be <= 13
-
-* Inputting an impossible value into the grid too often can mess with its recognition of actual possible value
-
-* Should be run on Netlogo 6.0.4 and up
+The sound extension
 
 ## CREDITS AND REFERENCES
 
