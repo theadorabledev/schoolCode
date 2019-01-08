@@ -1,5 +1,5 @@
 extensions [sound table]
-globals [lE A D G B hE minor minor-change dict note sharp is-7 change-7]
+globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7 roll]
 patches-own [last-val]
 to setup
   ca
@@ -9,8 +9,9 @@ to setup
   set G 56 ;+1
   set B 59
   set hE 64
-  set minor-change 0
+  set minor_change 0
   set minor false
+  set roll false
   ask patches[
     set pcolor white
     ;set plabel pxcor
@@ -51,13 +52,20 @@ to play
 end
 
 to play-chord
-  sound:play-note "Nylon String Guitar" (lE + (table:get dict note) + minor-change) Sound 3
-  sound:play-note "Nylon String Guitar" (A + (table:get dict note) + minor-change) Sound 3
-  sound:play-note "Nylon String Guitar" (D + (table:get dict note) + minor-change + change-7) Sound 3
-  sound:play-note "Nylon String Guitar" (G + (table:get dict note) + minor-change) Sound 3
-  sound:play-note "Nylon String Guitar" (B + (table:get dict note) + minor-change) Sound 3
-  sound:play-note "Nylon String Guitar" (hE + (table:get dict note) + minor-change) Sound 3
-  ask patches with [pxcor = min-pxcor][
+
+  sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+  sound:play-note-later .05  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
+  sound:play-note-later .1  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
+  ifelse roll[
+    sound:play-note-later .15  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .25  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+  ][
+    sound:play-note-later .15  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .25  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+  ]
+    ask patches with [pxcor = min-pxcor][
     set plabel ""
   ]
   ask patch min-pxcor table:get dict note[
@@ -83,15 +91,13 @@ end
 to swap-minor
   ifelse minor[
     set minor false
-    set minor-change 0
+    set minor_change 0
   ][
     set minor true
-    set minor-change -1
+    set minor_change -1
   ]
-
 end
 to swap-sharp
-
   ifelse sharp [
     set sharp false
     set note remove "#" note
@@ -113,6 +119,10 @@ to swap-7
     set is-7 true
     set change-7 -2
   ]
+
+end
+to swap-roll
+  set roll not roll
 
 end
 @#$#@#$#@
@@ -386,6 +396,33 @@ T
 OBSERVER
 NIL
 7
+NIL
+NIL
+1
+
+CHOOSER
+668
+349
+806
+394
+Capo
+Capo
+0 1 2 3 4 5 6 7 8 9 10
+0
+
+BUTTON
+756
+264
+851
+297
+NIL
+swap-roll\n
+NIL
+1
+T
+OBSERVER
+NIL
+R
 NIL
 NIL
 1
@@ -718,7 +755,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.4
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
