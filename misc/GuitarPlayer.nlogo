@@ -1,5 +1,5 @@
 extensions [sound table]
-globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7 roll]
+globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7]
 patches-own [last-val]
 to setup
   ca
@@ -11,7 +11,7 @@ to setup
   set hE 64
   set minor_change 0
   set minor false
-  set roll false
+  ;set roll false
   ask patches[
     set pcolor white
     ;set plabel pxcor
@@ -52,23 +52,44 @@ to play
 end
 
 to play-chord
+  if picking = "Roll"[
+    show "rolling"
+    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .4  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .6  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+  ]
+  if picking = "Down-Strum"[
+    show "rawhide"
+    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .6  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+  ]
+  if picking = "Up-Strum"[
+    sound:play-note-later 0  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .6  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .8  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+  ]
+  if picking = "Travis-Pick"[
+    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .8  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1.2  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
 
-  sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
-  sound:play-note-later .05  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
-  sound:play-note-later .1  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
-  ifelse roll[
-    sound:play-note-later .15  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .25  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
-  ][
-    sound:play-note-later .15  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
-    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .25  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
   ]
     ask patches with [pxcor = min-pxcor][
     set plabel ""
   ]
-  ask patch min-pxcor table:get dict note[
+  ask patch min-pxcor ((table:get dict note) - 6)[
     set plabel get-chord
   ]
 end
@@ -121,8 +142,8 @@ to swap-7
   ]
 
 end
-to swap-roll
-  set roll not roll
+to set-pick [pick]
+  set picking pick
 
 end
 @#$#@#$#@
@@ -401,31 +422,24 @@ NIL
 1
 
 CHOOSER
-668
-349
-806
-394
+867
+28
+1005
+73
 Capo
 Capo
 0 1 2 3 4 5 6 7 8 9 10
 0
 
-BUTTON
-756
-264
-851
-297
-NIL
-swap-roll\n
-NIL
-1
-T
-OBSERVER
-NIL
-R
-NIL
-NIL
-1
+CHOOSER
+866
+86
+1004
+131
+Picking
+Picking
+"Down-Strum" "Up-Strum" "Roll" "Travis-Pick"
+3
 
 @#$#@#$#@
 ## WHAT IS IT?
