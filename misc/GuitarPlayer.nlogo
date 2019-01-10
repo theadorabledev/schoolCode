@@ -1,5 +1,5 @@
 extensions [sound table]
-globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7]
+globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7 recording pastRecord]
 patches-own [last-val]
 to setup
   ca
@@ -11,6 +11,8 @@ to setup
   set hE 64
   set minor_change 0
   set minor false
+  set recording false
+  set pastRecord []
   ;set roll false
   ask patches[
     set pcolor white
@@ -46,52 +48,54 @@ to play
   ask patches[
     set plabel [last-val] of patch-at -1 0
   ]
-
+  set pastRecord lput " " pastRecord
   wait .5
 
 end
-
+; * (10 / speed)
 to play-chord
+  show Guitar
   if picking = "Roll"[
-    show "rolling"
-    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .2  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
-    sound:play-note-later .4  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
-    sound:play-note-later .6  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later 1  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+
+    sound:play-note-later 0 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .4 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .6 * (10 / speed) Guitar (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .8 * (10 / speed) Guitar (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
   ]
   if picking = "Down-Strum"[
-    show "rawhide"
-    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .2  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .4  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
-    sound:play-note-later .6  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
-    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later 1  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
+
+    sound:play-note-later 0 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2 * (10 / speed) Guitar (A + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .6 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .8 * (10 / speed) Guitar (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1 * (10 / speed) Guitar (hE + (table:get dict note) + Capo) Sound .5
   ]
   if picking = "Up-Strum"[
-    sound:play-note-later 0  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .2  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .4  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
-    sound:play-note-later .6  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
-    sound:play-note-later .8  "Nylon String Guitar" (A + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later 1  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 0 * (10 / speed) Guitar (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .2 * (10 / speed) Guitar (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later .6 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .8 * (10 / speed) Guitar (A + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
   ]
   if picking = "Travis-Pick"[
-    sound:play-note-later 0  "Nylon String Guitar" (lE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .4  "Nylon String Guitar" (D + (table:get dict note)  + change-7 + Capo) Sound .5
-    sound:play-note-later .8  "Nylon String Guitar" (hE + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later .8  "Nylon String Guitar" (B + (table:get dict note) + Capo) Sound .5
-    sound:play-note-later 1.2  "Nylon String Guitar" (G + (table:get dict note) + minor_change + Capo) Sound .5
+    sound:play-note-later 0 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .4 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
+    sound:play-note-later .8 * (10 / speed) Guitar (hE + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later .8 * (10 / speed) Guitar (B + (table:get dict note) + Capo) Sound .5
+    sound:play-note-later 1.2 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
 
   ]
-    ask patches with [pxcor = min-pxcor][
+  ask patches with [pxcor = min-pxcor][
     set plabel ""
   ]
   ask patch min-pxcor ((table:get dict note) - 6)[
     set plabel get-chord
   ]
+  set pastRecord replace-item -1 pastRecord get-chord
 end
 to set-note [n]
   set sharp false
@@ -146,6 +150,77 @@ to set-pick [pick]
   set picking pick
 
 end
+to house-of-rising-sun
+  setup
+  play
+  set speed 10
+  set picking "Roll"
+  set note "A"
+  swap-minor
+  play-chord
+  wait 1.2
+  swap-minor
+  set note "C"
+  play-chord
+  wait 1.2
+  set note "D"
+  play-chord
+  wait 1.2
+  set note "F"
+  play-chord
+
+  wait 1.2
+  set note "A"
+  swap-minor
+  play-chord
+  wait 1.2
+  swap-minor
+  set note "C"
+  play-chord
+  wait 1.2
+  set note "E"
+  play-chord
+  wait 1.2
+  set note "E"
+  play-chord
+
+  wait 1.2
+  set note "A"
+  swap-minor
+  play-chord
+  wait 1.2
+  swap-minor
+  set note "C"
+  play-chord
+  wait 1.2
+  set note "D"
+  play-chord
+  wait 1.2
+  set note "F"
+  play-chord
+
+  wait 1.2
+  set note "A"
+  swap-minor
+  play-chord
+  wait 1.2
+  swap-minor
+  set note "E"
+  play-chord
+  wait 1.2
+  set note "A"
+  swap-minor
+  play-chord
+  wait 1.2
+  swap-minor
+  set note "E"
+  play-chord
+  setup
+end
+to record
+  set recording not recording
+
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -175,10 +250,10 @@ ticks
 30.0
 
 BUTTON
-53
-94
-116
-127
+126
+130
+189
+163
 NIL
 play\n
 T
@@ -192,10 +267,10 @@ NIL
 1
 
 BUTTON
-100
-48
-163
+18
+132
 81
+165
 NIL
 setup\n
 NIL
@@ -345,10 +420,10 @@ NIL
 1
 
 MONITOR
-45
-164
-102
-209
+24
+188
+81
+233
 Note
 get-chord
 17
@@ -356,10 +431,10 @@ get-chord
 11
 
 SLIDER
-30
-242
-202
-275
+29
+266
+201
+299
 Sound
 Sound
 0
@@ -439,7 +514,162 @@ CHOOSER
 Picking
 Picking
 "Down-Strum" "Up-Strum" "Roll" "Travis-Pick"
+2
+
+BUTTON
+880
+153
+998
+186
+Down-Strum
+set picking \"Down-Strum\"
+NIL
+1
+T
+OBSERVER
+NIL
+1
+NIL
+NIL
+1
+
+BUTTON
+890
+208
+988
+241
+Up-Strum
+set picking \"Up-Strum\"
+NIL
+1
+T
+OBSERVER
+NIL
+2
+NIL
+NIL
+1
+
+BUTTON
+909
+264
+972
+297
+Roll
+set picking \"Roll\"
+NIL
+1
+T
+OBSERVER
+NIL
 3
+NIL
+NIL
+1
+
+BUTTON
+883
+326
+989
+359
+Travis-Pick
+set picking \"Travis-Pick\"
+NIL
+1
+T
+OBSERVER
+NIL
+4
+NIL
+NIL
+1
+
+SLIDER
+853
+388
+1025
+421
+Speed
+Speed
+0
+30
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+64
+319
+137
+352
+Demo
+house-of-rising-sun\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+CHOOSER
+11
+384
+211
+429
+Guitar
+Guitar
+"Nylon String Guitar" "Steel Acoustic Guitar" "Jazz Electric Guitar" "Clean Electric Guitar" "Muted Electric Guitar" "Overdriven Guitar" "Distortion Guitar" "Guitar harmonics" "Banjo" "Bag pipe"
+9
+
+BUTTON
+13
+20
+95
+53
+Record
+record
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+122
+15
+200
+60
+Recording
+recording
+17
+1
+11
+
+BUTTON
+20
+82
+197
+115
+Play Back Recording
+playback
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
