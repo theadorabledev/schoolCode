@@ -1,0 +1,9 @@
+from math import *
+def getEuclideanDistance(a, b):
+    return sqrt((a[0] - b[0]) ** 2) + ((a[1] - b[1]) ** 2))
+def makeRegularPolygon(sides, dist):
+    angle = radians(360.0 / sides)
+    points = [(dist, 0)]
+    for i in xrange(1, sides):
+        x, y = points[-1]
+        points.append(((x * cos(angle)) - (y * sin(angle))), ((y * cos(angle)) + (x * sin(angle))))
