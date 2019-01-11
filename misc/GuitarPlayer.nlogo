@@ -12,7 +12,7 @@ to setup
   set minor_change 0
   set minor false
   set recording false
-  set pastRecord []
+  set pastRecord [" "]
   set strum-time 1
   ;set roll false
   ask patches[
@@ -228,10 +228,13 @@ end
 to record
   set recording not recording
   if recording[
-    set pastRecord []
+    set pastRecord [" "]
   ]
 end
 to playback
+  let l pastRecord
+  setup
+  set pastRecord l
   ask patches[
     set pcolor white
     set plabel ""
@@ -508,7 +511,7 @@ NIL
 T
 OBSERVER
 NIL
-NIL
+X
 NIL
 NIL
 1
@@ -565,7 +568,7 @@ CHOOSER
 Picking
 Picking
 "Down-Strum" "Up-Strum" "Roll" "Travis-Pick"
-0
+2
 
 BUTTON
 880
@@ -644,7 +647,7 @@ Speed
 Speed
 1
 30
-30.0
+10.0
 1
 1
 NIL
@@ -768,7 +771,7 @@ It plays barre chords
 0) Press setup, then press play.
 1) You press a key.
 2) You press the modifiers available ( 7 sharp minor).
-3) Pressing the space key plays the chord
+3) Pressing the x key plays the chord
 4) Repeat 1-4
 
 ## Extra Modifiers
@@ -1096,7 +1099,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.4
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
