@@ -1,5 +1,5 @@
 extensions [sound table]
-globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7 recording pastRecord]
+globals [lE A D G B hE minor minor_change dict note sharp is-7 change-7 recording pastRecord strum-time]
 patches-own [last-val]
 to setup
   ca
@@ -13,6 +13,7 @@ to setup
   set minor false
   set recording false
   set pastRecord []
+  set strum-time 1
   ;set roll false
   ask patches[
     set pcolor white
@@ -39,24 +40,26 @@ to setup
 end
 
 to play
-  ask patches with [pxcor = max-pxcor][
-    set plabel ""
-  ]
-  ask patches[
-    set last-val plabel
-  ]
-  ask patches[
-    set plabel [last-val] of patch-at -1 0
-  ]
-  set pastRecord lput " " pastRecord
-  wait .5
+  every 10 / speed[
+    ask patches with [pxcor = max-pxcor][
+      set plabel ""
+    ]
+    ask patches[
+      set last-val plabel
+    ]
+    ask patches[
+      set plabel [last-val] of patch-at -1 0
+    ]
+    if recording[
+      set pastRecord lput " " pastRecord
+    ]
+  ];wait .5
 
 end
 ; * (10 / speed)
 to play-chord
-  show Guitar
+  ;show Guitar
   if picking = "Roll"[
-
     sound:play-note-later 0 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
     sound:play-note-later .2 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
     sound:play-note-later .4 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
@@ -81,13 +84,15 @@ to play-chord
     sound:play-note-later .8 * (10 / speed) Guitar (A + (table:get dict note) + Capo) Sound .5
     sound:play-note-later 1 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
   ]
-  if picking = "Travis-Pick"[
+  ifelse picking = "Travis-Pick"[
     sound:play-note-later 0 * (10 / speed) Guitar (lE + (table:get dict note) + Capo) Sound .5
     sound:play-note-later .4 * (10 / speed) Guitar (D + (table:get dict note)  + change-7 + Capo) Sound .5
     sound:play-note-later .8 * (10 / speed) Guitar (hE + (table:get dict note) + Capo) Sound .5
     sound:play-note-later .8 * (10 / speed) Guitar (B + (table:get dict note) + Capo) Sound .5
     sound:play-note-later 1.2 * (10 / speed) Guitar (G + (table:get dict note) + minor_change + Capo) Sound .5
-
+    set strum-time 1.6 * (10 / speed)
+  ][
+    set strum-time 1.2 * (10 / speed)
   ]
   ask patches with [pxcor = min-pxcor][
     set plabel ""
@@ -95,7 +100,10 @@ to play-chord
   ask patch min-pxcor ((table:get dict note) - 6)[
     set plabel get-chord
   ]
-  set pastRecord replace-item -1 pastRecord get-chord
+  if recording[
+    set pastRecord butLast pastRecord
+    set pastRecord lput get-chord pastRecord
+  ]
 end
 to set-note [n]
   set sharp false
@@ -219,6 +227,49 @@ to house-of-rising-sun
 end
 to record
   set recording not recording
+  if recording[
+    set pastRecord []
+  ]
+end
+to playback
+  ask patches[
+    set pcolor white
+    set plabel ""
+    set plabel-color 0
+  ]
+  set recording False
+  foreach pastRecord[ n ->
+    ifelse n != " "[
+      if sharp[
+        swap-sharp
+      ]
+      if is-7[
+        swap-7
+      ]
+      if minor[
+        swap-minor
+      ]
+      show item 0 n
+      set note (item 0 n)
+      ;set-note item 0 n
+      if member? "7" n[
+        swap-7
+      ]
+      if member? "#" n[
+        swap-sharp
+      ]
+      if member? "m" n[
+        swap-minor
+      ]
+
+      play-chord
+      wait strum-time
+    ][
+      wait 10 / speed
+    ]
+    play
+  ]
+
 
 end
 @#$#@#$#@
@@ -431,10 +482,10 @@ get-chord
 11
 
 SLIDER
-29
-266
-201
-299
+22
+245
+194
+278
 Sound
 Sound
 0
@@ -457,7 +508,7 @@ NIL
 T
 OBSERVER
 NIL
-X
+NIL
 NIL
 NIL
 1
@@ -514,7 +565,7 @@ CHOOSER
 Picking
 Picking
 "Down-Strum" "Up-Strum" "Roll" "Travis-Pick"
-2
+0
 
 BUTTON
 880
@@ -585,15 +636,15 @@ NIL
 1
 
 SLIDER
-853
-388
-1025
-421
+851
+371
+1023
+404
 Speed
 Speed
-0
+1
 30
-10.0
+30.0
 1
 1
 NIL
@@ -623,8 +674,8 @@ CHOOSER
 429
 Guitar
 Guitar
-"Nylon String Guitar" "Steel Acoustic Guitar" "Jazz Electric Guitar" "Clean Electric Guitar" "Muted Electric Guitar" "Overdriven Guitar" "Distortion Guitar" "Guitar harmonics" "Banjo" "Bag pipe"
-9
+"Nylon String Guitar" "Steel Acoustic Guitar" "Jazz Electric Guitar" "Clean Electric Guitar" "Muted Electric Guitar" "Overdriven Guitar" "Distortion Guitar" "Guitar harmonics" "Banjo"
+0
 
 BUTTON
 13
@@ -671,6 +722,40 @@ NIL
 NIL
 1
 
+BUTTON
+939
+415
+1018
+448
+Speed >
+if speed < 30[\nset speed speed + 1\n]
+NIL
+1
+T
+OBSERVER
+NIL
+.
+NIL
+NIL
+1
+
+BUTTON
+852
+416
+931
+449
+< Speed
+if speed > 0[\nset speed speed - 1\n]\n
+NIL
+1
+T
+OBSERVER
+NIL
+,
+NIL
+NIL
+1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -680,11 +765,23 @@ A Guitar playing app.
 It plays barre chords
 
 ## HOW TO USE IT
-0) Press setup, then play.
+0) Press setup, then press play.
 1) You press a key.
-2) You press the modifiers available.
-3) Pressing the x key plays the chord
+2) You press the modifiers available ( 7 sharp minor).
+3) Pressing the space key plays the chord
 4) Repeat 1-4
+
+## Extra Modifiers
+* Capo sets the capo on the fretboard with 0 being none
+* Guitar sets the type of guitar
+* Picking sets the picking / strumming style (Keys 1-4)
+* Speed sets the picking/strumming speed, it can be moved up and down with the . and , keys respectively
+* Sound sets the audio level
+
+## Recording / Playback
+* While playing (play is pressed), press 'Record'
+* To stop press 'Record' again or play again.
+* Press 'Play Back Recording' to replay the last saved song, with CURRENT extra modifiers.
 
 ## NETLOGO FEATURES
 
@@ -999,7 +1096,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
