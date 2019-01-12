@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Sign Up</title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha384-PmY9l28YgO4JwMKbTvgaS7XNZJ30MK9FAZjjzXtlqyZCqBY6X6bXIkM++IkyinN+" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="container">
+      <form action="" method="post" class="box login">
+          Email : <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+          <br>
+          Password : <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+          <br>
+          Confirm Password : <input type="password" placeholder="Password" name="password2" value="{{
+          request.form.password2 }}">
+          <br>
+        <input class="btn btn-default" type="submit" value="Sign Up">
+        <br>
+        <a href="login">Log In</a>
+      </form>
+      
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+    </div>
+  </body>
+</html>
