@@ -1,0 +1,27 @@
+<html>
+	<head>
+	<title></title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha384-PmY9l28YgO4JwMKbTvgaS7XNZJ30MK9FAZjjzXtlqyZCqBY6X6bXIkM++IkyinN+" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+	<body>
+		<div class="message-box">
+			{% for segment in segment_details %}
+			
+			  {% if not segment["private"] %}
+				  <div class="message">
+				  {{segment["sender"]}} : {{segment["time"]}} : {{segment["text"]}}
+				  </div>
+			  {% elif (username == segment["sender"]) or ((segment["recipients"] is not none) and (username in segment["recipients"])) %}
+					<div class="message">
+					{{segment["sender"]}} - {{segment["recipients"]}} : {{segment["time"]}} : {{segment["text"]}}
+					</div>
+			  {% endif %}
+			  
+			
+		  {% endfor %}
+		</div>
+	</body>
+</html>
