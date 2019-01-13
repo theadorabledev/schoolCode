@@ -8,11 +8,13 @@ invites = set(open("Invites.txt").read().split(","))
 posts = json.loads(open("chat.json").read())
 
 def userPost(sender, text, recipients=None):
+    if recipients:
+        recipients.remove("")
     return {
             "sender" : sender,
             "text" : text,
             "time" : datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "private" : len(recipients) > 0 ,
+            "private" : len(recipients) > 1 ,
             "recipients" : recipients
         }
 
@@ -94,8 +96,6 @@ def login():
 @app.route('/home', methods=["GET", "POST"])
 def home():
     if request.method == 'POST':     
-        #return str(globals())
-        #return str(globals())
         thePost = userPost(request.cookies.get('userID'),  request.form["message"], recipients=request.form["recipients"].split(","))
         posts.append(thePost)
         with open("chat.json", "w") as f:
@@ -116,6 +116,10 @@ def invite():
     return redirect(url_for("home"))
     
 
+@app.route("/sub", methods=["GET"])
+def sub():
+    name = request.cookies.get('userID')
+    return render_template('messageBox.html', username=name, segment_details=posts)
 @app.route('/')
 def hello_world():
     return redirect(url_for('home'))
