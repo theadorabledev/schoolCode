@@ -106,6 +106,7 @@ to-report nearestPatch [x y]
   report list xx yy
 end
 to play
+  set playing true
   if not mouse-down?[
     set mouse-was-down? false
   ]
@@ -206,7 +207,7 @@ to solve
       check-win
     ]
   ]
-
+set playing false
 
 end
 @#$#@#$#@
@@ -469,6 +470,23 @@ BUTTON
 230
 NIL
 solve
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+66
+294
+139
+327
+NIL
+setup
 NIL
 1
 T
