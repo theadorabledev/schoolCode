@@ -1,5 +1,5 @@
 extensions [table py]
-globals [coords]
+globals [coords bestCoords]
 breed [points point]
 to go
   ca
@@ -7,7 +7,8 @@ to go
 
   py:setup py:python
   py:run "from TravellingSalesman import *"
-  set coords py:runresult "netlogoA(10)"
+  set coords py:runresult word word "netlogoA("  sides ")"
+  set bestCoords py:runresult word word word word "netlogoB(" sides "," generations ")"
   ask patches[
     set pcolor white
   ]
@@ -16,6 +17,17 @@ to go
       sprout-points 1
     ]
   ]
+  let i 0
+  repeat (length bestCoords) - 1[
+    let t1 item i bestCoords
+    let t2 item (i + 1) bestCoords
+    show list t1 t2
+    ask turtles-on patch (item 0 t1) (item 1 t1)[
+      create-links-with turtles-on patch (item 0 t2) (item 1 t2)
+    ]
+    set i i + 1
+  ]
+
   ;show read-from-string shell:exec "python TravellingSalesman.py"
 end
 @#$#@#$#@
@@ -33,8 +45,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
@@ -62,6 +74,36 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+21
+23
+193
+56
+sides
+sides
+3
+100
+17.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+16
+78
+188
+111
+generations
+generations
+10
+1000
+50.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
