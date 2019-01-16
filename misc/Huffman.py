@@ -30,13 +30,6 @@ class Node:
         if not self.right and not self.left:
             children.append(self.encoding)
         return children
-# Shannon info for one possibility given its probability def 
-S1(prob):  
-return log(1/prob,2) 
-# Shannon info for an event, given list of probabilities: 
-def S(event
-):  
-return sum([x * S1(x) for x in event]) 
 def Huffman(possibilities):
     """ Returns the best encoding given the possibilities. """
     possibilities = [Node(value=p) for p in possibilities]
@@ -53,10 +46,32 @@ def Huffman(possibilities):
     return r
 def group(p, g):
     """ Groups the possiblities together g times. """
-    r = [p1 * p2 for p1 in p for p2 in p]
-    r.sort()
-    return r
+    theDict = [str(p1) for p1 in p]
+    print theDict
+    orig = p[::]
+    orig2 = p[::]
+    for i in xrange(g - 1):
+        a = []
+        for p2 in orig:
+            for p1 in theDict:
+                a.append(str(p1) +"-"+ str(p2))
+        theDict = a
+        print theDict
+    p = []
+    for p1 in theDict:
+        t = 1
+        for n in p1.split("-"):
+            t *= float(n)
+        p.append(t)
+    p.sort()
+    return p
+def getBestEncoding(p, g=1):
+    """ Given a list of possibilities (p) and the number of consecutive times information is sent(g), returns the best encoding and the average number of bits. """
+    p = group(p, g)
+    result = Huffman(p[::])
+    print p
+    print result
 def main():
-    print Huffman(group([.75, .25], 2))
+    getBestEncoding([.75, .25], 2)
 if __name__ == "__main__":
     main()

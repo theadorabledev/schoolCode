@@ -2,3 +2,6 @@
 *.tmp.nlogo
 outTemp.txt
 *.idea
+*.pyc
+*.py~
+*.py#
