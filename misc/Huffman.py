@@ -30,24 +30,28 @@ class Node:
         if not self.right and not self.left:
             children.append(self.encoding)
         return children
-def Huffman(possibilities):
-    """ Returns the best encoding given the possibilities. """
-    possibilities = [Node(value=p) for p in possibilities]
-    possibilities.sort(key=lambda k : k.value)
-    while len(possibilities) > 1:
-        a = possibilities.pop(0)#smaller
-        b = possibilities.pop(0)#larger
-        possibilities.append(Node(left=b, right=a))
-        possibilities.sort(key = lambda k : k.value)
-    root = possibilities[0]
+def Huffman(event):
+    """ Returns the best encoding given the event. """
+    orig = event[::]
+    event = [Node(value=p) for p in event]
+    event.sort(key=lambda k : k.value)
+    while len(event) > 1:
+        a = event.pop(0)#smaller
+        b = event.pop(0)#larger
+        event.append(Node(left=b, right=a))
+        event.sort(key = lambda k : k.value)
+    root = event[0]
     root.setEncoding()
     r = root.getAllEncodings()
     r.sort(key = lambda k : len(k))
-    return r
+    rPos = orig[::-1]
+    #print rPos, r
+    #print [rPos[i] * len(r[i]) for i in xrange(len(r))]
+    return [r, Shannon([rPos[i] * len(r[i]) for i in xrange(len(r))])]
 def group(p, g):
     """ Groups the possiblities together g times. """
     theDict = [str(p1) for p1 in p]
-    print theDict
+    #print theDict
     orig = p[::]
     orig2 = p[::]
     for i in xrange(g - 1):
@@ -56,7 +60,7 @@ def group(p, g):
             for p1 in theDict:
                 a.append(str(p1) +"-"+ str(p2))
         theDict = a
-        print theDict
+        #print theDict
     p = []
     for p1 in theDict:
         t = 1
@@ -65,13 +69,22 @@ def group(p, g):
         p.append(t)
     p.sort()
     return p
+def S1(prob):
+    
+    return log(1/prob,2) 
+def Shannon(event):
+    s = sum(event)
+    #print s
+    return abs(sum([x * log(1/(float(x)/s), 2) for x in event])/sum(event)) 
 def getBestEncoding(p, g=1):
     """ Given a list of possibilities (p) and the number of consecutive times information is sent(g), returns the best encoding and the average number of bits. """
+    print "\nGiven :", p, "with grouping", g,"."
+    print "Theoretical best average number of bits:", Shannon(p)
     p = group(p, g)
     result = Huffman(p[::])
-    print p
-    print result
+    print "Best encoding :", result[0]
+    print "Average number of bits :", result[1]/g
 def main():
-    getBestEncoding([.75, .25], 2)
+    getBestEncoding([.75, .25], g=2)
 if __name__ == "__main__":
     main()
