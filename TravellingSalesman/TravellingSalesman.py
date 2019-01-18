@@ -27,6 +27,8 @@ class Path:
         self.salesmen = []
         self.rejects = {" "}
         self.places = [coord for coord in self.world if coord != self.startPos]
+        self.mom = self.dad = None
+        
         self.kirk()
         
     def evolve(self):
@@ -39,6 +41,9 @@ class Path:
         """ The first generation, to boldly go where no one has gone before. """
         for i in xrange(self.batchSize):
             self.salesmen.append(Salesman(self))
+        self.salesmen.sort(key=lambda k : k.score)
+        self.mom = self.salesmen[0]
+        self.dad = self.salesmen[1]
     def picard(self):
         """ The next generation. Still boldly going!"""
         children = []
@@ -47,6 +52,15 @@ class Path:
             for child in Salesman.beFruitfulAndMultiply(self.salesmen[i], self.salesmen[i + 1], self.batchSize / self.numberPassing):
                 children.append(child)
         self.salesmen = children
+        # If the last generation was better, keep the best
+        """
+        if self.mom.score < self.salesmen[0]:
+            self.salesmen.pop(-1)
+            self.salesmen.pop(-1)
+            self.salesmen.append(self.dad)
+            self.salesmen.append(self.mom)
+            self.salesmen.sort(key=lambda k : k.score)
+        """    
         
 class Salesman:
     def __init__(self, path, route=None):
@@ -70,9 +84,11 @@ class Salesman:
             for coord in father.route:
                 if coord not in newRoute:
                     newRoute[newRoute.index(" ")] = coord
-            for i in xrange(-1, len(newRoute) - 1):
-                if random.randint(0, 100) < mother.path.swapChance:
-                    newRoute[i], newRoute[i + 1] = newRoute[i + 1], newRoute[i] 
+            #for i in xrange(-1, len(newRoute) - 1):
+            if random.randint(0, 100) < mother.path.swapChance:
+                r1 = random.randint(0, len(newRoute) - 1)
+                r2 = random.randint(0, len(newRoute) - 1)
+                newRoute[r1], newRoute[r2] = newRoute[r2], newRoute[r1] 
             children.append(Salesman(mother.path, route=newRoute))
         return children
     
