@@ -68,7 +68,7 @@ def group(p, g):
 def Shannon(event):
     """ Return the Shannon info for an event. """
     s = sum(event)
-    return abs(sum([x * log(1/(float(x)/s), 2) for x in event])/sum(event)) 
+    return abs(sum([x * log(1/(float(x)/s), 2) for x in event if x > 0])/sum(event)) 
 def getBestEncoding(p, g=1):
     """ Given a list of possibilities (p) and the number of consecutive times information is sent(g), returns the best encoding and the average number of bits. """
     print "\nGiven :", p, "with grouping", g,"."
@@ -79,7 +79,7 @@ def getBestEncoding(p, g=1):
     print "Average number of bits :", result[1]/g
 def main():
     # Usage : python Huffman.py <Groups> <probability 1> .. <probability n>
-    args = [float(x) for x in sys.argv[1:]]
+    args = [float(x) for x in sys.argv[1:] if float(x) > 0]
     getBestEncoding(args[1:], g=int(args[0]))
 if __name__ == "__main__":
     main()
