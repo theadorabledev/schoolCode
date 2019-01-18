@@ -6,7 +6,7 @@ to setup
   set gen 0
   set-default-shape points "circle"
 
-  py:setup py:python
+  py:setup py:python2
   py:run "from TravellingSalesman import *"
   py:run word word word word "p = Path(makeRegularPolygon(" sides ", 15), swapChance=" swap-chance ")"
 
@@ -134,7 +134,7 @@ sides
 sides
 3
 100
-20.0
+16.0
 1
 1
 NIL
@@ -177,7 +177,7 @@ generations
 generations
 1
 1000
-396.0
+1.0
 1
 1
 NIL
@@ -191,7 +191,7 @@ SLIDER
 number-shown
 number-shown
 1
-20
+10
 1.0
 1
 1
@@ -236,7 +236,7 @@ swap-chance
 swap-chance
 0
 100
-50.0
+30.0
 1
 1
 NIL
