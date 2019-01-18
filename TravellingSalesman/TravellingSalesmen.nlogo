@@ -1,34 +1,84 @@
 extensions [table py]
-globals [coords bestCoords]
+globals [coords bestCoords gen]
 breed [points point]
-to go
+to setup
   ca
+  set gen 0
   set-default-shape points "circle"
 
   py:setup py:python
   py:run "from TravellingSalesman import *"
+  py:run word word word word "p = Path(makeRegularPolygon(" sides ", 15), swapChance=" swap-chance ")"
+
   set coords py:runresult word word "netlogoA("  sides ")"
-  set bestCoords py:runresult word word word word "netlogoB(" sides "," generations ")"
+  ;set bestCoords py:runresult word word word word "netlogoB(" sides "," generations ")"
   ask patches[
     set pcolor white
   ]
+
   foreach coords[n ->
     ask patch item 0 n item 1 n[
       sprout-points 1
     ]
   ]
-  let i 0
-  repeat (length bestCoords) - 1[
-    let t1 item i bestCoords
-    let t2 item (i + 1) bestCoords
-    show list t1 t2
-    ask turtles-on patch (item 0 t1) (item 1 t1)[
-      create-links-with turtles-on patch (item 0 t2) (item 1 t2)
+
+  let c py:runresult "[[p.startPos] + salesman.route + [p.startPos] for salesman in p.salesmen[:p.numberPassing]]"
+  let x 0
+  repeat number-shown[
+    let i 0
+    let p item x c
+    repeat (length p) - 1[
+      let t1 item i p
+      let t2 item (i + 1) p
+      show list t1 t2
+      ask turtles-on patch (item 0 t1) (item 1 t1)[
+        create-links-with turtles-on patch (item 0 t2) (item 1 t2) [
+          set color (x * 10) + 5
+        ]
+
+      ]
+      set i i + 1
     ]
-    set i i + 1
+    set x x + 1
   ]
+  update-plots
 
   ;show read-from-string shell:exec "python TravellingSalesman.py"
+end
+to next-generation
+  repeat generations - 1[
+    set gen gen + 1
+    ;let c py:runresult word word "netlogoC(p, " generations")"
+    let c py:runresult "netlogoC(p, 1)"
+    show c
+
+    update-plots
+  ]
+  set gen gen + 1
+  let c py:runresult "netlogoC(p, 1)"
+  ask links [
+      die
+    ]
+    let x 0
+    repeat number-shown[
+      let i 0
+      let p item x c
+      repeat (length p) - 1[
+        let t1 item i p
+        let t2 item (i + 1) p
+        show list t1 t2
+        ask turtles-on patch (item 0 t1) (item 1 t1)[
+          create-links-with turtles-on patch (item 0 t2) (item 1 t2) [
+            set color (x * 10) + 5
+          ]
+
+        ]
+        set i i + 1
+      ]
+      set x x + 1
+    ]
+  update-plots
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -60,11 +110,11 @@ ticks
 
 BUTTON
 67
-132
+167
 130
-165
+200
 NIL
-go\n
+setup\n
 NIL
 1
 T
@@ -76,29 +126,116 @@ NIL
 1
 
 SLIDER
-21
-23
-193
-56
+14
+50
+186
+83
 sides
 sides
 3
 100
-17.0
+20.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+37
+213
+158
+246
+NIL
+next-generation\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+35
+424
+166
+469
+Generation number : 
+gen + 1
+17
+1
+11
+
+SLIDER
+16
+91
+188
+124
+generations
+generations
+1
+1000
+396.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-16
-78
-188
-111
-generations
-generations
+19
+128
+191
+161
+number-shown
+number-shown
+1
+20
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+2
+260
+202
+410
+Gen. vs dist.
+Generation
+Best distance
+0.0
+100.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot py:runresult \"p.best.score\""
+
+MONITOR
+70
+475
+139
+520
+Best dist. 
+py:runresult \"p.best.score\"
+17
+1
+11
+
+SLIDER
+17
 10
-1000
+189
+43
+swap-chance
+swap-chance
+0
+100
 50.0
 1
 1
