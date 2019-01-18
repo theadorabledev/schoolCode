@@ -19,7 +19,7 @@ def connectionsToNetlogo(connections):
     return [list(coord) for coord in connections]
     #return " [" + " ".join([str(coord) for coord in connections]).replace("(", "[").replace(")","]").replace(",", "") + " ]"
 class Path:
-    def __init__(self, world, startPos=None, generations=100, batchSize=100, numberPassing=10, swapChance=5):
+    def __init__(self, world, startPos=None, generations=100, batchSize=100, numberPassing=10, swapChance=10):
         self.world, self.distances = world
         self.startPos, self.generations, self.batchSize, self.numberPassing, self.swapChance = startPos, generations, batchSize, numberPassing, swapChance
         if not startPos:
@@ -28,13 +28,13 @@ class Path:
         self.rejects = {" "}
         self.places = [coord for coord in self.world if coord != self.startPos]
         self.kirk()
-        for i in xrange(generations):
-            self.picard()
+        
+    def evolve(self):
+        """ Sets the next generation. """
+        
+        self.picard()
         self.best = min(self.salesmen, key=lambda k : k.score)
-        #print best.score
-        #print best.route
-        a =  [self.startPos] + self.best.route + [self.startPos]
-
+        self.salesmen.sort(key=lambda k : k.score)
     def kirk(self):
         """ The first generation, to boldly go where no one has gone before. """
         for i in xrange(self.batchSize):
@@ -70,11 +70,9 @@ class Salesman:
             for coord in father.route:
                 if coord not in newRoute:
                     newRoute[newRoute.index(" ")] = coord
-            for coord in newRoute:
+            for i in xrange(-1, len(newRoute) - 1):
                 if random.randint(0, 100) < mother.path.swapChance:
-                    r1 = random.randint(0, len(newRoute) - 1)
-                    r2 = random.randint(0, len(newRoute) - 1)
-                    newRoute[r1], newRoute[r2] = newRoute[r2], newRoute[r1] 
+                    newRoute[i], newRoute[i + 1] = newRoute[i + 1], newRoute[i] 
             children.append(Salesman(mother.path, route=newRoute))
         return children
     
@@ -89,6 +87,10 @@ def netlogoB(s, g):
     square = makeRegularPolygon(s, 15)
     p = Path(square, generations=g)    
     return connectionsToNetlogo([p.startPos] + p.best.route + [p.startPos])
+def netlogoC(path, generations):
+    for i in xrange(generations):
+        path.evolve()
+    return [[path.startPos] + salesman.route + [path.startPos] for salesman in path.salesmen[:path.numberPassing]]
 def main():
     square = makeRegularPolygon(20, 10)
     p = Path(square)

@@ -1,4 +1,5 @@
 from math import log
+import sys
 class Node:
     def __init__(self, value=0, left=None, right=None):
         if left and right:
@@ -19,7 +20,6 @@ class Node:
         if self.right:
             self.right.encoding = self.encoding + "1"
             self.right.setEncoding()
-    #bigger smaller
     def getAllEncodings(self):
         """ Returns all possible encodings in the tree. """
         children = []
@@ -45,13 +45,10 @@ def Huffman(event):
     r = root.getAllEncodings()
     r.sort(key = lambda k : len(k))
     rPos = orig[::-1]
-    #print rPos, r
-    #print [rPos[i] * len(r[i]) for i in xrange(len(r))]
-    return [r, Shannon([rPos[i] * len(r[i]) for i in xrange(len(r))])]
+    return [r, sum([rPos[i] * len(r[i]) for i in xrange(len(r))])]
 def group(p, g):
     """ Groups the possiblities together g times. """
     theDict = [str(p1) for p1 in p]
-    #print theDict
     orig = p[::]
     orig2 = p[::]
     for i in xrange(g - 1):
@@ -60,7 +57,6 @@ def group(p, g):
             for p1 in theDict:
                 a.append(str(p1) +"-"+ str(p2))
         theDict = a
-        #print theDict
     p = []
     for p1 in theDict:
         t = 1
@@ -69,12 +65,9 @@ def group(p, g):
         p.append(t)
     p.sort()
     return p
-def S1(prob):
-    
-    return log(1/prob,2) 
 def Shannon(event):
+    """ Return the Shannon info for an event. """
     s = sum(event)
-    #print s
     return abs(sum([x * log(1/(float(x)/s), 2) for x in event])/sum(event)) 
 def getBestEncoding(p, g=1):
     """ Given a list of possibilities (p) and the number of consecutive times information is sent(g), returns the best encoding and the average number of bits. """
@@ -85,6 +78,8 @@ def getBestEncoding(p, g=1):
     print "Best encoding :", result[0]
     print "Average number of bits :", result[1]/g
 def main():
-    getBestEncoding([.75, .25], g=2)
+    # Usage : python Huffman.py <Groups> <probability 1> .. <probability n>
+    args = [float(x) for x in sys.argv[1:]]
+    getBestEncoding(args[1:], g=int(args[0]))
 if __name__ == "__main__":
     main()
