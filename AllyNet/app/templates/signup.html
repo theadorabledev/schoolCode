@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Login</title>
+    <title>Sign Up</title>
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha384-PmY9l28YgO4JwMKbTvgaS7XNZJ30MK9FAZjjzXtlqyZCqBY6X6bXIkM++IkyinN+" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,17 +9,21 @@
   <body>
     <div class="container">
       <form action="" method="post" class="box login">
-        Email : <input type="text" placeholder="Username" name="username" value="{{
+		<input type="text" placeholder="Email" name="email" value="{{
+          request.form.email }}">	
+          <input type="text" placeholder="Username" name="username" value="{{
           request.form.username }}">
-		  <br>
-         Password : <input type="password" placeholder="Password" name="password" value="{{
+          <input type="password" placeholder="Password" name="password" value="{{
           request.form.password }}">
-		  <br>
-        <input class="btn btn-default" type="submit" value="login">
-		<br>
-		<a href="signup">Sign Up</a>
+          <input type="password" placeholder="Confirm Password" name="confirm_password">
+		  <input type="text" placeholder="Signup Key" name="key" value="{{
+          request.form.key }}">
+          <br>
+        <input class="btn btn-default" type="submit" value="Sign Up">
+        <br>
+        <a href="login">Log In</a>
       </form>
-	  
+      
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
       {% endif %}
