@@ -46,3 +46,12 @@ class Session(db.Model):
         limit = datetime.now() - timedelta(days=expiration_days)
         cls.query.filter(cls.timestamp <= limit).delete()
         db.session.commit()    
+class Noun(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    reason = db.Column(db.String(200), index=True)
+    location = db.Column(db.String(200), index=True)
+    friendly = db.Column(db.Boolean)
+    person = db.Column(db.Boolean)
+    agrees = db.Column(db.Integer)
+    disagrees = db.Column(db.Integer)

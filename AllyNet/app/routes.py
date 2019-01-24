@@ -135,6 +135,25 @@ def profile():
         return render_template("profile.html", username=getUser(request).username)
     else:
         return redirect(url_for("login"))
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if getUser(request):
+        print request.args
+        friendly1 = request.args.get("friendly", default=False, type=bool)
+        person1 = request.args.get("people", default=False, type=bool)
+        keywords = request.args.get("keywords", default="", type=str)
+        results = db.session.query(Noun).filter_by(friendly = friendly1, person = person1).all()
+        print person1, friendly1, results
+        nouns = []
+        for result in results:
+            for word in keywords:
+                if word in result.name.lower() or word in result.location.lower() or word in result.reason.lower():
+                    nouns.append(result)
+        if keywords:
+            results = [{"name":noun.name, "location":noun.location, "reason":noun.reason} for noun in nouns]
+        return render_template("search.html", friendly=friendly1, people=person1, username=getUser(request).username, nouns=results)
+    else:
+        return redirect(url_for("login"))
 def makeSessionID(user, resp):
     s_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in xrange(45))
     s = Session(user=user, session_id=s_id)
@@ -143,7 +162,7 @@ def makeSessionID(user, resp):
     resp.set_cookie('sessionID', s_id) 
 def getUser(request):
     Session.delete_expired()
-    if request.cookies.get('sessionID'):
+    if request.cookies.get('sessionID') and db.session.query(Session).filter_by(session_id=request.cookies.get('sessionID')).first():
         u = db.session.query(Session).filter_by(session_id=request.cookies.get('sessionID')).first().user
         return u
     else:       
