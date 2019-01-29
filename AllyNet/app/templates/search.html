@@ -5,12 +5,29 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha384-PmY9l28YgO4JwMKbTvgaS7XNZJ30MK9FAZjjzXtlqyZCqBY6X6bXIkM++IkyinN+" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	  <script>
+		  $(document).on('click', '.panel-heading span.clickable', function(e){
+			var $this = $(this);
+			if(!$this.hasClass('panel-collapsed')) {
+				$this.parents('.panel').find('.panel-body').slideUp();
+				$this.addClass('panel-collapsed');
+				$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+			} else {
+				$this.parents('.panel').find('.panel-body').slideDown();
+				$this.removeClass('panel-collapsed');
+				$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+			}
+		})
+	  </script>
   </head>
+  
   
   <body onload='$("#mb").scrollTop($("#mb")[0].scrollHeight);'>
 	<nav class="navbar navbar-default">
@@ -25,7 +42,6 @@
 		  </button>
 		  <a class="navbar-brand" href="#">Welcome {{ username }}!</a>
 		</div>
-
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav">
@@ -58,7 +74,6 @@
 			<button type="submit" class="btn btn-default">Search</button>
 		  </form>
 		  <ul class="nav navbar-nav navbar-right">
-			<li><a href="#">Link</a></li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
 			  <ul class="dropdown-menu">
@@ -71,29 +86,89 @@
 		</div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>
-		
 	
 	
-	<form action="/invite" method="post" style="visibility: hidden;">
-		<input style="display:inline" class="btn btn-default" type="submit" value="Invite : ">
-		<input  style="display:inline"type="text" placeholder="example@me.com" name="email" value="{{request.form.email }}">
-		  
-	</form>
-	<div class="message-box" onclick="this.scrollTop = this.scrollHeight;" id="mb">
-		{% for segment in nouns %}
-		
-			{% if not segment["private"] %}
-				<div class="message">
-				{{segment["name"]}} : {{segment["location"]}} : {{segment["reason"]}}
+	<div class="panel panel-default" style="overflow:scroll; height:50%;">
+		<div class="panel-heading">
+			<h3 class="panel-title">{% if request.args.friendly %} Friendly {% else %} Hostile {% endif %}{% if request.args.people %}People {% else %}Places {% endif %}</h3>
+		</div>
+		<div class="panel-body" onclick="this.scrollTop = this.scrollHeight;" id="mb" >
+			{% for segment in nouns %}				
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title d-inline" >{{segment["name"]}}    ---    {{segment["location"]}}</h3>
+					</div>
+					<div class="panel-body">
+						{{segment["reason"]}}
+					</div>
 				</div>
-			{% endif %}	
-		{% endfor %}
+			{% endfor %}
+		</div>
 	</div>
 	<br>
-	<form action="" method="post" class="box" id="message_form">
-		<input type="textarea" placeholder="Message" name="message" value="{{request.form.message}}">
+	
+<form>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputEmail4">Email</label>
+      <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputPassword4">Password</label>
+      <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+  </div>
+  <div class="form-group">
+    <label for="inputAddress2">Address 2</label>
+    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">City</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="inputState">State</label>
+      <select id="inputState" class="form-control">
+        <option selected>Choose...</option>
+        <option>...</option>
+      </select>
+    </div>
+    <div class="form-group col-md-2">
+      <label for="inputZip">Zip</label>
+      <input type="text" class="form-control" id="inputZip">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck">
+        Check me out
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+	
+	<form action="" method="post" class="" id="">
+		<div class="row">
+			<div class="col">
+				<input type="text" class="form-control" name="name" placeholder="Name">
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" name="location "placeholder="Location">
+			</div>
+		</div>
+		<div class="row">
+		<input type="textarea" rows=2 placeholder="Message" name="message" >
+		</row>
 		<br>
 		<input class="btn btn-default" type="submit" value="Send">
 	</form>
+	
   </body>
 </html>

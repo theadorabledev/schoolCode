@@ -53,20 +53,19 @@
 			  <ul class="dropdown-menu">
 				<li><a href="/search?people=True&friendly=True">People</a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="/search?people=False&friendly=True">Places</a></li>
+				<li><a href="/search?people=&friendly=True">Places</a></li>
 			  </ul>
 			</li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hostile <span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a href="/sarch?people=False&friendly=False"People</a></li>
+				<li><a href="/search?people=&friendly=">People</a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="/search?people=False&friendly=False">Places</a></li>
+				<li><a href="/search?people=&friendly=">Places</a></li>
 			  </ul>
 			</li>
 		  </ul>
 		  <ul class="nav navbar-nav navbar-right">
-			<li><a href="#">Link</a></li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
 			  <ul class="dropdown-menu">
@@ -79,35 +78,50 @@
 		</div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>
-		
-	
-	
-	<form action="/invite" method="post" style="visibility: hidden;">
-		<input style="display:inline" class="btn btn-default" type="submit" value="Invite : ">
-		<input  style="display:inline"type="text" placeholder="example@me.com" name="email" value="{{request.form.email }}">
-		  
-	</form>
-	<div class="message-box" onclick="this.scrollTop = this.scrollHeight;" id="mb">
-		{% for segment in segment_details %}
-		
-		  {% if not segment["private"] %}
-			  <div class="message">
-			  {{segment["sender"]}} : {{segment["text"]}}
-			  </div>
-		  {% elif (username == segment["sender"]) or ((segment["recipients"] is not none) and (username in segment["recipients"])) %}
-				<div class="message">
-				{{segment["sender"]}} - {{segment["recipients"]}} : {{segment["time"]}} : {{segment["text"]}}
+
+	<div class="panel panel-default" style="overflow:scroll; height:50%;">
+
+		<div class="panel-heading text-right">
+			<h3 class="panel-title d-inline pull-left" >Group Forum</h3>
+			<div>
+				<form class="form-inline" method="post" action="/flag" onsubmit="">
+					<input name="flagged" type="hidden" value="True">
+					<!--<input type="submit" value="Show Flagged">-->
+					<button type="submit" class = "btn btn-default">
+						Show Flagged
+					</button>
+				</form>
+			</div>
+		</div>
+		<div class="panel-body" onclick="this.scrollTop = this.scrollHeight;" id="mb" >
+			{% for segment in segment_details %}
+			<div class="panel panel-default">
+				<div class="panel-heading text-right">
+					<h3 class="panel-title d-inline pull-left" >{{segment["sender"]}}</h3>
+					<div>
+						<form class="form-inline" method="post" action="/flag" onsubmit="return confirm('Do you really want to flag this post?');">
+							<input name="id" type="hidden" value="{{segment['id']}}">
+							<input name="i" type="hidden" value="message">
+							<button type="submit" class="btn btn-default" title="">
+								<span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+							</button>
+						</form>
+					</div>
 				</div>
-		  {% endif %}
-		  
-		
-	  {% endfor %}
+				<div class="panel-body">
+					{{segment["text"]}}
+				</div>
+			</div>
+			{% endfor %}
+		</div>
 	</div>
 	<br>
+	
 	<form action="" method="post" class="box" id="message_form">
 		<input type="textarea" placeholder="Message" name="message" value="{{request.form.message}}">
 		<br>
 		<input class="btn btn-default" type="submit" value="Send">
 	</form>
+	
   </body>
 </html>

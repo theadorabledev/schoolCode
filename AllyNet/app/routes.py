@@ -92,7 +92,7 @@ def home():
         return redirect(url_for("home"))
     if getUser(request):
         name = getUser(request).username
-        posts = [{"text":post.body, "sender":post.author.username, "recipients":[], "private":False, "time":post.timestamp} for post in Post.query.all()]
+        posts = [{"text":post.body, "sender":post.author.username, "id":post.author.id, "private":False, "time":post.timestamp} for post in Post.query.all()]
         return make_response(render_template('index.html', username=name, segment_details=posts))
     else:
         return redirect(url_for("login"))
@@ -154,6 +154,14 @@ def search():
         return render_template("search.html", friendly=friendly1, people=person1, username=getUser(request).username, nouns=results)
     else:
         return redirect(url_for("login"))
+@app.route("/flag", methods=["GET", "POST"])
+def flag():
+    print request.form
+    if request.form["i"] == "message":
+        Post.query.get(int(request.form["id"])).flagged = True
+        db.session.commit()
+        return redirect(url_for("home"))
+    return redirect(url_for("home"))
 def makeSessionID(user, resp):
     s_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in xrange(45))
     s = Session(user=user, session_id=s_id)
@@ -167,3 +175,5 @@ def getUser(request):
         return u
     else:       
         return None
+def makeHome(user, sd=None):
+    return make_response(render_template('index.html', username=user.username, segment_details=sd, mod=user.moderator))
