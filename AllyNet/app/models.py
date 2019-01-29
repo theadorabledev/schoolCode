@@ -19,6 +19,7 @@ class Post(db.Model):
     body = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    flagged = db.Column(db.Boolean, default=False)
     _viewers = db.Column(db.String(100), default="?")
     @property
     def viewers(self):
@@ -53,5 +54,6 @@ class Noun(db.Model):
     location = db.Column(db.String(200), index=True)
     friendly = db.Column(db.Boolean)
     person = db.Column(db.Boolean)
+    flagged = db.Column(db.Boolean, default=False)
     agrees = db.Column(db.Integer)
     disagrees = db.Column(db.Integer)
