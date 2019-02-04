@@ -1,6 +1,5 @@
-import java.util.*;
 public class Queen extends Piece{
-	public static final String symbol = "!";
+	public static final String symbol = "Q";
 	private Bishop bishop;
 	private Rook rook;
 	public Queen(Coordinate c, int s, Game g){
@@ -8,8 +7,8 @@ public class Queen extends Piece{
 		bishop = new Bishop(c, s, g);
 		rook = new Rook(c, s, g);
 	}
-	public boolean isValidPlay(Coordinate c){
-		if(!super.isValidPlay(c)) return false;
+	public boolean isValidPlay(Coordinate c, boolean theoretical){
+		if(!super.isValidPlaySuper(c)) return false;
 		return (bishop.isValidPlay(c) || rook.isValidPlay(c));
 	}
 	public void move(Coordinate c){

@@ -1,2 +1,2 @@
 #!/bin/bash
-javac -d target/bin -cp src/main/java/*.java
+javac -d target/bin -cp target/bin src/main/java/*.java src/main/java/pieces/*.java && java -cp target/bin Game
