@@ -1,7 +1,9 @@
 public class Player{
     public King king;
-	private int side;
-	public Piece[] pieces;
+    private int side;
+    public Piece[] pieces;
+    public static final Player BLACK = new Player("b");
+    public static final Player WHITE = new Player("w");
     public Player(String s, Game g){
     	side = (s.equals("w")) ? 1 : 0;
 		if(side == 1) {
