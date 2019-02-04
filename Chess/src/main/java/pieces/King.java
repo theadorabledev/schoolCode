@@ -6,7 +6,7 @@ public class King extends Piece{
 	}
 	public boolean isValidPlay(Coordinate c, boolean theoretical){
 		if(!super.isValidPlaySuper(c)) return false;
-		return (Math.abs(c.x - pos.x) == 1 && Math.abs(c.y - pos.y) == 1);
+		return (Math.abs(c.x - pos.x) == 1 && Math.abs(c.y - pos.y) == 1) && (theoretical ||  tryMove(c));
 	}
 	public boolean isInCheck(){
 		for(Piece p : game.players[otherSide].pieces){

@@ -55,7 +55,7 @@ public abstract class Piece{
 
     @Override
 	public String toString(){
-		return symbol;
+	return (side == 1) ? symbol : symbol.toLowerCase();
 		
 	}
 }

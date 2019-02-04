@@ -11,8 +11,8 @@ public class Pawn extends Piece{
 		if(Math.abs(c.x - pos.x) > 1 || Math.abs(c.y - pos.y) > 2 || (Math.abs(c.y - pos.y) == 2 && c.x - pos.x != 0)) return false;
 		if(!super.isValidPlaySuper(c)) return false;
 		if(c.y - pos.y == direction){
-			if(pos.x - c.x == 0) return game.pieceAt(pos.x, pos.y + direction) == null;
-			return (game.pieceAt(pos.x, pos.y + direction) != null);
+			if(pos.x - c.x == 0) return game.pieceAt(pos.x, pos.y + direction) == null && (theoretical ||  tryMove(c));
+			return (game.pieceAt(pos.x, pos.y + direction) != null) && (theoretical ||  tryMove(c));
 		}
 		if(!moved && c.x - pos.x == 0 && c.y - pos.y == 2 * direction && game.pieceAt(c) == null && game.pieceAt(pos.x, pos.y + direction) == null) return (theoretical ||  tryMove(c)); //first move
 		return false;
