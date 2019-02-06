@@ -1,6 +1,7 @@
 import java.util.*;
 public class King extends Piece{
 	public static final String symbol = "K";
+	public static final int points = 10;
 	public King(Coordinate c, int s, Game g){
 		super(c, s, symbol, g);
 	}
