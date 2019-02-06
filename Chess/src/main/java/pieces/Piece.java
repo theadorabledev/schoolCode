@@ -36,6 +36,7 @@ public abstract class Piece{
     	Coordinate old = new Coordinate(pos.x, pos.y);
     	boolean m = moved;
     	game.movePiece(this, c, true);
+    	//King king = game.players[side].king;
     	if (king.isInCheck()){
     		game.movePiece(this, old, true, true);
     		moved = m;
@@ -52,10 +53,14 @@ public abstract class Piece{
 	public ArrayList<Coordinate> getPossibleMoves(){
     	return game.allCoords.stream().filter(c -> isValidPlay(c)).collect(Collectors.toCollection(() -> new ArrayList<Coordinate>()));
 	}
-
     @Override
 	public String toString(){
-	return (side == 1) ? symbol : symbol.toLowerCase();
-		
+		return (side == 1) ? symbol : symbol.toLowerCase();
+	}
+	public void betray(int s){
+    	side = s;
+	}
+	public void setKing(King k){
+    	king = k;
 	}
 }

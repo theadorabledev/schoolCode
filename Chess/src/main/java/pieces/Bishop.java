@@ -1,6 +1,7 @@
 import java.util.*;
 public class Bishop extends Piece{
 	public static final String symbol = "B";
+	public static final int points = 3;
 	public Bishop(Coordinate c, int s, Game g){
 		super(c, s, symbol, g);
 	}
