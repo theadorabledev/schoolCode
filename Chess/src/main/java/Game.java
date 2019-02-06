@@ -92,14 +92,14 @@ public class Game{
 			System.out.println(p.pos + " " + p.getPossibleMoves());
 			for(Coordinate c : p.getPossibleMoves()){
 				movePiece(p, c, false, true);
-				//System.out.println(depth);
-				//printBoard();
+				System.out.println(depth + " " + p + " " + p.pos);
+				printBoard();
 				//swapTurn();
 				String move = lastCoord.x + "" + lastCoord.y + "-" + c.x + "" + c.y;
 				if(depth > 1){
 					HashMap<String, Integer> m = bestMoveTree(p.otherSide, depth - 1 );
-					printBoard();
-					System.out.println(m);
+					//printBoard();
+					//System.out.println(m);
 					String s = (side == 1) ? Collections.max(m.entrySet(), Map.Entry.comparingByValue()).getKey() : Collections.min(m.entrySet(), Map.Entry.comparingByValue()).getKey();
 					dict.put(move, m.get(s));
 				}else{
@@ -124,6 +124,7 @@ public class Game{
 		Game g = new Game();
 		g.printBoard();
 		Pair<Coordinate, Coordinate> p = g.getBestMove(1, 1);
+		g.printBoard();
 		System.out.println("White : " + g.analyzeBoard(1) + "\nBlack : " + g.analyzeBoard(0));
 	}
 }
