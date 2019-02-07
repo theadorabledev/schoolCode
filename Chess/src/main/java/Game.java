@@ -60,7 +60,7 @@ public class Game{
 	public int analyzeBoard(int side) {
 		int points = 0;
 		for (Piece p : players[side].pieces) {
-			//System.out.println();
+			int lSide = p.side;
 			for (Piece oP : players[p.otherSide].pieces) { // Piece attacked
 				if (p.isValidPlay(oP.pos, true)) points += (2 * oP.points);
 			}
@@ -68,7 +68,6 @@ public class Game{
 			for (Piece oP : players[side].pieces) { // Pieces defended
 				if (p.isValidPlay(oP.pos, true)) points += oP.points;
 			}
-			int lSide = p.side;
 			p.betray(2); // Jump out so all moves are ok. Then tests defended positions.
 			for (Coordinate c : center) {
 				if (p.isValidPlay(c, true)) points += 2;
@@ -89,27 +88,26 @@ public class Game{
 			Coordinate lastCoord = p.pos;
 			boolean moved = p.moved;
 
-			System.out.println(p.pos + " " + p.getPossibleMoves());
+			//System.out.println(p.pos + " " + p.getPossibleMoves());
 			for(Coordinate c : p.getPossibleMoves()){
+				Piece lastPiece = pieceAt(c);
 				movePiece(p, c, false, true);
-				System.out.println(depth + " " + p + " " + p.pos);
-				printBoard();
-				//swapTurn();
+				//System.out.println(depth + " " + p + " " + p.pos);
+				//printBoard();
 				String move = lastCoord.x + "" + lastCoord.y + "-" + c.x + "" + c.y;
 				if(depth > 1){
 					HashMap<String, Integer> m = bestMoveTree(p.otherSide, depth - 1 );
-					//printBoard();
-					//System.out.println(m);
 					String s = (side == 1) ? Collections.max(m.entrySet(), Map.Entry.comparingByValue()).getKey() : Collections.min(m.entrySet(), Map.Entry.comparingByValue()).getKey();
 					dict.put(move, m.get(s));
 				}else{
 					dict.put(move, analyzeBoard(1) - analyzeBoard(0));
 				}
 				movePiece(p, lastCoord, false, true);
+				if(lastPiece != null) movePiece(lastPiece, c, true,true);
 			}
 			p.moved = moved;
 		}
-		//System.out.println(depth + "\n	" + dict);
+		System.out.println(depth + "\n	" + dict);
 		return dict;
 	}
 
@@ -123,7 +121,7 @@ public class Game{
 	public static void main(String[] args){
 		Game g = new Game();
 		g.printBoard();
-		Pair<Coordinate, Coordinate> p = g.getBestMove(1, 1);
+		Pair<Coordinate, Coordinate> p = g.getBestMove(1, 5);
 		g.printBoard();
 		System.out.println("White : " + g.analyzeBoard(1) + "\nBlack : " + g.analyzeBoard(0));
 	}

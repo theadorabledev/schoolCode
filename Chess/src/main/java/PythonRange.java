@@ -26,7 +26,11 @@ public class PythonRange implements Iterable<Integer> {
     public Iterator<Integer> iterator() {
         return list.iterator();
     }
+    @Override
+    public String toString(){
+        return String.valueOf(list);
 
+    }
 
 
 }

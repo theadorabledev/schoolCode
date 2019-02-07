@@ -12,9 +12,6 @@ public class Rook extends Piece{
 		for(int i : new PythonRange(1, Math.max(Math.abs(c.x - pos.x), Math.abs(c.y - pos.y)))){
 			if(game.pieceAt(pos.x + (i * xDir), pos.y + (i * yDir)) != null) return false;
 		}
-		//if(pos.x == 3 && c.x == 7) System.out.println(xDir + " " + pos);
-		//System.out.println(game.pieceAt(6, 0));
-		//game.printBoard();
 		return (theoretical ||  tryMove(c));
 	}
 
