@@ -35,6 +35,7 @@ public abstract class Piece{
     public boolean tryMove(Coordinate c){
     	Coordinate old = new Coordinate(pos.x, pos.y);
     	boolean m = moved;
+    	Piece p = game.pieceAt(c);
     	game.movePiece(this, c, true);
     	//King king = game.players[side].king;
     	if (king.isInCheck()){
@@ -44,6 +45,7 @@ public abstract class Piece{
 		}
 		game.movePiece(this, old, true, true);
     	moved = m;
+    	if(p != null )game.movePiece(p, c, true, true);
     	return true;
 	}
     public void move(Coordinate c){
