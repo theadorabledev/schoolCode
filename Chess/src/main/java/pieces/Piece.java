@@ -9,6 +9,7 @@ public abstract class Piece{
     public boolean moved = false;
     public King king;
 	public int points;
+	public boolean captured = false;
     public Piece(Coordinate c, int s, String sym, Game g){
 		pos = c;
 		side = s;
@@ -26,7 +27,7 @@ public abstract class Piece{
 		return isValidPlaySuper(c.x, c.y);
 	}
 	public boolean isValidPlaySuper(int x, int y){
-		if(x < 0 || x > 8 || y < 0 || y > 8) return false;
+		if(x < 0 || x > 8 || y < 0 || y > 8 || captured) return false;
 		if(x == pos.x && y == pos.y) return false;
 		Piece pi = game.pieceAt(x, y);
 		if(pi != null && pi.side == side) return false;
@@ -37,15 +38,20 @@ public abstract class Piece{
     	boolean m = moved;
     	Piece p = game.pieceAt(c);
     	game.movePiece(this, c, true);
+    	if(p != null) p.captured = true;
     	//King king = game.players[side].king;
     	if (king.isInCheck()){
     		game.movePiece(this, old, true, true);
     		moved = m;
+    		if(p != null) p.captured = false;
     		return false;
 		}
 		game.movePiece(this, old, true, true);
     	moved = m;
-    	if(p != null )game.movePiece(p, c, true, true);
+    	if(p != null ) {
+    		p.captured = false;
+			game.movePiece(p, c, true, true);
+		}
     	return true;
 	}
     public void move(Coordinate c){
