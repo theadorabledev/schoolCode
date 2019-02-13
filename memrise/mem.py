@@ -1,18 +1,25 @@
-import os
+import os, sys
 from splinter import Browser
 from selenium.webdriver.common.keys import Keys
 import selenium
 import time
 import json
+import getpass
+def loadBrowser():
+    password = getpass.getpass("password-->")+"\n" # newline equivalent to typing enter
+    if sys.platform == "win32":
+        browser = Browser('chrome')
+    elif "linux" in sys.platform:
+        browser = Browser()
+    browser.visit('https://www.memrise.com/course/1992222/descubre-2-5/garden/speed_review/')
+    browser.fill("username", "iwilliams10@stuy.edu")
+    browser.fill("password", password)
+    return browser
 def main():
     with open('data.json', 'r') as fp:
         data = json.load(fp)
     print "Translations loaded."
-    password = raw_input("password-->")+"\n" # newline equivalent to typing enter
-    browser = Browser('chrome')
-    browser.visit('https://www.memrise.com/course/1992222/descubre-2-5/garden/speed_review/')
-    browser.fill("username", "iwilliams10@stuy.edu")
-    browser.fill("password", password)
+    browser = loadBrowser()
     time.sleep(4)
     lastQuestion = "?"
     looping = True
