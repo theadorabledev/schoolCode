@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, inspect
 import re
 from splinter import Browser
 from selenium.webdriver.common.keys import Keys
@@ -38,7 +38,18 @@ def loadBrowser(url):
     if sys.platform == "win32":
         browser = Browser('chrome')
     elif "linux" in sys.platform:
-        browser = Browser()
+        executable_path = {'executable_path':'geckodriver'}
+        currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+        parentdir = os.path.dirname(currentdir)
+        sys.path.insert(0,parentdir)
+        """
+ from selenium import webdriver
+    browser = webdriver.Firefox(executable_path = '/Users/zhaosong/Documents/WorkSpace/tool/geckodriver')
+    browser.get('https://www.google.com') 
+"""
+        #sys.path.insert(0, os.path.abspath("..") )
+#browser = Browser('chrome', **executable_path)
+        browser = Browser(**executable_path)
     browser.visit(url)
     browser.fill("username", data["username"])
     browser.fill("password", data["password"])
