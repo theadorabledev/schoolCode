@@ -1,3 +1,22 @@
+"""
+usage: mem.py [-h] [-l] [-r] [-s] [-cp] [-p] [-v] [-t TIMES] [-u UNIT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l, --learn           Learn.
+  -r, --review          Review.
+  -s, --speed           Speed Review.
+  -cp, --change_profile
+                        Change profile data.
+  -p, --profile         View profile data.
+  -v, --visible         Show the browser.
+  -t TIMES, --times TIMES
+                        Repeats the action times times.
+  -u UNIT, --unit UNIT  Perform the action for this unit.
+
+Times and Unit are optional. Unit must be used with the learn command. You can
+not combine learn/review/speed.
+"""
 import os
 import sys
 import inspect
@@ -6,16 +25,20 @@ import argparse
 import json
 import time
 import getpass
+#import souper
+import requests
 from splinter import Browser
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options  
-def loadBrowser(url):
+from selenium.webdriver.chrome.options import Options 
+from bs4 import BeautifulSoup
+def loadBrowser(url, headless=True):
     """ Loads the browser according to OS, visits website, and then logs in. """
     data = loadUser()
     if sys.platform == "win32":
-        chrome_options = Options()  
-        chrome_options.add_argument("--headless") 
+        chrome_options = Options()
         chrome_options.add_argument("--silent") 
+        if headless:
+            chrome_options.add_argument("--headless") 
         browser = Browser('chrome', options=chrome_options)
     elif "linux" in sys.platform:
         executable_path = {'executable_path':'geckodriver'}
@@ -37,6 +60,7 @@ def loadBrowser(url):
     return browser
 
 
+#Check what page the scraper is on
 def isPoints(browser):
     """ Returns whether the page contains the earned points. """
     pts = browser.find_by_css('span[class="pts"]')
@@ -49,8 +73,10 @@ def isMultipleChoice(browser):
 def isTyping(browser):
     """ Returns whether or not you are being asked to type a translation. """
     return browser.is_element_present_by_css('input[class="roundy shiny-box typing-type-here  "]')
-
-
+def isScrambleTranslate(browser):
+    """ Returns whether it is a scrambled translate problem"""
+    return browser.is_element_present_by_css('div[class="word-box word-box-choice  "]')
+#Answers the questions
 def answerMultipleChoice(browser, data, question):
     """ Solves the multiple choice problem. """
     for val in browser.find_by_css('span[class="val  "]'):#Checks possible answers
@@ -77,13 +103,14 @@ def scrambleTranslate(browser, answer):
                 break    
 
 
-def learn(lessonNumber=""):
+#Different types of activities
+def learn(lessonNumber="", headless=True):
     """ Automates the learning on memrise. """
     data = loadData()
     url = "garden/learn/"
     if lessonNumber:
-        url =  str(lessonNumber) + '/garden/learn/'
-    browser = loadBrowser(url)
+        url = str(lessonNumber) + '/garden/learn/'
+    browser = loadBrowser(url, headless=headless)
     time.sleep(2)
     lastQuestion = "?"
     looping = True
@@ -100,23 +127,27 @@ def learn(lessonNumber=""):
                 answerMultipleChoice(browser, data, question)   
             elif isTyping(browser):
                 typeTranslation(browser, data[question])
-            else:
+            elif isScrambleTranslate(browser):
                 scrambleTranslate(browser, data[question])
             time.sleep(.5)
             
         else:#Definition or endpage
             if browser.is_element_present_by_css('span[class="next-icon"]'):
-                browser.find_by_css('span[class="next-icon"]').first.click()
+                try:
+                    browser.find_by_css('span[class="next-icon"]').first.click()
+                
+                except:
+                    pass
             else:
                 pts = isPoints(browser)
                 if pts:
                     browser.quit()
                     return int("".join([i for i in pts if i in "1234567890"]))           
             time.sleep(.5)
-def review():
+def review(headless=True):
     """ Automates the review on memrise. """
     data = loadData()
-    browser = loadBrowser("garden/classic_review/")
+    browser = loadBrowser("garden/classic_review/", headless=headless)
     time.sleep(2)
     lastQuestion = "?"
     looping = True
@@ -138,18 +169,19 @@ def review():
             if pts:
                 browser.quit()
                 return int("".join([i for i in pts if i in "1234567890"]))  
-def speed_review():
+def speed_review(headless=True):
     """ Automates the speed review on memrise. """
     data = loadData()
-    browser = loadBrowser("garden/speed_review/")
+    browser = loadBrowser("garden/speed_review/", headless=headless)
     time.sleep(4)
     lastQuestion = "?"
     looping = True
     loops = 0
     while looping:
-        question = browser.find_by_css('div[class="qquestion qtext  "]').first.text #Read question
+        question = browser.find_by_css('div[class="qquestion qtext  "]')
         loops += 1
-        if question != lastQuestion: # Check if still on old question
+        if question and question.first.text != lastQuestion: # Check if still on old question
+            question = question.first.text
             loops = 0
             answerMultipleChoice(browser, data, question)
             lastQuestion = question      
@@ -167,13 +199,14 @@ def speed_review():
                 browser.quit()
                 return int("".join([i for i in pts if i in "1234567890"]))      
 
+#Load data
 def loadUser(change=False, view=False):
     """ Returns login information if saved, if not, asks for it and saves it. """
     data = None
     try:
         if change:
             raise EnvironmentError
-        with open("user.json", "r") as fp:
+        with open("data/user.json", "r") as fp:
             data = json.load(fp)
     except:
         if view:
@@ -185,15 +218,35 @@ def loadUser(change=False, view=False):
         }
         if data["course_url"][-1] != "/":
             data["course_url"] += "/"
-        with open('user.json', 'w') as fp:
+        with open('data/user.json', 'w') as fp:
             json.dump(data, fp, indent=4)        
     return data
 def loadData():
-    """ Loads the memrise dictionary. """
-    with open('data.json', 'r') as fp:
-        return json.load(fp)    
+    """ Loads the memrise dictionary or scrapes it. """
+    try:
+        with open('data/data.json', 'r') as fp:
+            return json.load(fp)    
+    except:
+        souper()
+        return loadData(url=loadUser["course_url"])
 
 
+#Scrapes data
+def souper(url="https://www.memrise.com/course/1992222/descubre-2-5/"):
+    """ Scrapes the memrise pages for words and their definitions. """
+    masterDict = {}
+    for i in range(1, 100):
+        r = requests.get(url + str(i) + "/")
+        if r.url == url:
+            break
+        data = r.text
+        soup = BeautifulSoup(data, features="html5lib")
+        for row in soup.findAll("div", {"class": "thing text-text"}):
+            texts = row.findAll("div", {"class": "text"})
+            masterDict[texts[0].text] = texts[2].text
+            masterDict[texts[2].text] = texts[0].text       
+    with open('data/data.json', 'w') as fp:
+        json.dump(masterDict, fp, indent=4)    
 def main():
     """ Handles CLI. """
     parser = argparse.ArgumentParser(epilog="""
@@ -206,6 +259,7 @@ def main():
     parser.add_argument('-s', "--speed", help="Speed Review.", action="store_true")
     parser.add_argument('-cp', "--change_profile", help="Change profile data.", action="store_true")
     parser.add_argument('-p', "--profile", help="View profile data.", action="store_true")
+    parser.add_argument('-v', "--visible", help="Show the browser.", action="store_true")
     parser.add_argument('-t', "--times", help="Repeats the action times times.", type=int, default=1)
     parser.add_argument('-u', "--unit", help="Perform the action for this unit.", type=int)
     args = parser.parse_args()
@@ -218,13 +272,13 @@ def main():
                 start = time.time()
                 if args.learn:
                     if args.unit:
-                        learn(lessonNumber=str(args.unit))
+                        print learn(lessonNumber=str(args.unit), headless=not args.visible), "Points Gained."
                     else:
-                        learn()
+                        print learn(headless=not args.visible), "Points Gained."
                 elif args.review:
-                    review()
+                    print review(headless=not args.visible), "Points Gained."
                 elif args.speed:
-                    print speed_review(), "Points Gained."
+                    print speed_review(headless=not args.visible), "Points Gained."
                 print time.time() - start, " seconds."
         elif args.change_profile:
             loadUser(change=True)
