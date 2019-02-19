@@ -27,6 +27,7 @@ import json
 import time
 import getpass
 import requests
+import subprocess
 from splinter import Browser
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options 
@@ -39,7 +40,10 @@ def loadBrowser(url, headless=True):
         chrome_options.add_argument("--silent") 
         if headless:
             chrome_options.add_argument("--headless") 
-        browser = Browser('chrome', options=chrome_options)
+        executable_path = {'executable_path':resource_path("chromedriver.exe", b=True)}
+        
+        #browser = Browser('chrome', **executable_path)        
+        browser = Browser('chrome', options=chrome_options, **executable_path)
     elif "linux" in sys.platform:
         executable_path = {'executable_path':'geckodriver'}
         currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -76,16 +80,27 @@ def isTyping(browser):
 def isScrambleTranslate(browser):
     """ Returns whether it is a scrambled translate problem"""
     return browser.is_element_present_by_css('div[class="word-box word-box-choice  "]')
+def getQuestion(browser):
+    """ Returns the current question. """
+    try:
+        q = browser.find_by_css('div[class="qquestion qtext  "]')
+        if not q:
+            return None
+        return q.first.text
+    except:
+        return None
 #Answers the questions
-def answerMultipleChoice(browser, data, question):
+def answerMultipleChoice(browser, data):
     """ Solves the multiple choice problem. """
-    for val in browser.find_by_css('span[class="val  "]'):#Checks possible answers
-        if (question in data and val.text == data[question]) or (val.text in data and data[val.text] == question): # Hopefully deals with definition repetion creating json problems
-            try:
-                val.click()
-            except:
-                val.click()
-            break                                
+    question = getQuestion(browser)# Failsafe against outdated calls
+    if question:     
+        for val in browser.find_by_css('span[class="val  "]'):#Checks possible answers
+            if (question in data and val.text == data[question]) or (val.text in data and data[val.text] == question): # Hopefully deals with definition repetion creating json problems
+                try:
+                    val.click()
+                except:
+                    val.click()
+                break                                
 
 def typeTranslation(browser, answer):
     """ Types the translation. """
@@ -124,7 +139,7 @@ def learn(lessonNumber="", headless=True):
             loops = 0
             lastQuestion = question
             if isMultipleChoice(browser):
-                answerMultipleChoice(browser, data, question)   
+                answerMultipleChoice(browser, data)   
             elif isTyping(browser):
                 typeTranslation(browser, data[question])
             elif isScrambleTranslate(browser):
@@ -160,7 +175,7 @@ def review(headless=True):
             loops = 0
             lastQuestion = question
             if isMultipleChoice(browser):
-                answerMultipleChoice(browser, data, question)                               
+                answerMultipleChoice(browser, data)                               
             elif isTyping(browser):
                 typeTranslation(browser, data[question])
             time.sleep(.5)
@@ -178,35 +193,47 @@ def speed_review(headless=True):
     looping = True
     loops = 0
     while looping:
-        question = browser.find_by_css('div[class="qquestion qtext  "]')
+        question = getQuestion(browser)
         loops += 1
-        if question and question.first.text != lastQuestion: # Check if still on old question
-            question = question.first.text
-            loops = 0
-            answerMultipleChoice(browser, data, question)
-            lastQuestion = question      
-            #time.sleep(.5)
-            time.sleep(.1)
-        elif loops > 6:
-            try:
-                active_web_element = browser.driver.switch_to_active_element()  
-                active_web_element.send_keys(Keys.PAGE_DOWN)
-                active_web_element.send_keys(Keys.ENTER) # Presses enter to continue to next page
-            except:
-                pass            
-            pts = isPoints(browser)
-            if pts:
-                browser.quit()
-                return int("".join([i for i in pts if i in "1234567890"]))      
-
+        try:
+            if question and question != lastQuestion: # Check if still on old question
+                loops = 0
+                if question != lastQuestion:
+                    lastQuestion = question
+                    answerMultipleChoice(browser, data)
+                time.sleep(.1)
+            elif loops > 8:
+                try:
+                    active_web_element = browser.driver.switch_to_active_element()  
+                    active_web_element.send_keys(Keys.PAGE_DOWN)
+                    active_web_element.send_keys(Keys.ENTER) # Presses enter to continue to next page
+                except:
+                    pass            
+                pts = isPoints(browser)
+                if pts:
+                    browser.quit()
+                    return int("".join([i for i in pts if i in "1234567890"]))      
+        except:
+            pass
 #Load data
+def resource_path(relative_path, b=False):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = os.path.abspath(os.path.join(sys.executable, ".."))
+        if b:
+            base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 def loadUser(change=False, view=False):
     """ Returns login information if saved, if not, asks for it and saves it. """
     data = None
     try:
         if change:
             raise EnvironmentError
-        with open("data/user.json", "r") as fp:
+        with open(resource_path("user.json"), "r") as fp:
             data = json.load(fp)
     except:
         if view:
@@ -218,13 +245,14 @@ def loadUser(change=False, view=False):
         }
         if data["course_url"][-1] != "/":
             data["course_url"] += "/"
-        with open('data/user.json', 'w') as fp:
+        souper(url=data["course_url"])
+        with open(resource_path("user.json"), 'w') as fp:
             json.dump(data, fp, indent=4)        
     return data
 def loadData():
     """ Loads the memrise dictionary or scrapes it. """
     try:
-        with open('data/data.json', 'r') as fp:
+        with open(resource_path("data.json"), 'r') as fp:
             return json.load(fp)    
     except:
         souper(url=loadUser()["course_url"])
@@ -245,12 +273,14 @@ def souper(url="https://www.memrise.com/course/1992222/descubre-2-5/"):
             texts = row.findAll("div", {"class": "text"})
             masterDict[texts[0].text] = texts[2].text
             masterDict[texts[2].text] = texts[0].text       
-    with open('data/data.json', 'w') as fp:
+    with open(resource_path("data.json"), 'w') as fp:
         json.dump(masterDict, fp, indent=4)    
 def main():
     """ Handles CLI. """
-    mac = hex(uuid.getnode()).replace("0x", "")
-    if not (mac == "(MAC_HERE)" or mac == "3ca06791613aL"):
+    mac = subprocess.check_output("wmic csproduct get uuid").decode().split("\n")[1].strip()
+    print "Current computer ", mac
+    print "Licensed to      ", "(MAC_HERE)"
+    if not (mac == "(MAC_HERE)" or mac == "538A6D1A-6A98-3F43-8F89-A81E846DCE11"):
         print "This computer was not licensed for this software"
         return False
     parser = argparse.ArgumentParser(epilog="""
@@ -287,6 +317,7 @@ def main():
         elif args.change_profile:
             loadUser(change=True)
         elif args.profile: 
+            print resource_path("user.json")
             u = loadUser(view=True)
             if u:
                 for key in u:
