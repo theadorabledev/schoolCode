@@ -18,6 +18,7 @@ Times and Unit are optional. Unit must be used with the learn command. You can
 not combine learn/review/speed.
 """
 import os
+import uuid
 import sys
 import inspect
 import re
@@ -25,7 +26,6 @@ import argparse
 import json
 import time
 import getpass
-#import souper
 import requests
 from splinter import Browser
 from selenium.webdriver.common.keys import Keys
@@ -227,8 +227,8 @@ def loadData():
         with open('data/data.json', 'r') as fp:
             return json.load(fp)    
     except:
-        souper()
-        return loadData(url=loadUser["course_url"])
+        souper(url=loadUser()["course_url"])
+        return loadData()
 
 
 #Scrapes data
@@ -249,6 +249,10 @@ def souper(url="https://www.memrise.com/course/1992222/descubre-2-5/"):
         json.dump(masterDict, fp, indent=4)    
 def main():
     """ Handles CLI. """
+    mac = hex(uuid.getnode()).replace("0x", "")
+    if not (mac == "(MAC_HERE)" or mac == "3ca06791613aL"):
+        print "This computer was not licensed for this software"
+        return False
     parser = argparse.ArgumentParser(epilog="""
     Times and Unit are optional.
     Unit must be used with the learn command.

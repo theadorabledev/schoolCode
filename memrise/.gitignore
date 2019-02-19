@@ -1,3 +1,6 @@
 *.log
 user.json
 env
+*.pyd
+dist
+build
