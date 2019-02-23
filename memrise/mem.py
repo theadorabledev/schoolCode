@@ -38,6 +38,7 @@ def loadBrowser(url, headless=True):
     if sys.platform == "win32":
         chrome_options = Options()
         chrome_options.add_argument("--silent") 
+        chrome_options.add_argument("log-level=3")
         if headless:
             chrome_options.add_argument("--headless") 
         executable_path = {'executable_path':resource_path("chromedriver.exe", b=True)}
@@ -96,11 +97,13 @@ def answerMultipleChoice(browser, data):
     if question:     
         for val in browser.find_by_css('span[class="val  "]'):#Checks possible answers
             if (question in data and val.text == data[question]) or (val.text in data and data[val.text] == question): # Hopefully deals with definition repetion creating json problems
+                #time.sleep(.1)
                 try:
                     val.click()
                 except:
-                    val.click()
-                break                                
+                    pass
+                    #val.click()
+                break   
 
 def typeTranslation(browser, answer):
     """ Types the translation. """
@@ -188,7 +191,7 @@ def speed_review(headless=True):
     """ Automates the speed review on memrise. """
     data = loadData()
     browser = loadBrowser("garden/speed_review/", headless=headless)
-    time.sleep(4)
+    time.sleep(3.5)
     lastQuestion = "?"
     looping = True
     loops = 0
