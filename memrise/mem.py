@@ -32,7 +32,7 @@ from splinter import Browser
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options 
 from bs4 import BeautifulSoup
-def loadBrowser(url, headless=True):
+def loadBrowser(url, headless=True, firefox=False):
     """ Loads the browser according to OS, visits website, and then logs in. """
     data = loadUser()
     if sys.platform == "win32":
@@ -43,7 +43,6 @@ def loadBrowser(url, headless=True):
             chrome_options.add_argument("--headless") 
         executable_path = {'executable_path':resource_path("chromedriver.exe", b=True)}
         
-        #browser = Browser('chrome', **executable_path)        
         browser = Browser('chrome', options=chrome_options, **executable_path)
     elif "linux" in sys.platform:
         executable_path = {'executable_path':'geckodriver'}
@@ -297,6 +296,7 @@ def main():
     parser.add_argument('-cp', "--change_profile", help="Change profile data.", action="store_true")
     parser.add_argument('-p', "--profile", help="View profile data.", action="store_true")
     parser.add_argument('-v', "--visible", help="Show the browser.", action="store_true")
+    parser.add_argument('-f', "--firefox", help="Use firefox instead of chrome", action="store_true")
     parser.add_argument('-t', "--times", help="Repeats the action times times.", type=int, default=1)
     parser.add_argument('-u', "--unit", help="Perform the action for this unit.", type=int)
     args = parser.parse_args()
