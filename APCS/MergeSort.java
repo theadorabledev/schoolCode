@@ -1,19 +1,16 @@
+import java.util.*;
 public class MergeSort{
-    public static int[] makeData(int a, int b){
-	int[] ans = new int[b - a + 1];
-	for (int i = 0; i < (b - a); i++){
-	    ans[b - a + i - 1] = i;
-	}
+    public static int [] makeData(int n, int lo, int hi){
+	int [] ans = new int[n];
+        for (int i = 0; i < n; i++)
+	    ans[i] = lo + (int)(Math.random() * (hi - lo));
 	return ans;
+	
     }
-
-    public static void shuffle(int [] data){
-	for (int i = 0; i < data.length; i++){
-	    int r = (int) (Math.random() * (data.length  - i));
-	    int temp = data[r];
-	    data[r] = data[i];
-	    data[i] = temp;
-	}
+    public static ArrayList<Integer> toList(int [] data){
+		ArrayList<Integer> ans = new ArrayList<Integer>();
+		for (Integer x : data) ans.add(x);
+		return ans;
     }
 
     public static void print(int [] array){
@@ -35,17 +32,38 @@ public class MergeSort{
 		fin[pointer] = b[bPointer];
 		bPointer++;
 	    }
-	    
 	    pointer++;
 	}
 	return fin;
     }
-    
+    public static ArrayList<Integer> merge(ArrayList<Integer> a, ArrayList<Integer> b){
+	ArrayList<Integer> fin = new ArrayList<Integer>();
+	int ap = 0;
+	int bp = 0;
+	
+	while(fin.size() < a.size() + b.size()){
+	    if(ap >= a.size() || bp >= b.size()) break;
+	    if(a.get(ap) <= b.get(bp)) fin.add(a.get(ap++));
+	    else fin.add(b.get(bp++));
+	}
+	while(ap < a.size()) fin.add(a.get(ap++));
+	while(bp < b.size()) fin.add(b.get(bp++));
+	return fin;
+    }
+    public static void sort(ArrayList<Integer> data){
+	LinkedList<ArrayList<Integer>> q = new LinkedList<ArrayList<Integer>>();
+	for(Integer i : data){
+	    q.add(new ArrayList<Integer>(){{add(i);}});
+	}
+	System.out.println(q);
+    }
     public static void main(String args[]){
-	int[] a = makeData(1, 4);
-	int[] b = makeData(4, 8);
+	int[] a = makeData(5, 1, 10);
+	int[] b = makeData(5, 1, 10);
 	print(a);
 	print(b);
-	print(merge(a, b));
+	sort(toList(makeData(10, 1, 10)));
+	//System.out.println(toList(a));
+	//System.out.println(merge(toList(a), toList(b)));
     }
 }
