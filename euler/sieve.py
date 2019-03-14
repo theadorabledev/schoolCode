@@ -46,9 +46,9 @@ def sieve(n, l=False):
 			for x in xrange(deConvert(convert(i) ** 2), accumulativeLength - steps, steps):
 				primes[x + stepA] = False
 				primes[x + steps] = False
-    if l:
-        return primes
-        return nthTrue(primes, n)
+	if l:
+		return primes
+	return nthTrue(primes, n)
 
 def pi(n):
     """ Returns apprximatio of what nth prime will be. """
