@@ -37,13 +37,17 @@ public class NodeStack<E> implements MyStack<E>{
 	return val;
     }
     public void print(){
-	print(top);
-	System.out.println();
+	System.out.println(this);
     }
-    public void print(Node<E> n){
-	System.out.print(n.getValue() + " ");
-	if(n.getNext() != null) print(n.getNext());
-	
+    @Override
+    public String toString(){
+	return " [ " + strHelper(top) + " ] ";
+    }
+    private String strHelper(Node<E> n){
+	if(n == null) return "";
+	String s = n.getValue().toString();
+	if(n.getNext() != null) s += ", " + strHelper(n.getNext());
+	return s;
     }
     public static void main(String [] args){
 	NodeStack<Integer> s = new NodeStack<Integer>();
