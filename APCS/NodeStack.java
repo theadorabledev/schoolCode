@@ -33,6 +33,7 @@ public class NodeStack<E> implements MyStack<E>{
 	if(empty()) throw new EmptyStackException();
 	E val = top.getValue();
 	top = top.getNext();
+	size--;
 	return val;
     }
     public void print(){
