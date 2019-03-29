@@ -23,11 +23,12 @@ public class Evaluator{
 	Stack<String> stack = new Stack<String>();
 	for(int i = 0; i < expTokens.length; i++){
 	    if(expTokens[i].equals(")")){
-		    String[] arr = new String[3];
+		//String[] arr = new String[3];
+		    ArrayList<String> arr = new ArrayList<String>();
 		    int pos = 2;
 		    while(!stack.peek().equals("(")){
 			System.out.println(i + " "+ pos);
-			arr[pos] = stack.pop();
+			arr.add(stack.pop());
 			pos --;
 		    }
 		    stack.pop();
@@ -38,26 +39,31 @@ public class Evaluator{
 	}
         return new Double(stack.pop());
     }
-	public static String minEval(String[] arr){
-	    System.out.println(Arrays.asList(arr));
-	    double d;
-	    if(arr[1].equals("+")){
-		d = Double.valueOf(arr[0]) + Double.valueOf(arr[2]);
-	    }else if(arr[1].equals("-")){
-		d = Double.valueOf(arr[0]) - Double.valueOf(arr[2]);
+	public static String minEval(ArrayList<String> arr){
+	    Stack<String> stack = new Stack<String>();
+	    stack.addAll(arr);
+	    System.out.println(arr);
+	    double d = 0;
+	    String a = stack.pop();
+	    String b = stack.pop();
+	    if(b.equals("+")){
+		d = Double.valueOf(a) + Double.valueOf(stack.pop());
+	    }else if(b.equals("-")){
+		d = Double.valueOf(a) - Double.valueOf(stack.pop());
 	    }
-	    else if(arr[1].equals("*")){
-		d = Double.valueOf(arr[0]) * Double.valueOf(arr[2]);
+	    else if(b.equals("*")){
+		stack.pop();
+		d = Double.valueOf(a) * Double.valueOf(stack.pop());
 	    }
-	    else if(arr[1].equals("/")){
-		d = Double.valueOf(arr[0]) / Double.valueOf(arr[2]);
+	    else if(b.equals("/")){
+		d = Double.valueOf(a) / Double.valueOf(stack.pop());
 	    }
-	    else if(arr[1].equals("%")){
-		d = Double.valueOf(arr[0]) * Double.valueOf(arr[2]);
-	    }else{
-		d = Math.sqrt(Double.valueOf(arr[2]));
+	    else if(b.equals("%")){
+		d = Double.valueOf(a) * Double.valueOf(stack.pop());
+	    }else if( a.equals("sqrt")){
+		d = Math.sqrt(Double.valueOf(b));
 	    }
-	    System.out.println(d);
+	    //System.out.println(d);
 	    return d + "";
 	}
        
