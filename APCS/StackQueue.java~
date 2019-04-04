@@ -1,0 +1,3 @@
+public class StackQueue<E> implements MyQueue<E>{
+
+}

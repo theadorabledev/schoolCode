@@ -1,0 +1,6 @@
+public class ArrayDequeue<E> implements Dequeue<E>{
+    private int size = 0;
+    private E[] q;
+    
+    
+}
