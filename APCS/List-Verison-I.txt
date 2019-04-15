@@ -1,0 +1,109 @@
+Implement a fixed capacity ArrayList.
+
+You may want to comment out : implements List<E>
+
+1. Provide 2 constructors to instantiate an ArrayList. The default construct
+   should set the initial capacity to 16, the second constructor allows
+   the user to determine the capacity of the list.
+
+
+2. Implment both the size() and isEmpty() methods.
+
+
+3. Implement the toString method.
+
+4. Test your code by providing a main method for the ArrayList class.
+   Instantiate an ArrayList and print it out.
+
+
+5. Implement the boolean add(E value) method. This method adds a value 
+   to the end of a list however an Illegal State Exception is thrown
+   when the list is at capacity.
+
+
+6. Test your add method by creating the following output.
+   []
+   [a]
+   [a,b]
+   [a,b,c]
+   [a,b,c,d]
+   [a,b,c,d,e]
+   [a,b,c,d,e,f]
+   [a,b,c,d,e,f,g]
+   [a,b,c,d,e,f,g,h]
+   [a,b,c,d,e,f,g,h,i]
+   [a,b,c,d,e,f,g,h,i,j]
+   [a,b,c,d,e,f,g,h,i,j,k]
+   [a,b,c,d,e,f,g,h,i,j,k,l]
+   [a,b,c,d,e,f,g,h,i,j,k,l,m]
+   [a,b,c,d,e,f,g,h,i,j,k,l,m,n]
+   [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o]
+   [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
+
+7. Implement both the get method and use it create the following output.
+   0: a
+   1: b
+   2: c
+   3: d
+   4: e
+   5: f
+   6: g
+   7: h
+   8: i
+   9: j
+  10: k
+  11: l
+  12: m
+  13: n
+  14: o
+  15: p
+
+
+8. Implement the set method. Then test your code by swapping the
+   first 2 elements of the list using only 1 statement.
+
+   Before swap: [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
+   Before swap: [b,a,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
+   
+   
+9. Implement the remove method and test it by removing every
+   other element from the list.
+
+   Before removing: [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
+   remove: b
+   list: [a,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
+   remove: d
+   list: [a,c,e,f,g,h,i,j,k,l,m,n,o,p]
+   remove: f
+   list: [a,c,e,g,h,i,j,k,l,m,n,o,p]
+   remove: h
+   list: [a,c,e,g,i,j,k,l,m,n,o,p]
+   remove: j
+   list: [a,c,e,g,i,k,l,m,n,o,p]
+   remove: l
+   list: [a,c,e,g,i,k,m,n,o,p]
+   remove: n
+   list: [a,c,e,g,i,k,m,o,p]
+   remove: p
+   list: [a,c,e,g,i,k,m,o]
+
+10. Implement the void add(int i, E value ) method. Test the method
+    by creating the output:
+
+    Before inserting: [a,c,e,g,i,k,m,o]
+    insert : b
+    list : [a,b,c,e,g,i,k,m,o]
+    insert : d
+    list : [a,b,c,d,e,g,i,k,m,o]
+    insert : f
+    list : [a,b,c,d,e,f,g,i,k,m,o]
+    insert : h
+    list : [a,b,c,d,e,f,g,h,i,k,m,o]
+    insert : j
+    list : [a,b,c,d,e,f,g,h,i,j,k,m,o]
+    insert : l
+    list : [a,b,c,d,e,f,g,h,i,j,k,l,m,o]
+    insert : n
+    list : [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o]
+    insert : p
+    list : [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p]
