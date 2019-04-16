@@ -1,9 +1,9 @@
- 
+import java.util.Arrays;
 
 public class ArrayList<E> {// implements List<E>{
 
     // instance variables
-    private  final int CAPACITY;       //  array capacity
+    private  int CAPACITY;       //  array capacity
     private E[] data;                       // generic array used for storage
     private int size = 0;                       // current number of elements
     public ArrayList(){
@@ -24,10 +24,10 @@ public class ArrayList<E> {// implements List<E>{
 	if(i < 0 || i > size() - 1) throw new IndexOutOfBoundsException();
 	return data[i];
     }
-    public E set(int i, E value) throws IndexOutOfBoundsException{
-	if(i < 0 || i > size() - 1) throw new IndexOutOfBoundsException();
+    public E set(int i, E value) throws IndexOutOfBoundsException{//Returns old value
+	E ans = get(i);
 	data[i] = value;
-	return value;
+	return ans;
     }
     public boolean add(E value){
 	add(size, value);
@@ -35,6 +35,10 @@ public class ArrayList<E> {// implements List<E>{
     }
     public boolean add(int i, E value) throws IndexOutOfBoundsException{
 	if(i < 0 || i > size()) throw new IndexOutOfBoundsException();
+	if(size == CAPACITY){
+	    data = Arrays.copyOf(data ,(CAPACITY * 3) / 2);
+	    CAPACITY = (CAPACITY * 3) / 2;
+	}
 	for(int k = size; k > i; k--){
 	    data[k] = data[k - 1];
 	}
@@ -43,12 +47,13 @@ public class ArrayList<E> {// implements List<E>{
 	return true;
     }
     public E remove(int i) throws IndexOutOfBoundsException{
-	if(i < 0 || i > size() - 1) throw new IndexOutOfBoundsException();
-	E val = data[i];
+	E val = get(i);
 	for(int k = i; k < size - 1; k++){
 	    data[k] = data[k + 1];
 	}
+	data[size - 1] = null;
 	size--;
+	
 	return val;
     }
     public String toString(){
@@ -74,7 +79,7 @@ public class ArrayList<E> {// implements List<E>{
 	}
 	System.out.println("\nProblem 8");
 	System.out.println(l);
-	l.add(0, l.remove(1));
+	l.add(0, l.remove(1));//l.set(1, l.set(0,.get(1)))); Faster O(1)
 	System.out.println(l);
 	l.add(0, l.remove(1));
 	System.out.println("\nProblem 9");
@@ -92,6 +97,7 @@ public class ArrayList<E> {// implements List<E>{
 	    l.add(i, str);
 	    System.out.println("List : " + l);
 	}
+	l.add("q");
 
 	
     }
