@@ -5,3 +5,5 @@ outTemp.txt
 *.pyc
 *.py~
 *.py#
+*.java~
+*.java#
