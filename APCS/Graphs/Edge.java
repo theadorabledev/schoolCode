@@ -3,16 +3,19 @@ import java.util.ArrayList;
 public class Edge<E>{
     private Node<E> from;
     private Node<E> to;
-    private boolean undirected;
+    private int weight;
     public Edge(Node<E> from, Node<E> to){
-	this(from, to, false);
+	this(from, to, 1);
     }
-    public Edge(Node<E> from, Node<E> to, boolean undirected){
+
+    public Edge(Node<E> from, Node<E> to, int weight){
 	this.from = from;
 	this.to = to;
+	this.weight = weight;
 	from.connect(to);
-	this.undirected = undirected;
-	if(undirected) to.connect(from);
+    }
+    public int weight(){
+	return weight;
     }
     public Node<E> getStart(){
 	return from;
@@ -39,7 +42,7 @@ public class Edge<E>{
     @Override
     public String toString(){
 	    
-	String arrow = (undirected) ?  "<-> " : " -> ";
+	String arrow = " -> ";//(undirected) ?  " <-> " : " -> ";
 	return "("+ from + arrow + to + ")";
 	    
     }

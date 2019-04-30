@@ -1,20 +1,26 @@
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.*;
 public class Node<E>{
     private final E VALUE;
-    private ArrayList<Node<E>> connections = new ArrayList<Node<E>>();
+    //private ArrayList<Node<E>> connections = new ArrayList<Node<E>>();
+    private HashMap<Node<E>, Integer> connections = new HashMap<Node<E>, Integer>();
     public Node(E value){
 	VALUE = value;
     }
     public E getValue(){
 	return VALUE;
     }
-    public ArrayList<Node<E>> getConnections(){
-	return connections;
+    public Set<Node<E>> getConnections(){
+	return connections.keySet();
     }
     public void connect(Node<E> n){
 	//Adds path from this to n
-	connections.add(n);
+	//connections.add(n);
+	connect(n, 1);
+    }
+    public void connect(Node<E> n, int weight){
+	connections.put(n, weight);
     }
     @Override
     public String toString(){
