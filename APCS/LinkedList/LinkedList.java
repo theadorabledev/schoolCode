@@ -23,47 +23,33 @@ public class LinkedList<E>{
 	return size == 0;
     }
 
-    // *************************** Exercise *******************************
-
     // returns true if v is not the header node
     public boolean hasPrevious(DNode<E> v){
 	return(v != header);
     }
-    // *************************** Exercise *******************************
     // returns true if v is not the trailer node
     public boolean hasNext(DNode<E> v){
 	return(v != trailer);
     }
-    
-
-    // *************************** Exercise *******************************
     public DNode<E> getFirst() throws IllegalStateException {
 	if (isEmpty()) throw new IllegalStateException("empty list");
 	return header.getNext();
     }
-    // *************************** Exercise *******************************
     public DNode<E> getLast() throws IllegalStateException{
 	if (isEmpty()) throw new IllegalStateException("empty list");
 	return trailer.getPrevious();
     }
-
-    // *************************** Exercise *******************************
     // returns the node that comes directly before the current node.
     public DNode<E> getPrevious(DNode <E> current) throws IllegalArgumentException{
 	if(!hasPrevious(current)) throw new IllegalArgumentException();
 	return current.getPrevious();
     }
-
-    // *************************** Exercise *******************************
     // returns the node that comes directly after the current node.
     public DNode<E> getNext(DNode<E> current) throws IllegalArgumentException{
 	if(!hasNext(current)) throw new IllegalArgumentException();
 	return current.getNext();
 
     }
-
-    // *************************** Exercise *******************************
-    //*******************************************************************
     // inserts node a before node b. 
     // An exception is thrown if b is the header
     public void addBefore(DNode<E> b, DNode<E> a){
@@ -72,17 +58,8 @@ public class LinkedList<E>{
 	a.setPrevious(prev);
 	a.setNext(b);
 	b.setPrevious(a);
-	
+	size++;
     }
-
-    // *************************** Exercise *******************************
-    public void addLast(DNode<E> node){
-	addBefore(trailer, node);
-    }
-
- 
-    // *************************** Exercise *******************************
-    //*********************************************************************
     // inserts node b after node a
     // throw exception if b is the trailer node
     public void addAfter(DNode<E> a, DNode<E> b){
@@ -91,19 +68,55 @@ public class LinkedList<E>{
 	b.setNext(next);
 	a.setNext(b);
 	b.setPrevious(a);
+	size++;
     }
 
-    // *************************** Exercise *******************************
     public void addFirst(DNode<E> current){
 	addAfter(header, current);
     }
-    // *************************** Exercise *******************************
     public void addFirst(E value){
 	addAfter(header, new DNode<E>(value, null, null));
     }
-
-    // *************************** Exercise *******************************
-    //*******************************************************************
+    public void addLast(DNode<E> node){
+	addBefore(trailer, node);
+    }
+    public void addLast(E value){
+	addBefore(trailer, new DNode<E>(value, null, null));
+    }
+    public E removeFirst(){
+	DNode<E> first = getFirst();
+	remove(first);
+	size--;
+	return first.getValue();
+    }
+    public E removeLast(){
+	DNode<E> last = getLast();
+	remove(last);
+	size--;
+	return last.getValue();
+    }
+    public DNode<E> getNode(int i){
+	//if(i < 0 || i >= size) throw new IndexOutOfBoundsException();
+	DNode<E> node = getFirst();
+	for(int k = 0; k < i; k++){
+	    node = node.getNext();
+	}
+	return node;
+    }
+    public void swap(DNode<E> x, DNode<E> y){
+	if(!hasNext(x) || !hasNext(y) || !hasPrevious(x) || !hasPrevious(y) || x == y) return;
+	DNode<E> xLast = x.getPrevious();
+	DNode<E> yNext = y.getNext();
+	if(xLast == y){
+	    swap(y, x);
+	    return;
+	}
+	remove(x);
+	remove(y);
+	addAfter(xLast, y);
+	addBefore(yNext, x);
+	
+    }
     //precondition: v != null and is a node in the list
     //postconditon: removes the node v refers to.
     //              Throws exception if v is header or trailer.
@@ -112,9 +125,17 @@ public class LinkedList<E>{
 	DNode<E> next = getNext(v);
 	prev.setNext(next);
 	next.setPrevious(prev);
+	size--;
     }
-
-    //*******************************************************************   
+    public void addAll(LinkedList<E> L){
+	if(this == L) return;
+	DNode<E> first = L.getFirst();
+	DNode<E> last = L.getLast();
+	first.setPrevious(getLast());
+	getLast().setNext(first);
+	trailer.setPrevious(last);
+	last.setNext(trailer);
+    }
     public String toString(){
 	String ans = "";
 	DNode current = header.getNext();
@@ -128,8 +149,6 @@ public class LinkedList<E>{
 	return ans;
     }
 
-
-    
     public static void main(String [] args){
 	LinkedList<Integer> L = new LinkedList<Integer>();
 
@@ -138,8 +157,17 @@ public class LinkedList<E>{
             L.addFirst(i);
             System.out.println("add " + i + " : " + L);
         }
-
-	
+	for(int i = 0; i < 10; i ++){
+	    System.out.println("L[" + i + "] = " + L.getNode(i));
+	}
+	for(int i = 0; i < 10; i++){
+	    L.swap(L.getNode(i), L.getNode(9 - i));
+	}
+	System.out.println(L);
+	L.removeFirst();
+	L.removeLast();
+	System.out.println(L);
+		
     }
 
 }
