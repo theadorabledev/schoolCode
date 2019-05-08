@@ -1,6 +1,6 @@
 import java.util.Iterator;
-
-public interface List<E>{
+//import java.util.Iterable;
+public interface List<E> extends Iterable<E>{
 
     public int size();
     public boolean isEmpty();
