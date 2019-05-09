@@ -20,7 +20,7 @@ public class Tree<E>{
 	}
 	public void addChild(Tree<E> child){
 		children.add(child);
-		treeRank += child.treeRank();
+		treeRank = Math.max(treeRank, child.treeRank() + 1);
 		child.setParent(this);
 	}
 	public int rank(){
