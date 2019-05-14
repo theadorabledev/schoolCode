@@ -20,7 +20,9 @@ public class IntBST{
 	public Integer getValue() { return value;}
 	public TreeNode<Integer> getLeft() {return left;}
 	public TreeNode<Integer> getRight() {return right;}
-	
+	public boolean isLeaf(){
+	    return (left == null && right == null);
+	}
 	// mutators
 	public void setLeft(TreeNode<Integer> n) { left = n;}
 	public void setRight(TreeNode<Integer> n) { right = n;}
@@ -33,10 +35,10 @@ public class IntBST{
     }
 
     // Adds x into the IntBST as a leaf.
-    public void add(Integer x){
-	root = add(x,root);
-	size++;
-    }
+    //public void add(Integer x){
+    //	root = add(x,root);
+    //	size++;
+    //
     
     private TreeNode<Integer> add(Integer x, TreeNode<Integer> rt){
 	if (rt == null)
@@ -47,7 +49,41 @@ public class IntBST{
 	    rt.setRight(add(x,rt.getRight()));
 	return rt;
     }
+    public void add(Integer x){
+	size++;
+	TreeNode<Integer> leaf = new TreeNode<Integer>(x, null, null);
+	if(root == null){
+	    root = leaf;
+	    return;
+	}
+	TreeNode<Integer> trailer = root;
+	TreeNode<Integer> node = root;
+	while(true){
+	    if(node == null){
+		if(trailer.getValue() > x) trailer.setLeft(leaf);
+		else trailer.setRight(leaf);
+		return;
+	    }
+	    trailer = node;
+	    if(node.getValue() > x){
+		node = node.getLeft();
+	    }else{
+		node = node.getRight();
+	    }
+	}
+    }
+    public void printSideways(){
+	printSideways(root, 0);
+    }
+    private void printSideways(TreeNode<Integer> node, int depth){
+	if(node == null) return;
+	String s = "";
+	for(int i = 0; i < depth; i++)s+= "---";
+	printSideways(node.getRight(), depth + 1);
+	System.out.println(s + node.getValue());
+	printSideways(node.getLeft(), depth + 1);
 
+    }
     public void inorder(){
 	inorder(root);
 	System.out.println();
@@ -100,6 +136,7 @@ public class IntBST{
 	bst.inorder();
 	bst.preorder();
 	bst.postorder();
+	bst.printSideways();
     }
 
 
