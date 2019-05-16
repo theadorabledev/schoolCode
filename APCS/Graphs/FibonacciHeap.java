@@ -166,17 +166,23 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 	System.out.println("--------------");
     }
     public void display(){
-	String[] totalGraph = new String[head.treeRank() * 3];
-	String[] graph = new String[head.treeRank() * 3];	
+	int maxDepth = head.treeRank();
+	Tree<E> node = head.getNext();
+	while(node != head){
+	    maxDepth = Math.max(maxDepth, node.treeRank());
+	    node = node.getNext();
+	}
+	String[] totalGraph = new String[maxDepth * 3];
+	String[] graph = new String[maxDepth * 3];	
 	for(int i = 0; i < graph.length; i++) totalGraph[i] = "";
 	displayHelper(head.getNext(), totalGraph, 0, 0);
 	for(String s : totalGraph){
 	    System.out.println(s + "");
 	}
 	equalizeGraph(totalGraph);
-	Tree<E> node = head.getNext();
+	node = head.getNext();
 	while(node != head){		
-	    graph = new String[head.treeRank() * 3];	
+	    graph = new String[maxDepth * 3];	
 	    for(int i = 0; i < graph.length; i++) graph[i] = "";
 	    displayHelper(node, graph, 0, 0);
 	    for(int i = 0; i < graph.length; i++){
@@ -205,10 +211,16 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
     }
     private int displayHelper(Tree<E> tree, String[] graph, int depth, int parentPos){
 	int pos = 0;
-	System.out.println(graph[depth * 2]);
 	if(graph[depth * 2].length() < parentPos){
 	    for(int i = 0; i < parentPos - graph[depth * 2].length() + 1; i++){
 		graph[depth * 2] += "  ";
+	    }
+	}
+	int m = maxLength(graph);
+	if(graph[depth * 2].length() < m){
+	    
+	    for(int i = graph[depth * 2].length(); i < m; i++){
+			graph[depth * 2] += "  "; 
 	    }
 	}
 	int startLen = graph[depth * 2].length();
@@ -229,13 +241,12 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 	    try{
 		graph[depth * 2 + 2] = (next.substring(0, s + tree.children().size() * 2 - 1) + " " + next.substring(s + tree.children().size() * 2));
 	    }catch (Exception e){
-		System.out.println("Error : \n"
-				   + next);
+		//System.out.println("Error : \n" + next);
 	    }
 	    while(graph[depth * 2 + 1].length() < s) graph[depth * 2 + 1] += " ";
 	    graph[depth * 2 + 1] += "|";
 	}
-	System.out.println(graph[depth * 2]);
+	//System.out.println(graph[depth * 2]);
 
 	return startLen;
 		
@@ -334,9 +345,10 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 	for(int i = 0; i < 20; i ++){
 	    fib.add(i % 9);
 	}
-	fib.display();
+	//fib.display();
 	System.out.println(Arrays.asList(fib.toArray()));
-	for(int i = 0; i < 2; i ++){
+
+	for(int i = 0; i < 1; i ++){
 	    System.out.println(fib.deleteMin());
 	    fib.print();
 	    fib.display();
