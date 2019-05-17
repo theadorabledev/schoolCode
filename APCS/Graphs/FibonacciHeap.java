@@ -175,7 +175,7 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 	String[] totalGraph = new String[maxDepth * 3];
 	String[] graph = new String[maxDepth * 3];	
 	for(int i = 0; i < graph.length; i++) totalGraph[i] = "";
-	displayHelper(head.getNext(), totalGraph, 0, 0);
+	displayHelper(head, totalGraph, 0, 0);
 	for(String s : totalGraph){
 	    System.out.println(s + "");
 	}
@@ -185,6 +185,9 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 	    graph = new String[maxDepth * 3];	
 	    for(int i = 0; i < graph.length; i++) graph[i] = "";
 	    displayHelper(node, graph, 0, 0);
+	    for(String s : graph){
+		System.out.println(s + "");
+	    }
 	    for(int i = 0; i < graph.length; i++){
 		totalGraph[i] += graph[i];
 	    }
@@ -216,38 +219,33 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 		graph[depth * 2] += "  ";
 	    }
 	}
-	int m = maxLength(graph);
-	if(graph[depth * 2].length() < m){
-	    
-	    for(int i = graph[depth * 2].length(); i < m; i++){
-			graph[depth * 2] += "  "; 
-	    }
-	}
+	
 	int startLen = graph[depth * 2].length();
-	graph[depth * 2] += tree.root() + ((depth == 0)? " " : "-");
 	if(tree.treeRank() > 1){
-	    boolean first = true;
-
+	    int m = maxLength(graph);
+	    if(graph[depth * 2].length() < m){
+		for(int i = graph[depth * 2].length(); i < m; i++){
+		    graph[depth * 2] += "-"; 
+		}
+	    }
+	    graph[depth * 2] += tree.root() + ((depth == 0)? " " : "-");
 	    int s = graph[depth * 2].length() - 2;
 	    for(Tree<E> child : tree.children()){
 		pos = displayHelper(child, graph, depth + 1, s);
-		if(first){
-		    //while(s < graph[depth * 2 + 2].length()) graph[depth * 2] += " ";
-		    first = false;
-		}
 	    }
 	    while(graph[depth * 2].length() < pos) graph[depth * 2] += " "; 
 	    String next = graph[depth * 2 + 2];
 	    try{
-		graph[depth * 2 + 2] = (next.substring(0, s + tree.children().size() * 2 - 1) + " " + next.substring(s + tree.children().size() * 2));
+		graph[depth * 2 + 2] = next.substring(0, next.length() - 1) + " ";
+		//graph[depth * 2 + 2] = (next.substring(0, s + tree.children().size() * 2 - 1) + " " + next.substring(s + tree.children().size() * 2));
 	    }catch (Exception e){
-		//System.out.println("Error : \n" + next);
+		System.out.println("Error : \n" + next);
 	    }
 	    while(graph[depth * 2 + 1].length() < s) graph[depth * 2 + 1] += " ";
 	    graph[depth * 2 + 1] += "|";
+	}else{
+	    graph[depth * 2] += tree.root() + ((depth == 0)? " " : "-");
 	}
-	//System.out.println(graph[depth * 2]);
-
 	return startLen;
 		
     }	
