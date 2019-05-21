@@ -26,6 +26,8 @@ public class IntBST{
 	// mutators
 	public void setLeft(TreeNode<Integer> n) { left = n;}
 	public void setRight(TreeNode<Integer> n) { right = n;}
+	public void setValue(Integer x){ value = x;}
+	
 
     }
 
@@ -34,11 +36,59 @@ public class IntBST{
 	size = 0;
     }
 
-    // Adds x into the IntBST as a leaf.
-    //public void add(Integer x){
-    //	root = add(x,root);
-    //	size++;
-    //
+    private TreeNode<Integer> maxNode(TreeNode<Integer> rt){
+	if(rt == null) return null;
+	while(rt.getRight() != null){
+	    rt = rt.getRight();
+	}
+	return rt;
+    }
+    private TreeNode<Integer> minNode(TreeNode<Integer> rt){
+	if(rt == null) return null;
+	while(rt.getLeft() != null){
+	    rt = rt.getLeft();
+	}
+	return rt;
+    }
+    public TreeNode<Integer> find(Integer x){
+	TreeNode<Integer> rt = root;
+	while(rt != null){
+	    if(rt.getValue() == x)return rt;
+	    else if(rt.getValue() <= rt.getValue()) rt = rt.getRight();
+	    else rt = rt.getLeft();
+	}
+	return null;
+    }
+    public TreeNode<Integer> findParent(TreeNode<Integer> child){
+	TreeNode<Integer> rt = root;
+	while(rt != null){
+	    if(rt.getLeft() == child || rt.getRight() == child )return rt;
+	    else if(rt.getValue() <= rt.getValue()) rt = rt.getRight();
+	    else rt = rt.getLeft();
+	}
+	return null;
+    }
+    public boolean remove(Integer x){
+	TreeNode<Integer> root = find(x);
+	if(root == null) return false;
+	TreeNode<Integer> parent = findParent(root);
+       
+	if(root.isLeaf()){
+	    if(parent.getValue() >= root.getValue()) parent.setLeft(null);
+	    else parent.setRight(null);
+	}else{
+	    if(root.getRight() == null){
+		TreeNode<Integer> max = maxNode(root.getLeft());
+		root.setValue(max.getValue());
+		remove(max.getValue());
+	    }else{
+		TreeNode<Integer> min = minNode(root.getRight());
+		root.setValue(min.getValue());
+		remove(min.getValue());
+	    }
+	}
+	return true;
+    }
     
     private TreeNode<Integer> add(Integer x, TreeNode<Integer> rt){
 	if (rt == null)
