@@ -27,7 +27,15 @@ public class Tree<E>{
 		return children.size();
 	}
 	public int treeRank(){
-		return treeRank;
+		
+		int max = 0; 
+		for(Tree<E> child : children){
+			int t = child.treeRank();
+			if(t > max) max = t;
+		}
+		return max + 1;
+		
+		//return treeRank;
 	}
 	public E root(){
 		return root;
