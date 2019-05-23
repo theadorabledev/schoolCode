@@ -71,7 +71,6 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 		return node;
 	}
 	public E deleteMin(){
-		System.out.println("Min : " + min.root());
 		//Move min's children to list
 		for(Tree<E> child : min.children()){
 			insert(child);
@@ -93,7 +92,6 @@ public class FibonacciHeap<E> extends PriorityQueue<E> implements Iterable<E>{
 		HashMap<Integer, Tree<E>> ranks = new HashMap<Integer, Tree<E>>();
 		node = head.getNext();
 		ranks.put(head.treeRank(), head);
-		display();
 		int s = 0;
 		while(true){
 			Tree<E> nextNode = node.getNext();
