@@ -98,17 +98,16 @@ public class HashST<Key,Value>{
 		}
 		
 	}
+    
 
 	
 	public static void main(String [] args){
 		HashST<String, Integer> d = new HashST<String, Integer> (13);
 		for(String s : args){
-			if(d.containsKey(s)){
-				d.put(s, d.get(s) + 1);
-			}else{
-				d.put(s, 1);
-			}
-			
+		    if(! d.containsKey(s))
+			d.put(s, 0);
+		    d.put(s, d.get(s) + 1);
+		    
 		}
 		d.printTable();
 	}
