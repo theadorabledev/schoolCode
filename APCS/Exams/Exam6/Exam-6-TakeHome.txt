@@ -1,0 +1,139 @@
+
+1.In approval voting there are at least two candidates and there are many
+  voters. Each voter votes by submitting a ballot that represents a set
+  of candidates of whom the voter approves. The winner of the election
+  is the candidate that is listed on the most ballots, that is, the 
+  candidate who is approved by the most voters.
+
+  For example, suppose there are four candidates: Chris, Jamie, Pat, and
+  Sandy. Seven voters vote as follows (order is unimportant, each ballot
+  represents the set of candidates chosen by that voter).
+
+
+  Voter	   Ballot
+  0	   Chris, Jamie
+  1	   Chris, Sandy
+  2	   Chris, Sandy, Pat, Jamie
+  3	   Pat
+  4	   Sandy, Jamie
+  5	   Sandy, Pat, Jamie
+  6	   Jamie, Chris
+
+  The number of ballots on which each candidate was listed is as follows:
+
+  Candidate  Number of Ballots
+  Chris	   4
+  Jamie	   5
+  Pat	   3
+  Sandy	   4
+
+  In this example, Jamie is the winner. If more than one candidate is tied
+  with the most votes, then we consider the set of candidates to be the 
+  winning set for this election. For example, if Chris appeared on voter 3's
+  ballot along with Pat, then Chris would tie Jamie with five votes and the
+  winning set would be {Chris, Jamie}.
+
+  We represent one voter's ballot as a Set that contains the names (as Strings)
+  of the candidates approved by that voter. We represent the set of ballots
+  for all voters in the election by the following partial class declaration.
+
+  public class VoterBallots{
+
+       private Map<String,Integer> voteCount; 
+       // key is the candidate name, value is the
+       // number of votes received by that candidate.
+
+       // precondition: each entry in ballotList is a Set representing
+       //               one voter's ballot.
+       // postcondition: voteCount.get(candidate) is the total number of
+       //                times candidate appears on ballots in ballotList.
+       public VoterBallots(List<Set<String>> ballotList)
+
+       // postcondition: returns an Integer object with value equal
+       //                to the key in the Map voteCount.
+       private Integer maxVotes()
+
+
+       // postcondition: returns the set containing the candidate(s)
+       //                with the most votes
+       public Set<String> candidatesWithMost()
+
+       // other methods not shown
+  }
+
+  (A)   Write the VoterBallots constructor. The constructor creates the 
+        Map voteCount and initializes it to hold one entry for each 
+    	candidate that appears on at least one ballot in ballotList.
+    	The associated value for each candidate is the total number of
+    	ballots on which that candidate appears.
+    
+	A solution that creates an unnecessary new instance of a List
+    	or Set will not recieve full credit.
+
+  
+  (B).  Write the VoterBallots method candidatesWithMost. Method 
+     	candidatesWithMost returns a Set of the name(s) of the 
+     	candidate(s) in voteCount with the most votes.
+
+     	In writing method candidateWithMost, you may call the private
+     	helper method maxVotes. Solutions that reimplement functionality
+     	provided by maxVotes, rather than invoking maxVotes, will not
+     	receive full credit. A solution that creates an unnecessary new
+     	instance of a List or Set will not receive full credit.
+
+ (C). 	Assume that there are C candidates and V voters. What is the 
+     	expected time complexity, in Big-Oh notation in terms of C 
+     	and V, for your implementation of method candidatesWithMost?
+
+
+2. Write a program that reads in lines from the user and translates each
+   line either to or from Morse code, depending on the first character
+   of the line:
+
+   * If the line starts with a letter, you want to translate it to Morse
+     code. Any characters other than the 26 letters should simply be
+     ignored.
+
+   * If the line starts with a period (dot) or a hyphen (dash), it should
+     read as a series of Morse code characters that you need to translate
+     back to letters. You may assume that each sequence of dots and dashes
+     in the input string will be separated by spaces, and you are free to
+     ignore any other characters that appear. Because there is no encoding
+     for the space between words, the characters of the translated
+     message will be run together when your program translates in this
+     direction.
+
+   The program should end when the user enters a blank line. A sample run
+   of this program might look like this:
+
+   Morse code translator
+   > SOS TITANTIC
+     ... --- ... - .. - .--. .. -.-.
+   > WE ARE SINKING FAST
+    .-- . .- .-. . ... .. -. -.- .. -. --. ..-. .- ... -
+   > .... . .- -.. .. -. --. ..-. --- .-. -.-- --- ..-
+     HEADINGFORYOU
+
+   You must use a map data structure to store the letters and the 
+   Morse Code.
+
+3. Write a program that performs a simple n-body simulation, called
+   "Jumping Leprechauns." This simulation involves n leprechauns, numberd
+   1 to n. It maintains a gold value g_i for each leprechaun i, which 
+   begins with each leprechaun starting  out with a million dollars worth
+   of gold, that is, g_i = 1000000 for each i = 1,2,...,n. In addition,
+   the simulation also maintains, for each leprachaun,i, a place on the 
+   horizon, which is represented as a double-precision floating point number,
+   x_i. In each iteration of the simulation, the simulation processes the
+   leprachauns in order. Processing a leprachaun i during its iteration 
+   begins by computing a new place on the horizon for i, which is determined
+   by the assignment: 
+      
+		x_i + rg_i -> x_i
+
+   where r is a random floating-point number between -1 and 1. The leprachaun
+   i then steals half the gold from the nearest leprachauns on either side
+   of him and adds this gold to his gold value, g_i. Write a program that
+   can perform a series of iterations in this simulation for a given 
+   number,n, of leprachauns. You must maintain the set of horizon positions
+   using an ordered map data structure.
