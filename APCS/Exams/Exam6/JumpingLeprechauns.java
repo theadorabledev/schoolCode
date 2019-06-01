@@ -22,27 +22,18 @@ public class JumpingLeprechauns{
 		public int number(){
 			return number;
 		}
-		public double position(){
-			return pos;
-		}
-		public void setPos(double newPos){
-			pos = newPos;
-		}
 		public int compareTo(Object o){
 			return ((Leprechaun) o).gold () - gold;
 		}
 		public String toString(){
 			return "(#" + number + " : " + gold + "g)";// : @" + pos + ")";
 		}
-		
-		
 	}
 	private TreeMap<Double, Leprechaun> Horizon = new TreeMap<Double, Leprechaun>();
 	private Random rand = new Random();
-
 	public JumpingLeprechauns(int numLeprechauns){
 		for(int i = 0; i < numLeprechauns; i++){
-			Horizon.put((double) i, new Leprechaun(i));
+			Horizon.put(Math.random(), new Leprechaun(i));
 		} 
 	}
 	public void iterate(int rounds){
@@ -53,54 +44,39 @@ public class JumpingLeprechauns{
 	public void iterate(){
 		System.out.println("----------------\nStart : ");
 		print();
-		Set<Double> set = Horizon.keySet();
-		//Iterator<Map.Entry<Double, Leprechaun>> iterator = Horizon.entrySet().iterator();
-		List<Double> list = new ArrayList<Double>(set);
+		List<Double> list = new ArrayList<Double>(Horizon.keySet());
 		for( Double pos : list) {
-			//Map.Entry<Double, Leprechaun> entry = iterator.next();
-			//Double pos = iterator.next().getKey();
 			Leprechaun Henderson = Horizon.get(pos);
-			//iterator.remove();
 			Horizon.remove(pos);
 			double dest = pos + (Math.random() * Henderson.gold());
 			double previous = dest;
 			double last = previous;
 			Horizon.put(dest, Henderson);
-			Henderson.setPos(dest);
-			boolean out = false;
 			for(Double oPos: Horizon.keySet()){
 				if(previous == dest){
-					//System.out.println(oPos + " " + previous+ " " + last);
-					//System.out.println(Horizon.get(oPos) + " " + Horizon.get(previous) + " " + Horizon.get(last));
 					Henderson.stealFrom(Horizon.get(oPos));
 					Henderson.stealFrom(Horizon.get(last));
-					//System.out.println(Horizon.get(oPos) + " " + Horizon.get(previous) + " " + Horizon.get(last));
-					out=true;
 					break;
 				} 
-				if(out) break;
-			
 				last = previous;
 				previous = oPos;
-			}
-			//print();
-			
-		}	
-			
+			}			
+		}		
 		System.out.println("Finish : ");
 		print();
-		System.out.println("----------------\n");
+		System.out.println("----------------");
 		
 
 	}
 	public void print(){
-		//int gold = 0;
+		//for(Double pos : Horizon.keySet()){
+		//	System.out.print(pos + ", ");
+		//}	
+		//System.out.println();
 		for(Double pos : Horizon.keySet()){
 			System.out.print(Horizon.get(pos) + ", ");
-			//gold += Horizon.get(pos).gold();
 		}	
 		System.out.println();
-		//System.out.println("   " + (gold / Horizon.keySet().size()));
 	}
 	public static void main(String[] args){
 		JumpingLeprechauns horizon = new JumpingLeprechauns(Integer.parseInt(args[0]));
