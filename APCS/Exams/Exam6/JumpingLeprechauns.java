@@ -1,12 +1,10 @@
 import java.util.*;
 public class JumpingLeprechauns{
-	private static class Leprechaun implements Comparable{
+	private static class Leprechaun{
 		private int gold = 1000000;
 		private int number;
-		private double pos;
 		public Leprechaun(int number){
 			this.number = number;
-			pos = number;
 		}
 		public int stealHalf(){
 			gold = gold / 2;
@@ -22,11 +20,8 @@ public class JumpingLeprechauns{
 		public int number(){
 			return number;
 		}
-		public int compareTo(Object o){
-			return ((Leprechaun) o).gold () - gold;
-		}
 		public String toString(){
-			return "(#" + number + " : " + gold + "g)";// : @" + pos + ")";
+			return "(#" + number + " : " + gold + "g)";
 		}
 	}
 	private TreeMap<Double, Leprechaun> Horizon = new TreeMap<Double, Leprechaun>();
@@ -69,10 +64,7 @@ public class JumpingLeprechauns{
 
 	}
 	public void print(){
-		//for(Double pos : Horizon.keySet()){
-		//	System.out.print(pos + ", ");
-		//}	
-		//System.out.println();
+
 		for(Double pos : Horizon.keySet()){
 			System.out.print(Horizon.get(pos) + ", ");
 		}	
