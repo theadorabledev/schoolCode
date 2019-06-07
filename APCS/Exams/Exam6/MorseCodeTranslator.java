@@ -20,7 +20,7 @@ public class MorseCodeTranslator{
 	public static String Translate(String message){
 		message = message.toUpperCase();
 		String output = "";
-		if(message.substring(0,1).equals(".")||message.substring(0,1).equals(".")){
+		if(message.substring(0,1).equals(".")||message.substring(0,1).equals("-")){
 			String[] keeper = message.split(" ");
 			for(int i = 0; i < keeper.length; i++ ){
 				if(keeper[i].length() == keeper[i].replaceAll("[a-zA-Z]","").length()){
