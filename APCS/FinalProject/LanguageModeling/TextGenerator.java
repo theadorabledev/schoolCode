@@ -1,37 +1,46 @@
+import java.util.*;
 public class TextGenerator{
-    private LanguageModeler model;
-    private String origText = "";
-    private String text = "";
-    private int length;
-    private int kOrder;
-    public TextGenerator(LanguageModeler lm, int l, int k, String t){
-	length = l;
-	model = lm;
-	kOrder = k;
-	origText = t;
-    }
-    public void print(){
-	System.out.println(text);
-    }
-    public void generateText(){
-	text = origText.substring(kOrder);
-	while(text.length() < length){
-	    print();
-	    text += model.map.get(text.substring(text.length() + 1- kOrder, text.length())).random();
+	private LanguageModel model;
+	private String text = "";
+	private ArrayList<String> textList;
+	private int length;
+	public TextGenerator(LanguageModel lm, int l, int k, String t){
+		length = l;
+		model = lm;
+		textList = lm.startText();
+		text = String.join(" ", textList);
 	}
-    }
-    public static void main(String [] args){
-	int kOrder = Integer.parseInt(args[0]);
-	int length = Integer.parseInt(args[1]);
-	String text = LanguageModeler.getTextFromStdin();
-	System.out.println("Original text : ");
-	System.out.println(text);
-	LanguageModeler lm = new LanguageModeler(kOrder, text);
-	TextGenerator g = new TextGenerator(lm, length, kOrder, text);
-	g.generateText();
-	System.out.println("New text : ");
-	g.print();
+	public void print(){
+		System.out.println(text);
+	}
+	public void generateText(){
+		while(textList.size() < length){
+			textList.add(getNext());
+		}
+		text = String.join(" ", textList);
+	}
+	private String getNext(){
+		String next = "";
+		for(int k = model.kOrder(); k >= 0; k--){
+			ArrayList<String> sub = new ArrayList<String>(textList.subList(textList.size() - k, textList.size()));
+			if(model.map().containsKey(sub)){ 
+				//System.out.println(sub + " " + model.map().get(sub));
+				return model.getNext(sub);
+			}
+		}
+		return next;
+	}
+	public static void main(String [] args){
+		int kOrder = Integer.parseInt(args[0]);
+		int length = Integer.parseInt(args[1]);
+		String text = LanguageModel.getTextFromStdin();
+		LanguageModel lm = new LanguageModel(kOrder, text);
+		TextGenerator g = new TextGenerator(lm, length, kOrder, text);
+		g.generateText();
+		System.out.println("New text : ");
+		g.print();
+
+		
+	}	
 	
-    }	
-    
 }
