@@ -36,8 +36,10 @@ public class TextGenerator{
 		String text = LanguageModel.getTextFromStdin();
 		LanguageModel lm = new LanguageModel(kOrder, text);
 		TextGenerator g = new TextGenerator(lm, length, kOrder, text);
+		System.out.println("Original Text : ");
+		System.out.println(lm.text());
 		g.generateText();
-		System.out.println("New text : ");
+		System.out.println("\nNew Text : ");
 		g.print();
 
 		
