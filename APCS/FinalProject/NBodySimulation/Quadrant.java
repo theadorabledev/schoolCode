@@ -19,8 +19,8 @@ public class Quadrant{
 	public boolean contains(double xPos, double yPos){
 		return(x - radius <= xPos &&  xPos <= x + radius && y - radius <= yPos && yPos <= y + radius);
 	}
-	public boolean contains(Particle p){
-		return contains(p.xPosition, p.yPosition);
+	public boolean contains(Body b){
+		return contains(b.xPosition, b.yPosition);
 	}
 	public Quadrant NW(){
 		return new Quadrant(x - radius / 2, y + radius / 2, radius);

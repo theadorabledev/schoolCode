@@ -1,5 +1,5 @@
 public class BarnesHutTree{
-	private Particle particle = null;
+	private Body body = null;
 	private Quadrant quadrant;
 	private BarnesHutTree NW = null;
 	private BarnesHutTree NE = null;
@@ -11,54 +11,54 @@ public class BarnesHutTree{
 	public boolean external(){
 		return(NW == null && NE == null && SE == null && SW == null);
 	}
-	public void insert(Particle p){
+	public void insert(Body b){
 		
-		if(particle == null){
-			particle = p;
+		if(body == null){
+			body = b;
 		}else if(external()){
-			insertHelper(particle);
-			insert(p);
+			insertHelper(body);
+			insert(b);
 		}else{
-			particle = Particle.centerOfMass(particle, p);
-			insertHelper(p);
+			body = Body.centerOfMass(body, b);
+			insertHelper(b);
 			//insert(p);
 		}
 	}
-	private void insertHelper(Particle p){
+	private void insertHelper(Body b){
 		Quadrant nw = quadrant.NW();
-		if(nw.contains(p)){
+		if(nw.contains(b)){
 			if(NW == null) NW = new BarnesHutTree(nw);
-			NW.insert(p);
+			NW.insert(b);
 			return;
 		}
 		Quadrant ne = quadrant.NE();
-		if(ne.contains(p)){
+		if(ne.contains(b)){
 			if(NE == null) NE = new BarnesHutTree(ne);
-			NE.insert(p);
+			NE.insert(b);
 			return;
 		}
 		Quadrant se = quadrant.SE();
-		if(se.contains(p)){
+		if(se.contains(b)){
 			if(SE == null) SE = new BarnesHutTree(se);
-			SE.insert(p);
+			SE.insert(b);
 			return;
 		}		
 		Quadrant sw = quadrant.SW();
-		if(sw.contains(p)){
+		if(sw.contains(b)){
 			if(SW == null) SW = new BarnesHutTree(sw);
-			SW.insert(p);
+			SW.insert(b);
 		}
 	}
-	public void updateForces(Particle p){
+	public void updateForces(Body b){
 		if(external()){
-			if(particle != p) p.addForce(particle);
-		}else if(quadrant.length()/particle.distanceTo(p) < 2){
-			p.addForce(particle);
+			if(body != b) b.addForce(body);
+		}else if(quadrant.length()/body.distanceTo(b) < 2){
+			b.addForce(body);
 		}else{
-			if( NW != null) NW.updateForces(p);
-			if( NE != null) NE.updateForces(p);
-			if( SE != null) SE.updateForces(p);
-			if( SW != null) SW.updateForces(p);
+			if( NW != null) NW.updateForces(b);
+			if( NE != null) NE.updateForces(b);
+			if( SE != null) SE.updateForces(b);
+			if( SW != null) SW.updateForces(b);
 
 		}
 	}
