@@ -11,37 +11,43 @@ public class BarnesHutTree{
 	public boolean external(){
 		return(NW == null && NE == null && SE == null && SW == null);
 	}
-	public void addParticle(Particle p){
+	public void insert(Particle p){
 		
 		if(particle == null){
 			particle = p;
 		}else if(external()){
 			insertHelper(particle);
-			addParticle(p);
+			insert(p);
 		}else{
 			particle = Particle.centerOfMass(particle, p);
 			insertHelper(p);
+			//insert(p);
 		}
 	}
 	private void insertHelper(Particle p){
 		Quadrant nw = quadrant.NW();
-		Quadrant ne = quadrant.NE();
-		Quadrant se = quadrant.SE();
-		Quadrant sw = quadrant.SW();
 		if(nw.contains(p)){
 			if(NW == null) NW = new BarnesHutTree(nw);
-			NW.addParticle(p);
-		}else if(ne.contains(p)){
-			if(NE == null) NE = new BarnesHutTree(ne);
-			NE.addParticle(p);
-		}else if(se.contains(p)){
-			if(SE == null) NE = new BarnesHutTree(se);
-			SE.addParticle(p);
-		}else{
-			if(SW == null) NE = new BarnesHutTree(sw);
-			SW.addParticle(p);
+			NW.insert(p);
+			return;
 		}
-	
+		Quadrant ne = quadrant.NE();
+		if(ne.contains(p)){
+			if(NE == null) NE = new BarnesHutTree(ne);
+			NE.insert(p);
+			return;
+		}
+		Quadrant se = quadrant.SE();
+		if(se.contains(p)){
+			if(SE == null) SE = new BarnesHutTree(se);
+			SE.insert(p);
+			return;
+		}		
+		Quadrant sw = quadrant.SW();
+		if(sw.contains(p)){
+			if(SW == null) SW = new BarnesHutTree(sw);
+			SW.insert(p);
+		}
 	}
 	public void updateForces(Particle p){
 		if(external()){
