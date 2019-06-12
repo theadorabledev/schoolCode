@@ -30,15 +30,22 @@ public class Particle{
 		yForce = 0;
 	}
 	public void move(double t){
+		System.out.println("moving");
+		double tiny = 1E4;
+		System.out.println(this);
 		xVelocity += t * xForce / mass;
 		yVelocity += t * yForce / mass;
 		xPosition += t * xVelocity;
 		yPosition += t * yVelocity;
+		System.out.println(this);
 	}
 	public static Particle centerOfMass(Particle a, Particle b){
 		double m = a.mass + b.mass;
 		double x = (a.xPosition * a.mass + b.xPosition * b.mass) / m;
 		double y = (a.yPosition * a.mass + b.yPosition * b.mass) / m;
 		return new Particle(x, y, 0, 0, m);
+	}
+	public String toString(){
+		return "(" + xPosition + ", " + yPosition + ", " + xVelocity + ", " + yVelocity + ", " + mass + ")";
 	}
 }
