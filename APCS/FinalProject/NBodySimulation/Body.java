@@ -30,14 +30,11 @@ public class Body{
 		yForce = 0;
 	}
 	public void move(double t){
-		System.out.println("moving");
 		double tiny = 1E4;
-		System.out.println(this);
 		xVelocity += t * xForce / mass;
 		yVelocity += t * yForce / mass;
 		xPosition += t * xVelocity;
 		yPosition += t * yVelocity;
-		System.out.println(this);
 	}
 	public static Body centerOfMass(Body a, Body b){
 		double m = a.mass + b.mass;
