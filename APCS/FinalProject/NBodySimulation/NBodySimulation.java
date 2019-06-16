@@ -56,7 +56,6 @@ public class NBodySimulation extends Applet{
 			bodies[i - 2] = b;
 		}
 		return bodies;
-		
 	}
 	public static double getRadius(String []  lines){
 		return Double.parseDouble(lines[1]);
@@ -68,13 +67,9 @@ public class NBodySimulation extends Applet{
 		StdDraw.setPenRadius(0.03);
 		while(time > 0){
 			for(Body b : bodies){
-				//System.out.print(b + " ");
 				StdDraw.setPenRadius(0.001 * Math.log10(b.mass));
-		//System.out.println(sigMin + " " + sigMax + " "  + (int) ((sigMax - Math.log10(b.mass)) / (sigMax - sigMin) * 255));
-				//StdDraw.setPenColor((int) ((sigMax - Math.log10(b.mass)) / (sigMax - sigMin) * 255), 0, 0);
 				if(q.contains(b)) StdDraw.point(b.xPosition, b.yPosition);
 			}
-			//System.out.println();
 			StdDraw.show();
 			StdDraw.pause(10);
 			StdDraw.clear();
@@ -89,13 +84,11 @@ public class NBodySimulation extends Applet{
 		for(Body b : bodies){
 			sigMin = (b.mass < sigMin) ? b.mass : sigMin;
 			sigMax = (b.mass > sigMax) ? b.mass : sigMax;
-			//if(b.mass > maxMass) maxMass = b.mass; 
 		}
 		sigMin = Math.log10(sigMin);
 		sigMax = Math.log10(sigMax);
 		System.out.println("min" + sigMin);
 	}
-
 	private Color getBodyColor(Body b){
 		System.out.println(sigMin + " " + sigMax + " "  + (int) ((sigMax - Math.log10(b.mass)) / (sigMax - sigMin) * 255));
 		return new Color((int) ((sigMax - Math.log10(b.mass)) / (sigMax - sigMin) * 255), 0, 0);
