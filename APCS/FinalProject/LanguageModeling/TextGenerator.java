@@ -4,7 +4,7 @@ public class TextGenerator{
 	private String text = "";
 	private ArrayList<String> textList;
 	private int length;
-	public TextGenerator(LanguageModel lm, int l, int k, String t){
+	public TextGenerator(LanguageModel lm, int l){
 		length = l;
 		model = lm;
 		textList = lm.startText();
@@ -24,7 +24,6 @@ public class TextGenerator{
 		for(int k = model.kOrder(); k >= 0; k--){
 			ArrayList<String> sub = new ArrayList<String>(textList.subList(textList.size() - k, textList.size()));
 			if(model.map().containsKey(sub)){ 
-				//System.out.println(sub + " " + model.map().get(sub));
 				return model.getNext(sub);
 			}
 		}
@@ -35,7 +34,7 @@ public class TextGenerator{
 		int length = Integer.parseInt(args[1]);
 		String text = LanguageModel.getTextFromStdin();
 		LanguageModel lm = new LanguageModel(kOrder, text);
-		TextGenerator g = new TextGenerator(lm, length, kOrder, text);
+		TextGenerator g = new TextGenerator(lm, length);
 		System.out.println("Original Text : ");
 		System.out.println(lm.text());
 		g.generateText();

@@ -14,14 +14,10 @@ public class LanguageModel{
 		for(int i = 0; i < textArr.length - kOrder - 1; i++){
 			int k = 1;
 			while(k <= kOrder){
-				//if(!textArr[i + k + 1].equals("")){
-					
-					//if(textArr[i + k + 1].equals(""))  throw new  IndexOutOfBoundsException();
-					ArrayList<String> sub = new ArrayList<String>(textList.subList(i, i + k));
-					map.putIfAbsent(sub, new ArrayList<String>(Arrays.asList(new String [] {textArr[i + k + 1]})));
-					map.get(sub).add(textArr[i + k + 1]);
-					k++;				
-				//}
+				ArrayList<String> sub = new ArrayList<String>(textList.subList(i, i + k));
+				map.putIfAbsent(sub, new ArrayList<String>(Arrays.asList(new String [] {textArr[i + k + 1]})));
+				map.get(sub).add(textArr[i + k + 1]);
+				k++;				
 			}
 		}
 	}
