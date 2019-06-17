@@ -12,7 +12,6 @@ public class BarnesHutTree{
 		return(NW == null && NE == null && SE == null && SW == null);
 	}
 	public void insert(Body b){
-		
 		if(body == null){
 			body = b;
 		}else if(external()){
@@ -21,7 +20,6 @@ public class BarnesHutTree{
 		}else{
 			body = Body.centerOfMass(body, b);
 			insertHelper(b);
-			//insert(p);
 		}
 	}
 	private void insertHelper(Body b){
